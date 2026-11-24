@@ -16,9 +16,22 @@ services:
       interval: 5s
       retries: 10
 
+  api:
+    build: ./apps/api
+    profiles: ["api"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/analisebolsa_dev
+    ports:
+      - "8000:8000"
+
   worker:
     build: ./apps/api
     profiles: ["worker"]
+    command: ["python", "-m", "worker.eod"]
     depends_on:
       postgres:
         condition: service_healthy

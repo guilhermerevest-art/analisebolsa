@@ -1,0 +1,1864 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "analisebolsa API",
+    "description": "Conteúdo educacional. Não é recomendação de investimento.",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/v1/health": {
+      "get": {
+        "tags": [
+          "health"
+        ],
+        "summary": "Healthcheck com ping no banco",
+        "operationId": "health_v1_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Health"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/ativos": {
+      "get": {
+        "tags": [
+          "ativos"
+        ],
+        "summary": "Busca por ticker (prefixo) e nome",
+        "operationId": "listar_v1_ativos_get",
+        "parameters": [
+          {
+            "name": "busca",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 60
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Busca"
+            }
+          },
+          {
+            "name": "tipo",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "acao",
+                    "fii",
+                    "etf",
+                    "bdr"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Tipo"
+            }
+          },
+          {
+            "name": "pagina",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1,
+              "title": "Pagina"
+            }
+          },
+          {
+            "name": "limite",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 20,
+              "title": "Limite"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginaAtivos"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        }
+      }
+    },
+    "/v1/ativos/{ticker}": {
+      "get": {
+        "tags": [
+          "ativos"
+        ],
+        "summary": "Cadastro, última cotação e variações",
+        "operationId": "detalhe_v1_ativos__ticker__get",
+        "parameters": [
+          {
+            "name": "ticker",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Código de negociação, ex.: PETR4",
+              "title": "Ticker"
+            },
+            "description": "Código de negociação, ex.: PETR4"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AtivoDetalhe"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        }
+      }
+    },
+    "/v1/ativos/{ticker}/cotacoes": {
+      "get": {
+        "tags": [
+          "ativos"
+        ],
+        "summary": "Candles diários, semanais ou mensais",
+        "operationId": "cotacoes_v1_ativos__ticker__cotacoes_get",
+        "parameters": [
+          {
+            "name": "ticker",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Código de negociação, ex.: PETR4",
+              "title": "Ticker"
+            },
+            "description": "Código de negociação, ex.: PETR4"
+          },
+          {
+            "name": "inicio",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Inicio"
+            }
+          },
+          {
+            "name": "fim",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Fim"
+            }
+          },
+          {
+            "name": "periodo",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "1d",
+                "1w",
+                "1M"
+              ],
+              "type": "string",
+              "default": "1d",
+              "title": "Periodo"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Cotacoes"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        }
+      }
+    },
+    "/v1/ativos/{ticker}/indicadores": {
+      "get": {
+        "tags": [
+          "ativos"
+        ],
+        "summary": "Série dos indicadores",
+        "operationId": "indicadores_v1_ativos__ticker__indicadores_get",
+        "parameters": [
+          {
+            "name": "ticker",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Código de negociação, ex.: PETR4",
+              "title": "Ticker"
+            },
+            "description": "Código de negociação, ex.: PETR4"
+          },
+          {
+            "name": "inicio",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Inicio"
+            }
+          },
+          {
+            "name": "fim",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Fim"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Indicadores"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        }
+      }
+    },
+    "/v1/ativos/{ticker}/fundamentos": {
+      "get": {
+        "tags": [
+          "ativos"
+        ],
+        "summary": "Último snapshot e histórico",
+        "operationId": "fundamentos_v1_ativos__ticker__fundamentos_get",
+        "parameters": [
+          {
+            "name": "ticker",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Código de negociação, ex.: PETR4",
+              "title": "Ticker"
+            },
+            "description": "Código de negociação, ex.: PETR4"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Fundamentos"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        }
+      }
+    },
+    "/v1/ativos/{ticker}/proventos": {
+      "get": {
+        "tags": [
+          "ativos"
+        ],
+        "summary": "Proventos e DY por ano",
+        "operationId": "proventos_v1_ativos__ticker__proventos_get",
+        "parameters": [
+          {
+            "name": "ticker",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Código de negociação, ex.: PETR4",
+              "title": "Ticker"
+            },
+            "description": "Código de negociação, ex.: PETR4"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Proventos"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        }
+      }
+    },
+    "/v1/mercado/destaques": {
+      "get": {
+        "tags": [
+          "mercado"
+        ],
+        "summary": "Maiores altas e baixas do último pregão",
+        "operationId": "destaques_v1_mercado_destaques_get",
+        "parameters": [
+          {
+            "name": "limite",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 50,
+              "minimum": 1,
+              "default": 10,
+              "title": "Limite"
+            }
+          },
+          {
+            "name": "volume_minimo",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "minimum": 0.0
+                },
+                {
+                  "type": "string"
+                }
+              ],
+              "description": "Volume financeiro mínimo em R$, para excluir ativos ilíquidos",
+              "default": "1000000",
+              "title": "Volume Minimo"
+            },
+            "description": "Volume financeiro mínimo em R$, para excluir ativos ilíquidos"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Destaques"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        }
+      }
+    },
+    "/v1/admin/execucoes": {
+      "get": {
+        "tags": [
+          "admin"
+        ],
+        "summary": "Histórico do job",
+        "operationId": "execucoes_v1_admin_execucoes_get",
+        "parameters": [
+          {
+            "name": "limite",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limite"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Execucoes"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AtivoDetalhe": {
+        "properties": {
+          "ticker": {
+            "type": "string",
+            "title": "Ticker"
+          },
+          "nome": {
+            "type": "string",
+            "title": "Nome"
+          },
+          "tipo": {
+            "type": "string",
+            "enum": [
+              "acao",
+              "fii",
+              "etf",
+              "bdr"
+            ],
+            "title": "Tipo"
+          },
+          "setor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Setor"
+          },
+          "segmento": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Segmento"
+          },
+          "logo_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Logo Url"
+          },
+          "ultima_cotacao": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/UltimaCotacao"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "variacoes": {
+            "$ref": "#/components/schemas/Variacoes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ticker",
+          "nome",
+          "tipo",
+          "setor",
+          "segmento",
+          "logo_url",
+          "ultima_cotacao",
+          "variacoes"
+        ],
+        "title": "AtivoDetalhe"
+      },
+      "AtivoResumo": {
+        "properties": {
+          "ticker": {
+            "type": "string",
+            "title": "Ticker"
+          },
+          "nome": {
+            "type": "string",
+            "title": "Nome"
+          },
+          "tipo": {
+            "type": "string",
+            "enum": [
+              "acao",
+              "fii",
+              "etf",
+              "bdr"
+            ],
+            "title": "Tipo"
+          },
+          "setor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Setor"
+          },
+          "segmento": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Segmento"
+          },
+          "logo_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Logo Url"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ticker",
+          "nome",
+          "tipo",
+          "setor",
+          "segmento",
+          "logo_url"
+        ],
+        "title": "AtivoResumo"
+      },
+      "Candle": {
+        "properties": {
+          "data": {
+            "type": "string",
+            "format": "date",
+            "title": "Data"
+          },
+          "abertura": {
+            "type": "string",
+            "title": "Abertura"
+          },
+          "maxima": {
+            "type": "string",
+            "title": "Maxima"
+          },
+          "minima": {
+            "type": "string",
+            "title": "Minima"
+          },
+          "fechamento": {
+            "type": "string",
+            "title": "Fechamento"
+          },
+          "fechamento_ajustado": {
+            "type": "string",
+            "title": "Fechamento Ajustado"
+          },
+          "volume": {
+            "type": "integer",
+            "title": "Volume"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data",
+          "abertura",
+          "maxima",
+          "minima",
+          "fechamento",
+          "fechamento_ajustado",
+          "volume"
+        ],
+        "title": "Candle"
+      },
+      "Cotacoes": {
+        "properties": {
+          "ticker": {
+            "type": "string",
+            "title": "Ticker"
+          },
+          "periodo": {
+            "type": "string",
+            "enum": [
+              "1d",
+              "1w",
+              "1M"
+            ],
+            "title": "Periodo"
+          },
+          "candles": {
+            "items": {
+              "$ref": "#/components/schemas/Candle"
+            },
+            "type": "array",
+            "title": "Candles"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ticker",
+          "periodo",
+          "candles"
+        ],
+        "title": "Cotacoes"
+      },
+      "Destaque": {
+        "properties": {
+          "ticker": {
+            "type": "string",
+            "title": "Ticker"
+          },
+          "nome": {
+            "type": "string",
+            "title": "Nome"
+          },
+          "tipo": {
+            "type": "string",
+            "enum": [
+              "acao",
+              "fii",
+              "etf",
+              "bdr"
+            ],
+            "title": "Tipo"
+          },
+          "fechamento": {
+            "type": "string",
+            "title": "Fechamento"
+          },
+          "variacao": {
+            "type": "number",
+            "title": "Variacao"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ticker",
+          "nome",
+          "tipo",
+          "fechamento",
+          "variacao"
+        ],
+        "title": "Destaque"
+      },
+      "Destaques": {
+        "properties": {
+          "data": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Data"
+          },
+          "altas": {
+            "items": {
+              "$ref": "#/components/schemas/Destaque"
+            },
+            "type": "array",
+            "title": "Altas"
+          },
+          "baixas": {
+            "items": {
+              "$ref": "#/components/schemas/Destaque"
+            },
+            "type": "array",
+            "title": "Baixas"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data",
+          "altas",
+          "baixas"
+        ],
+        "title": "Destaques"
+      },
+      "DyAno": {
+        "properties": {
+          "ano": {
+            "type": "integer",
+            "title": "Ano"
+          },
+          "total": {
+            "type": "string",
+            "title": "Total"
+          },
+          "dy": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dy"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ano",
+          "total",
+          "dy"
+        ],
+        "title": "DyAno"
+      },
+      "Execucao": {
+        "properties": {
+          "execucao_id": {
+            "type": "integer",
+            "title": "Execucao Id"
+          },
+          "tipo": {
+            "type": "string",
+            "enum": [
+              "eod",
+              "backfill",
+              "catalogo",
+              "fundamentos"
+            ],
+            "title": "Tipo"
+          },
+          "iniciado_em": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Iniciado Em"
+          },
+          "finalizado_em": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Finalizado Em"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "rodando",
+              "ok",
+              "parcial",
+              "erro"
+            ],
+            "title": "Status"
+          },
+          "ativos_ok": {
+            "type": "integer",
+            "title": "Ativos Ok"
+          },
+          "ativos_erro": {
+            "type": "integer",
+            "title": "Ativos Erro"
+          },
+          "detalhes": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Detalhes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "execucao_id",
+          "tipo",
+          "iniciado_em",
+          "finalizado_em",
+          "status",
+          "ativos_ok",
+          "ativos_erro",
+          "detalhes"
+        ],
+        "title": "Execucao"
+      },
+      "Execucoes": {
+        "properties": {
+          "itens": {
+            "items": {
+              "$ref": "#/components/schemas/Execucao"
+            },
+            "type": "array",
+            "title": "Itens"
+          }
+        },
+        "type": "object",
+        "required": [
+          "itens"
+        ],
+        "title": "Execucoes"
+      },
+      "Fundamentos": {
+        "properties": {
+          "ticker": {
+            "type": "string",
+            "title": "Ticker"
+          },
+          "ultimo": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/FundamentosSnapshot"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "historico": {
+            "items": {
+              "$ref": "#/components/schemas/FundamentosSnapshot"
+            },
+            "type": "array",
+            "title": "Historico"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ticker",
+          "ultimo",
+          "historico"
+        ],
+        "title": "Fundamentos"
+      },
+      "FundamentosSnapshot": {
+        "properties": {
+          "data_referencia": {
+            "type": "string",
+            "format": "date",
+            "title": "Data Referencia"
+          },
+          "pl": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pl"
+          },
+          "pvp": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pvp"
+          },
+          "dy_12m": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dy 12M"
+          },
+          "roe": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Roe"
+          },
+          "margem_liquida": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Margem Liquida"
+          },
+          "div_liq_ebitda": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Div Liq Ebitda"
+          },
+          "vpa": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Vpa"
+          },
+          "lpa": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lpa"
+          },
+          "valor_mercado": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Valor Mercado"
+          },
+          "extras": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Extras"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data_referencia",
+          "pl",
+          "pvp",
+          "dy_12m",
+          "roe",
+          "margem_liquida",
+          "div_liq_ebitda",
+          "vpa",
+          "lpa",
+          "valor_mercado",
+          "extras"
+        ],
+        "title": "FundamentosSnapshot"
+      },
+      "Health": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "const": "ok",
+            "title": "Status"
+          },
+          "banco": {
+            "type": "string",
+            "const": "ok",
+            "title": "Banco"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "banco"
+        ],
+        "title": "Health"
+      },
+      "Indicadores": {
+        "properties": {
+          "ticker": {
+            "type": "string",
+            "title": "Ticker"
+          },
+          "itens": {
+            "items": {
+              "$ref": "#/components/schemas/IndicadoresDia"
+            },
+            "type": "array",
+            "title": "Itens"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ticker",
+          "itens"
+        ],
+        "title": "Indicadores"
+      },
+      "IndicadoresDia": {
+        "properties": {
+          "data": {
+            "type": "string",
+            "format": "date",
+            "title": "Data"
+          },
+          "mm20": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mm20"
+          },
+          "mm50": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mm50"
+          },
+          "mm200": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mm200"
+          },
+          "mme9": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mme9"
+          },
+          "rsi14": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rsi14"
+          },
+          "macd": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Macd"
+          },
+          "macd_sinal": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Macd Sinal"
+          },
+          "macd_hist": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Macd Hist"
+          },
+          "bb_superior": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bb Superior"
+          },
+          "bb_inferior": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bb Inferior"
+          },
+          "atr14": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Atr14"
+          },
+          "vol_media20": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Vol Media20"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data",
+          "mm20",
+          "mm50",
+          "mm200",
+          "mme9",
+          "rsi14",
+          "macd",
+          "macd_sinal",
+          "macd_hist",
+          "bb_superior",
+          "bb_inferior",
+          "atr14",
+          "vol_media20"
+        ],
+        "title": "IndicadoresDia"
+      },
+      "PaginaAtivos": {
+        "properties": {
+          "itens": {
+            "items": {
+              "$ref": "#/components/schemas/AtivoResumo"
+            },
+            "type": "array",
+            "title": "Itens"
+          },
+          "pagina": {
+            "type": "integer",
+            "title": "Pagina"
+          },
+          "limite": {
+            "type": "integer",
+            "title": "Limite"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          }
+        },
+        "type": "object",
+        "required": [
+          "itens",
+          "pagina",
+          "limite",
+          "total"
+        ],
+        "title": "PaginaAtivos"
+      },
+      "Problema": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "title": "Type",
+            "default": "about:blank"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "status": {
+            "type": "integer",
+            "title": "Status"
+          },
+          "detail": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Detail"
+          },
+          "instance": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Instance"
+          }
+        },
+        "type": "object",
+        "required": [
+          "title",
+          "status"
+        ],
+        "title": "Problema"
+      },
+      "ProventoItem": {
+        "properties": {
+          "tipo": {
+            "type": "string",
+            "enum": [
+              "dividendo",
+              "jcp",
+              "rendimento",
+              "bonificacao",
+              "desdobramento",
+              "grupamento"
+            ],
+            "title": "Tipo"
+          },
+          "data_com": {
+            "type": "string",
+            "format": "date",
+            "title": "Data Com"
+          },
+          "data_pagamento": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Data Pagamento"
+          },
+          "valor": {
+            "type": "string",
+            "title": "Valor"
+          }
+        },
+        "type": "object",
+        "required": [
+          "tipo",
+          "data_com",
+          "data_pagamento",
+          "valor"
+        ],
+        "title": "ProventoItem"
+      },
+      "Proventos": {
+        "properties": {
+          "ticker": {
+            "type": "string",
+            "title": "Ticker"
+          },
+          "itens": {
+            "items": {
+              "$ref": "#/components/schemas/ProventoItem"
+            },
+            "type": "array",
+            "title": "Itens"
+          },
+          "dy_por_ano": {
+            "items": {
+              "$ref": "#/components/schemas/DyAno"
+            },
+            "type": "array",
+            "title": "Dy Por Ano"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ticker",
+          "itens",
+          "dy_por_ano"
+        ],
+        "title": "Proventos"
+      },
+      "UltimaCotacao": {
+        "properties": {
+          "data": {
+            "type": "string",
+            "format": "date",
+            "title": "Data"
+          },
+          "abertura": {
+            "type": "string",
+            "title": "Abertura"
+          },
+          "maxima": {
+            "type": "string",
+            "title": "Maxima"
+          },
+          "minima": {
+            "type": "string",
+            "title": "Minima"
+          },
+          "fechamento": {
+            "type": "string",
+            "title": "Fechamento"
+          },
+          "volume": {
+            "type": "integer",
+            "title": "Volume"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data",
+          "abertura",
+          "maxima",
+          "minima",
+          "fechamento",
+          "volume"
+        ],
+        "title": "UltimaCotacao"
+      },
+      "Variacoes": {
+        "properties": {
+          "dia": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dia"
+          },
+          "doze_meses": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Doze Meses"
+          },
+          "ano": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ano"
+          }
+        },
+        "type": "object",
+        "required": [
+          "dia",
+          "doze_meses",
+          "ano"
+        ],
+        "title": "Variacoes",
+        "description": "Variações percentuais. Dia usa o fechamento; 12 meses e ano usam o\nfechamento ajustado, que incorpora proventos."
+      }
+    }
+  }
+}

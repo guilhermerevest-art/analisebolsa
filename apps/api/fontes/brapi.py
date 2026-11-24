@@ -39,6 +39,11 @@ def _data_iso(valor: str | None) -> date | None:
     return (datetime.fromisoformat(valor.replace("Z", "+00:00")) + FUSO_B3).date()
 
 
+def _fracionario(ticker: str) -> bool:
+    """Tickers do mercado fracionário (PETR4F, TAEE11F) repetem o ativo do lote padrão."""
+    return ticker.endswith("F") and ticker[-2].isdigit()
+
+
 def _pct(valor: float | None) -> float | None:
     return None if valor is None else round(valor * 100, 4)
 
@@ -82,6 +87,8 @@ class BrapiFonte:
             ticker = (s.get("stock") or "").upper()
             tipo = TIPOS_POR_SUBTIPO.get(s.get("subType") or s.get("type") or "")
             if tipo is None or not (4 <= len(ticker) <= 6) or not ticker.isalnum():
+                continue
+            if _fracionario(ticker):
                 continue
             saida.append(
                 AtivoInfo(

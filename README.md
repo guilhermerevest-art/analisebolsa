@@ -11,8 +11,9 @@ gráficos, indicadores, fundamentos e proventos, com conteúdo **educacional**.
 ## Estrutura
 
 ```
-apps/api/     Python 3.12 (uv): domínio, fontes de dados, worker EOD e, em breve, a API FastAPI
-apps/web/     Next.js (em breve)
+apps/api/            Python 3.12 (uv): API FastAPI, domínio, fontes de dados e worker EOD
+apps/web/            Next.js (em breve)
+packages/api-types/  OpenAPI da API e tipos TypeScript gerados (pnpm gerar)
 docs/         specs e planos
 ```
 
@@ -34,6 +35,16 @@ createdb -h localhost -U postgres analisebolsa_test
 DATABASE_URL_TEST=postgresql://postgres:postgres@localhost:5432/analisebolsa_test uv run pytest
 uv run ruff check . && uv run ruff format --check .
 ```
+
+## API
+
+`uv run uvicorn app.main:app --reload` sobe a API em `http://localhost:8000` (documentação em `/docs`).
+Ela é interna: no Coolify só a web é pública. Rotas em `/v1`: `health`, `ativos`, `ativos/{ticker}`
+(+ `/cotacoes`, `/indicadores`, `/fundamentos`, `/proventos`), `mercado/destaques` e
+`admin/execucoes` (exige JWT interno com `role=admin`). Erros seguem a RFC 7807.
+
+Depois de mudar a API, regenere os tipos com `pnpm gerar` em `packages/api-types` (o CI confere
+se o `openapi.json` está atualizado).
 
 ## Worker
 

@@ -31,3 +31,7 @@ jobs:
       - run: uv run ruff check .
       - run: uv run ruff format --check .
       - run: uv run pytest -q
+      - name: OpenAPI de packages/api-types está atualizado
+        run: |
+          uv run python -m app.exportar_openapi ../../packages/api-types/openapi.json
+          git diff --exit-code -- ../../packages/api-types/openapi.json
