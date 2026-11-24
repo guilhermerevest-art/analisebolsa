@@ -1,0 +1,30 @@
+# Ambiente de desenvolvimento local: `docker compose up -d postgres`
+# e depois, em apps/api: `uv run alembic upgrade head`.
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: analisebolsa_dev
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      retries: 10
+
+  worker:
+    build: ./apps/api
+    profiles: ["worker"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/analisebolsa_dev
+
+volumes:
+  pgdata:
