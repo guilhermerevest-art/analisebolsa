@@ -1,0 +1,61 @@
+{
+  "version": 2,
+  "skills": {
+    "backtest-expert": {
+      "source": "tradermonty/claude-trading-skills",
+      "commit": "4080042a7863f5eeb48aabeaf60bd547efb99949",
+      "sourceType": "github",
+      "skillPath": "skills/backtest-expert/SKILL.md",
+      "computedHash": "ae1854a6eabafd21083e6c0882cc6dfd620fd3d2047aeb47b8e3212272e3487d"
+    },
+    "backtesting-frameworks": {
+      "source": "wshobson/agents",
+      "commit": "c96b5f6552dba32e4492307493ee613581430715",
+      "sourceType": "github",
+      "skillPath": "plugins/quantitative-trading/skills/backtesting-frameworks/SKILL.md",
+      "computedHash": "06911073e6cb32003d4057134ab32548e7efd59d87e878c9f7f8915ca06ac260"
+    },
+    "data-quality-checker": {
+      "source": "tradermonty/claude-trading-skills",
+      "commit": "4080042a7863f5eeb48aabeaf60bd547efb99949",
+      "sourceType": "github",
+      "skillPath": "skills/data-quality-checker/SKILL.md",
+      "computedHash": "ff4909c1b979d0bf1655e0f1a30ff72168c51fd5a2e22f0fbf2a949494b0cc0c"
+    },
+    "lightweight-charts": {
+      "source": "tradingview/lightweight-charts",
+      "commit": "dbd6ae7831fe9496996794687206bc5fc212afa7",
+      "sourceType": "github",
+      "skillPath": ".github/skills/lightweight-charts/SKILL.md",
+      "computedHash": "1c7658cf601b98c2f0c0be78c13d63aedba7aa63e48754634cee97e816856304"
+    },
+    "position-sizer": {
+      "source": "tradermonty/claude-trading-skills",
+      "commit": "4080042a7863f5eeb48aabeaf60bd547efb99949",
+      "sourceType": "github",
+      "skillPath": "skills/position-sizer/SKILL.md",
+      "computedHash": "9148c51d5e7fcb724eaacb07912a3a80e1a72d768bae0c087277d1d611c9d56f"
+    },
+    "postgresql-table-design": {
+      "source": "wshobson/agents",
+      "commit": "c96b5f6552dba32e4492307493ee613581430715",
+      "sourceType": "github",
+      "skillPath": "plugins/database-design/skills/postgresql-table-design/SKILL.md",
+      "computedHash": "c2d9f4b5037b4320be0cc2489eeb287d3147477ae1f48b33f5f897e2c562ed06"
+    },
+    "technical-analyst": {
+      "source": "tradermonty/claude-trading-skills",
+      "commit": "4080042a7863f5eeb48aabeaf60bd547efb99949",
+      "sourceType": "github",
+      "skillPath": "skills/technical-analyst/SKILL.md",
+      "computedHash": "62ff26578e576b8018ffc2660220e441b4f1a9b07c738c0bf32de40f14d3b9b6"
+    },
+    "value-dividend-screener": {
+      "source": "tradermonty/claude-trading-skills",
+      "commit": "4080042a7863f5eeb48aabeaf60bd547efb99949",
+      "sourceType": "github",
+      "skillPath": "skills/value-dividend-screener/SKILL.md",
+      "computedHash": "e7398d9ca7ab492c53b26ba6482502e172efc761c2be5aca7ab2d85b39590bd6"
+    }
+  }
+}
