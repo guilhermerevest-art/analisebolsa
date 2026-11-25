@@ -7,6 +7,7 @@ from app import consultas as q
 from app import schemas as s
 from app.deps import Conn, Ticker
 from app.erros import Problema
+from dominio.insights import elegibilidade
 
 router = APIRouter(prefix="/ativos", tags=["ativos"])
 
@@ -77,3 +78,25 @@ def proventos(conn: Conn, ticker: Ticker):
     ativo = q.ativo_por_ticker(conn, ticker)
     itens, dy = q.proventos(conn, ativo["ativo_id"])
     return {"ticker": ticker, "itens": itens, "dy_por_ano": dy}
+
+
+@router.get(
+    "/{ticker}/analise",
+    response_model=s.AnaliseAtivo,
+    summary="Métricas e insights do último pregão",
+)
+def analise(conn: Conn, ticker: Ticker):
+    ativo = q.ativo_por_ticker(conn, ticker)
+    metricas, insights = q.analise(conn, ativo["ativo_id"])
+    if metricas is None:
+        motivo = "Ainda não há análise calculada para este ativo."
+        return {"ticker": ticker, "elegivel": False, "motivo": motivo, "metricas": None,
+                "insights": []}  # fmt: skip
+    elegivel, motivo = elegibilidade(metricas["pregoes"], metricas["volume_financeiro_20d"])
+    return {
+        "ticker": ticker,
+        "elegivel": elegivel,
+        "motivo": motivo,
+        "metricas": metricas,
+        "insights": insights,
+    }

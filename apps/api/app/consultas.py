@@ -275,3 +275,27 @@ def execucoes(conn: Connection, limite: int) -> list[RowMapping]:
             {"l": limite},
         ).mappings()
     )
+
+
+def analise(conn: Connection, ativo_id: int) -> tuple[RowMapping | None, list[RowMapping]]:
+    metricas = (
+        conn.execute(
+            text(
+                "SELECT *, volume_financeiro_20d::float AS volume_financeiro_20d, "
+                "valor_mercado::float AS valor_mercado FROM metricas_ativo WHERE ativo_id = :a"
+            ),
+            {"a": ativo_id},
+        )
+        .mappings()
+        .one_or_none()
+    )
+    insights = list(
+        conn.execute(
+            text(
+                "SELECT codigo, categoria, tom, titulo, texto, data FROM insights "
+                "WHERE ativo_id = :a ORDER BY prioridade DESC, codigo"
+            ),
+            {"a": ativo_id},
+        ).mappings()
+    )
+    return metricas, insights

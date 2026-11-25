@@ -21,7 +21,7 @@ runs:
         test -n "$VERCEL_TOKEN" || { echo "::error::defina o segredo VERCEL_TOKEN no repositório"; exit 1; }
         npx --yes vercel@latest env pull .env --environment=production --yes >/dev/null
         # Variáveis do tipo "sensitive" vêm vazias: as que o worker usa precisam ser "encrypted".
-        grep -q '^DATABASE_URL="\?[^"]' .env || { echo "::error::DATABASE_URL vazia ou ausente no projeto analisebolsa-api (use o tipo encrypted, não sensitive)"; exit 1; }
+        grep -qE '^DATABASE_URL="?postgres(ql)?://' .env || { echo "::error::DATABASE_URL ilegível ou ausente no projeto analisebolsa-api. Variáveis Sensitive não podem ser lidas pelo GitHub: recrie-a com Sensitive desligado."; exit 1; }
         while IFS= read -r linha; do
           valor="${linha#*=}"; valor="${valor%\"}"; valor="${valor#\"}"
           [ -n "$valor" ] && echo "::add-mask::$valor"

@@ -673,6 +673,84 @@
         }
       }
     },
+    "/v1/ativos/{ticker}/analise": {
+      "get": {
+        "tags": [
+          "ativos"
+        ],
+        "summary": "Métricas e insights do último pregão",
+        "operationId": "analise_v1_ativos__ticker__analise_get",
+        "parameters": [
+          {
+            "name": "ticker",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Código de negociação, ex.: PETR4",
+              "title": "Ticker"
+            },
+            "description": "Código de negociação, ex.: PETR4"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnaliseAtivo"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        }
+      }
+    },
     "/v1/mercado/destaques": {
       "get": {
         "tags": [
@@ -1563,6 +1641,57 @@
   },
   "components": {
     "schemas": {
+      "AnaliseAtivo": {
+        "properties": {
+          "ticker": {
+            "type": "string",
+            "title": "Ticker"
+          },
+          "elegivel": {
+            "type": "boolean",
+            "title": "Elegivel",
+            "description": "Se a análise técnica (insights técnicos e cenários) vale"
+          },
+          "motivo": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Motivo",
+            "description": "Por que a análise técnica não vale, se for o caso"
+          },
+          "metricas": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MetricasAtivo"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "insights": {
+            "items": {
+              "$ref": "#/components/schemas/InsightAtivo"
+            },
+            "type": "array",
+            "title": "Insights"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ticker",
+          "elegivel",
+          "motivo",
+          "metricas",
+          "insights"
+        ],
+        "title": "AnaliseAtivo"
+      },
       "AtivoDetalhe": {
         "properties": {
           "ticker": {
@@ -2440,8 +2569,327 @@
         ],
         "title": "IndicadoresDia"
       },
+      "InsightAtivo": {
+        "properties": {
+          "codigo": {
+            "type": "string",
+            "title": "Codigo"
+          },
+          "categoria": {
+            "type": "string",
+            "enum": [
+              "tendencia",
+              "momento",
+              "volatilidade",
+              "volume",
+              "fundamentos",
+              "proventos"
+            ],
+            "title": "Categoria"
+          },
+          "tom": {
+            "type": "string",
+            "enum": [
+              "positivo",
+              "neutro",
+              "atencao"
+            ],
+            "title": "Tom"
+          },
+          "titulo": {
+            "type": "string",
+            "title": "Titulo"
+          },
+          "texto": {
+            "type": "string",
+            "title": "Texto"
+          },
+          "data": {
+            "type": "string",
+            "format": "date",
+            "title": "Data"
+          }
+        },
+        "type": "object",
+        "required": [
+          "codigo",
+          "categoria",
+          "tom",
+          "titulo",
+          "texto",
+          "data"
+        ],
+        "title": "InsightAtivo"
+      },
       "ItemScreener": {
         "properties": {
+          "data": {
+            "type": "string",
+            "format": "date",
+            "title": "Data"
+          },
+          "preco": {
+            "type": "string",
+            "title": "Preco"
+          },
+          "var_1d": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Var 1D"
+          },
+          "var_1m": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Var 1M"
+          },
+          "var_3m": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Var 3M"
+          },
+          "var_6m": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Var 6M"
+          },
+          "var_12m": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Var 12M"
+          },
+          "var_ano": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Var Ano"
+          },
+          "volatilidade_12m": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Volatilidade 12M"
+          },
+          "drawdown_12m": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Drawdown 12M"
+          },
+          "max_52s": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max 52S"
+          },
+          "min_52s": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min 52S"
+          },
+          "pos_52s": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pos 52S"
+          },
+          "dist_mm50": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dist Mm50"
+          },
+          "dist_mm200": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dist Mm200"
+          },
+          "rsi14": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rsi14"
+          },
+          "tendencia": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "alta",
+                  "baixa",
+                  "lateral"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tendencia"
+          },
+          "volume_financeiro_20d": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Volume Financeiro 20D"
+          },
+          "pl": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pl"
+          },
+          "pvp": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pvp"
+          },
+          "dy_12m": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dy 12M"
+          },
+          "roe": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Roe"
+          },
+          "margem_liquida": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Margem Liquida"
+          },
+          "div_liq_ebitda": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Div Liq Ebitda"
+          },
+          "valor_mercado": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Valor Mercado"
+          },
           "ticker": {
             "type": "string",
             "title": "Ticker"
@@ -2481,7 +2929,45 @@
               }
             ],
             "title": "Logo Url"
-          },
+          }
+        },
+        "type": "object",
+        "required": [
+          "data",
+          "preco",
+          "var_1d",
+          "var_1m",
+          "var_3m",
+          "var_6m",
+          "var_12m",
+          "var_ano",
+          "volatilidade_12m",
+          "drawdown_12m",
+          "max_52s",
+          "min_52s",
+          "pos_52s",
+          "dist_mm50",
+          "dist_mm200",
+          "rsi14",
+          "tendencia",
+          "volume_financeiro_20d",
+          "pl",
+          "pvp",
+          "dy_12m",
+          "roe",
+          "margem_liquida",
+          "div_liq_ebitda",
+          "valor_mercado",
+          "ticker",
+          "nome",
+          "tipo",
+          "setor",
+          "logo_url"
+        ],
+        "title": "ItemScreener"
+      },
+      "MetricasAtivo": {
+        "properties": {
           "data": {
             "type": "string",
             "format": "date",
@@ -2752,11 +3238,6 @@
         },
         "type": "object",
         "required": [
-          "ticker",
-          "nome",
-          "tipo",
-          "setor",
-          "logo_url",
           "data",
           "preco",
           "var_1d",
@@ -2783,7 +3264,7 @@
           "div_liq_ebitda",
           "valor_mercado"
         ],
-        "title": "ItemScreener"
+        "title": "MetricasAtivo"
       },
       "PaginaAtivos": {
         "properties": {

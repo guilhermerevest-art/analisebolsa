@@ -123,6 +123,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/ativos/{ticker}/analise": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Métricas e insights do último pregão */
+        get: operations["analise_v1_ativos__ticker__analise_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/mercado/destaques": {
         parameters: {
             query?: never;
@@ -195,6 +212,24 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** AnaliseAtivo */
+        AnaliseAtivo: {
+            /** Ticker */
+            ticker: string;
+            /**
+             * Elegivel
+             * @description Se a análise técnica (insights técnicos e cenários) vale
+             */
+            elegivel: boolean;
+            /**
+             * Motivo
+             * @description Por que a análise técnica não vale, se for o caso
+             */
+            motivo: string | null;
+            metricas: components["schemas"]["MetricasAtivo"] | null;
+            /** Insights */
+            insights: components["schemas"]["InsightAtivo"][];
+        };
         /** AtivoDetalhe */
         AtivoDetalhe: {
             /** Ticker */
@@ -456,8 +491,85 @@ export interface components {
             /** Vol Media20 */
             vol_media20: number | null;
         };
+        /** InsightAtivo */
+        InsightAtivo: {
+            /** Codigo */
+            codigo: string;
+            /**
+             * Categoria
+             * @enum {string}
+             */
+            categoria: "tendencia" | "momento" | "volatilidade" | "volume" | "fundamentos" | "proventos";
+            /**
+             * Tom
+             * @enum {string}
+             */
+            tom: "positivo" | "neutro" | "atencao";
+            /** Titulo */
+            titulo: string;
+            /** Texto */
+            texto: string;
+            /**
+             * Data
+             * Format: date
+             */
+            data: string;
+        };
         /** ItemScreener */
         ItemScreener: {
+            /**
+             * Data
+             * Format: date
+             */
+            data: string;
+            /** Preco */
+            preco: string;
+            /** Var 1D */
+            var_1d: number | null;
+            /** Var 1M */
+            var_1m: number | null;
+            /** Var 3M */
+            var_3m: number | null;
+            /** Var 6M */
+            var_6m: number | null;
+            /** Var 12M */
+            var_12m: number | null;
+            /** Var Ano */
+            var_ano: number | null;
+            /** Volatilidade 12M */
+            volatilidade_12m: number | null;
+            /** Drawdown 12M */
+            drawdown_12m: number | null;
+            /** Max 52S */
+            max_52s: string | null;
+            /** Min 52S */
+            min_52s: string | null;
+            /** Pos 52S */
+            pos_52s: number | null;
+            /** Dist Mm50 */
+            dist_mm50: number | null;
+            /** Dist Mm200 */
+            dist_mm200: number | null;
+            /** Rsi14 */
+            rsi14: number | null;
+            /** Tendencia */
+            tendencia: ("alta" | "baixa" | "lateral") | null;
+            /** Volume Financeiro 20D */
+            volume_financeiro_20d: number | null;
+            /** Pl */
+            pl: number | null;
+            /** Pvp */
+            pvp: number | null;
+            /** Dy 12M */
+            dy_12m: number | null;
+            /** Roe */
+            roe: number | null;
+            /** Margem Liquida */
+            margem_liquida: number | null;
+            /** Div Liq Ebitda */
+            div_liq_ebitda: number | null;
+            /** Valor Mercado */
+            valor_mercado: number | null;
             /** Ticker */
             ticker: string;
             /** Nome */
@@ -471,6 +583,9 @@ export interface components {
             setor: string | null;
             /** Logo Url */
             logo_url: string | null;
+        };
+        /** MetricasAtivo */
+        MetricasAtivo: {
             /**
              * Data
              * Format: date
@@ -1032,6 +1147,69 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Proventos"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+        };
+    };
+    analise_v1_ativos__ticker__analise_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Código de negociação, ex.: PETR4 */
+                ticker: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AnaliseAtivo"];
                 };
             };
             /** @description Unauthorized */

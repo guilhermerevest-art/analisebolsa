@@ -13,6 +13,7 @@ from collections.abc import Iterable, Sequence
 from sqlalchemy import Engine
 
 from app.db import get_engine
+from dominio.insights import Contexto, gerar_insights
 from dominio.metricas import JANELA_DIAS, calcular_metricas
 from worker import repositorio as repo
 from worker.processamento import status_por_contagem
@@ -21,7 +22,7 @@ log = logging.getLogger("worker.analise")
 
 
 def analisar_ativo(engine: Engine, ativo_id: int) -> bool:
-    """Grava as métricas de um ativo. Devolve False se ele não tem cotações."""
+    """Grava as métricas e os insights de um ativo. Devolve False se ele não tem cotações."""
     with engine.begin() as conn:
         cot, ind, total = repo.carregar_para_analise(conn, ativo_id, JANELA_DIAS)
         if cot.empty:
@@ -30,6 +31,16 @@ def analisar_ativo(engine: Engine, ativo_id: int) -> bool:
         if metricas is None:
             return False
         repo.upsert_metricas(conn, ativo_id, metricas.como_dict())
+        setor = repo.setor_do_ativo(conn, ativo_id)
+        contexto = Contexto(
+            cotacoes=cot,
+            indicadores=ind,
+            metricas=metricas,
+            setor=setor,
+            dy_anos=repo.dy_anos_anteriores(conn, ativo_id, metricas.data.year),
+            pl_pares=repo.pl_do_setor(conn, ativo_id, setor),
+        )
+        repo.substituir_insights(conn, ativo_id, metricas.data, gerar_insights(contexto))
     return True
 
 
