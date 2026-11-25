@@ -95,6 +95,14 @@ def test_brapi_lista_ignora_subtipos_fora_do_escopo():
     assert BrapiFonte.parse_lista(dados) == []
 
 
+def test_brapi_lista_ignora_mercado_fracionario():
+    stocks = [
+        {"stock": t, "name": "X", "type": "stock", "subType": "stock"}
+        for t in ("MGLU3", "MGLU3F", "TAEE11F", "ITSA4")
+    ]
+    assert [a.ticker for a in BrapiFonte.parse_lista({"stocks": stocks})] == ["MGLU3", "ITSA4"]
+
+
 def test_brapi_paginacao_do_catalogo():
     def handler(req: httpx.Request):
         pagina = int(req.url.params["page"])

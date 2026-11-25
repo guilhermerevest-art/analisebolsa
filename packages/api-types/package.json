@@ -1,0 +1,13 @@
+{
+  "name": "@analisebolsa/api-types",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Tipos TypeScript gerados a partir do OpenAPI da API interna",
+  "types": "./schema.d.ts",
+  "scripts": {
+    "gerar": "cd ../../apps/api && uv run python -m app.exportar_openapi ../../packages/api-types/openapi.json && cd ../../packages/api-types && openapi-typescript openapi.json -o schema.d.ts"
+  },
+  "devDependencies": {
+    "openapi-typescript": "7.4.4"
+  }
+}
