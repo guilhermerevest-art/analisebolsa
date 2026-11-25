@@ -273,5 +273,5 @@ def test_chave_interna_nao_vale_para_health(cliente_com_chave):
 
 
 def test_chave_interna_correta_passa(cliente_com_chave):
-    r = cliente_com_chave.get("/v1/ativos/XX", headers={"X-Internal-Key": "chave-de-teste"})
-    assert r.status_code == 422  # passou da chave e caiu na validação do ticker
+    r = cliente_com_chave.get("/v1/nao-existe", headers={"X-Internal-Key": "chave-de-teste"})
+    assert r.status_code == 404  # passou da chave sem tocar no banco
