@@ -52,6 +52,9 @@ variáveis de produção do projeto `analisebolsa-api` (`vercel env pull`) antes
 - As variáveis que o worker usa (`DATABASE_URL`, `INTERNAL_JWT_SECRET`, `WEB_INTERNAL_URL`,
   `BRAPI_TOKEN`) precisam ser do tipo **encrypted**, não **sensitive**: a Vercel não devolve
   o valor de variáveis sensitive, e o workflow falha avisando qual falta.
+- Se o time da Vercel obrigar variáveis sensitive em produção, crie o segredo
+  `DATABASE_URL` no GitHub (Settings → Secrets and variables → Actions). Os workflows
+  usam esse segredo no lugar do valor da Vercel.
 - O GitHub Actions só conecta por IPv4. Se o provedor do banco separar as strings, use no
   projeto da api a do pooler que aceita IPv4.
 
