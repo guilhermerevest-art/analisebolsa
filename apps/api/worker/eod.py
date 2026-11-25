@@ -1,6 +1,6 @@
 """Job diário após o pregão: `python -m worker.eod`.
 
-Agendado no Coolify com cron `0 22 * * 1-5` (UTC), 19h em Brasília.
+Agendado no GitHub Actions (workflow Worker) com cron `0 22 * * 1-5` (UTC), 19h em Brasília.
 """
 
 import argparse

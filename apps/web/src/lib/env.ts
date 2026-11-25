@@ -22,3 +22,9 @@ export function emailsAdmin(valor = process.env.ADMIN_EMAILS ?? ""): Set<string>
 export function roleParaEmail(email: string | null | undefined, admins = emailsAdmin()): "admin" | "user" {
   return email && admins.has(email.trim().toLowerCase()) ? "admin" : "user";
 }
+
+/** Cabeçalhos de toda chamada da web à API. A chave só é exigida quando a API está exposta (Vercel). */
+export function cabecalhosApi(): Record<string, string> {
+  const chave = process.env.INTERNAL_API_KEY;
+  return chave ? { Accept: "application/json", "X-Internal-Key": chave } : { Accept: "application/json" };
+}

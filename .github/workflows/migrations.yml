@@ -1,0 +1,32 @@
+# Aplica as migrations do Alembic no banco de produção.
+# Roda em todo push na main que mexe em migrations, e sob demanda.
+name: Migrations
+
+on:
+  push:
+    branches: [main]
+    paths: ["apps/api/migrations/**"]
+  workflow_dispatch:
+
+concurrency:
+  group: banco-producao
+  cancel-in-progress: false
+
+jobs:
+  migrar:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/api
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - run: uv sync --frozen --no-dev
+      - name: Confere o segredo
+        run: test -n "$DATABASE_URL" || (echo "::error::defina o segredo DATABASE_URL no repositório" && exit 1)
+      - run: uv run alembic upgrade head
+      - run: uv run alembic current

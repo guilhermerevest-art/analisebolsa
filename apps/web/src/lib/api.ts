@@ -1,13 +1,13 @@
 import "server-only";
 
 import { auth } from "@/auth";
-import { env } from "@/lib/env";
+import { cabecalhosApi, env } from "@/lib/env";
 import { assinarTokenInterno } from "@/lib/jwt-interno";
 
 /** Chamada à API interna, com o JWT interno quando há sessão. */
 export async function chamarApi(caminho: string, init: RequestInit & { next?: NextFetchRequestConfig } = {}) {
   const headers = new Headers(init.headers);
-  headers.set("Accept", "application/json");
+  for (const [nome, valor] of Object.entries(cabecalhosApi())) headers.set(nome, valor);
   const sessao = await auth();
   if (sessao?.user?.id) {
     const token = await assinarTokenInterno(

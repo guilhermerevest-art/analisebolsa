@@ -28,6 +28,10 @@ dev = [
 [tool.uv]
 package = false
 
+# Vercel: a API roda como função Python (Fluid compute).
+[tool.vercel]
+entrypoint = "app.main:app"
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["."]

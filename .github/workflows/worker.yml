@@ -1,0 +1,57 @@
+# Worker de dados: EOD nos dias úteis às 19h de Brasília (22h UTC) e
+# backfill sob demanda. Grava em execucoes_job e revalida o cache da web.
+name: Worker
+
+on:
+  schedule:
+    - cron: "0 22 * * 1-5"
+  workflow_dispatch:
+    inputs:
+      modo:
+        description: "eod ou backfill"
+        type: choice
+        options: [eod, backfill]
+        default: eod
+      tickers:
+        description: "Backfill: tickers separados por vírgula (vazio = todos)"
+        required: false
+        default: ""
+      desde:
+        description: "Backfill: data inicial (AAAA-MM-DD)"
+        required: false
+        default: "2005-01-01"
+
+concurrency:
+  group: banco-producao
+  cancel-in-progress: false
+
+jobs:
+  worker:
+    runs-on: ubuntu-latest
+    timeout-minutes: 340
+    defaults:
+      run:
+        working-directory: apps/api
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      INTERNAL_JWT_SECRET: ${{ secrets.INTERNAL_JWT_SECRET }}
+      WEB_INTERNAL_URL: ${{ secrets.WEB_INTERNAL_URL }}
+      BRAPI_TOKEN: ${{ secrets.BRAPI_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - run: uv sync --frozen --no-dev
+      - name: EOD
+        if: github.event_name == 'schedule' || inputs.modo == 'eod'
+        run: uv run python -m worker.eod
+      - name: Backfill
+        if: github.event_name == 'workflow_dispatch' && inputs.modo == 'backfill'
+        env:
+          TICKERS: ${{ inputs.tickers }}
+          DESDE: ${{ inputs.desde }}
+        run: |
+          args=(--desde "$DESDE")
+          if [ -n "$TICKERS" ]; then args+=(--tickers "$TICKERS"); fi
+          uv run python -m worker.backfill "${args[@]}"
