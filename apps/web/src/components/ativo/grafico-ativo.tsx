@@ -23,6 +23,7 @@ import {
   serieIndicador,
 } from "@/lib/grafico";
 import type { Cotacoes, Indicadores, NivelPreco } from "@/lib/tipos-api";
+import { useTemaEscuro } from "@/lib/use-tema-escuro";
 import { cn } from "@/lib/utils";
 
 const ALTA = "#16a34a";
@@ -36,18 +37,6 @@ const OVERLAYS = [
 type ChaveOverlay = (typeof OVERLAYS)[number]["chave"];
 
 type Dados = { cotacoes: Cotacoes; indicadores: Indicadores | null };
-
-function useTemaEscuro(): boolean {
-  const [escuro, setEscuro] = useState(false);
-  useEffect(() => {
-    const mq = window.matchMedia("(prefers-color-scheme: dark)");
-    setEscuro(mq.matches);
-    const ouvir = (e: MediaQueryListEvent) => setEscuro(e.matches);
-    mq.addEventListener("change", ouvir);
-    return () => mq.removeEventListener("change", ouvir);
-  }, []);
-  return escuro;
-}
 
 function Alternador<T extends string>({
   opcoes,

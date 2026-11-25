@@ -146,3 +146,22 @@ def test_excluir_usuario_apaga_carteiras(api, db):
     with db.begin() as conn:
         conn.execute(text("DELETE FROM users WHERE id = 'u1'"))
         assert conn.execute(text("SELECT count(*) FROM operacoes")).scalar_one() == 0
+
+
+@pytest.mark.db
+def test_rentabilidade(api, db):
+    cid = nova_carteira(api)
+    vazio = api.get(f"/v1/carteiras/{cid}/rentabilidade", headers=auth()).json()
+    assert vazio == {"inicio": None, "pontos": [], "acumulado": None}
+    with db.begin() as conn:
+        conn.execute(
+            text("INSERT INTO indices VALUES ('cdi','2025-05-02',0.05),('ibov','2025-05-01',100)")
+        )
+    lancar(api, cid, data="2025-05-01", quantidade="10", preco="20")
+    r = api.get(f"/v1/carteiras/{cid}/rentabilidade", headers=auth())
+    assert r.status_code == 200 and r.headers["cache-control"] == "private, no-store"
+    corpo = r.json()
+    assert corpo["inicio"] == "2025-05-01" and corpo["pontos"][0]["data"] == "2025-05-01"
+    assert corpo["acumulado"]["cdi"] == pytest.approx(0.05)
+    assert corpo["acumulado"]["ibov"] == 0
+    assert api.get(f"/v1/carteiras/{cid}/rentabilidade", headers=auth("u2")).status_code == 404

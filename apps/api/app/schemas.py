@@ -445,3 +445,24 @@ class ResumoCarteira(BaseModel):
     posicoes: list[PosicaoCarteira]
     alocacao: AlocacaoCarteira
     proventos: list[ProventoRecebido]
+
+
+class PontoRentabilidade(BaseModel):
+    data: date
+    patrimonio: float
+    carteira: float = Field(description="Retorno acumulado (TWR) em %")
+    cdi: float | None = Field(description="CDI acumulado no mesmo período, em %")
+    ibov: float | None = Field(description="Ibovespa no mesmo período, em %")
+
+
+class AcumuladoCarteira(BaseModel):
+    data: date
+    carteira: float
+    cdi: float | None
+    ibov: float | None
+
+
+class RentabilidadeCarteira(BaseModel):
+    inicio: date | None
+    pontos: list[PontoRentabilidade]
+    acumulado: AcumuladoCarteira | None

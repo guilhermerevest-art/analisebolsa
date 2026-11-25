@@ -350,6 +350,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/carteiras/{carteira_id}/rentabilidade": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Rentabilidade acumulada (TWR) contra CDI e Ibovespa */
+        get: operations["rentabilidade_v1_carteiras__carteira_id__rentabilidade_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/admin/execucoes": {
         parameters: {
             query?: never;
@@ -371,6 +388,20 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** AcumuladoCarteira */
+        AcumuladoCarteira: {
+            /**
+             * Data
+             * Format: date
+             */
+            data: string;
+            /** Carteira */
+            carteira: number;
+            /** Cdi */
+            cdi: number | null;
+            /** Ibov */
+            ibov: number | null;
+        };
         /** AlocacaoCarteira */
         AlocacaoCarteira: {
             /** Ativo */
@@ -1046,6 +1077,31 @@ export interface components {
             /** Valor */
             valor: number;
         };
+        /** PontoRentabilidade */
+        PontoRentabilidade: {
+            /**
+             * Data
+             * Format: date
+             */
+            data: string;
+            /** Patrimonio */
+            patrimonio: number;
+            /**
+             * Carteira
+             * @description Retorno acumulado (TWR) em %
+             */
+            carteira: number;
+            /**
+             * Cdi
+             * @description CDI acumulado no mesmo período, em %
+             */
+            cdi: number | null;
+            /**
+             * Ibov
+             * @description Ibovespa no mesmo período, em %
+             */
+            ibov: number | null;
+        };
         /** PosicaoCarteira */
         PosicaoCarteira: {
             /** Ticker */
@@ -1142,6 +1198,14 @@ export interface components {
             itens: components["schemas"]["ProventoItem"][];
             /** Dy Por Ano */
             dy_por_ano: components["schemas"]["DyAno"][];
+        };
+        /** RentabilidadeCarteira */
+        RentabilidadeCarteira: {
+            /** Inicio */
+            inicio: string | null;
+            /** Pontos */
+            pontos: components["schemas"]["PontoRentabilidade"][];
+            acumulado: components["schemas"]["AcumuladoCarteira"] | null;
         };
         /** ResumoCarteira */
         ResumoCarteira: {
@@ -3122,6 +3186,78 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ResumoCarteira"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+        };
+    };
+    rentabilidade_v1_carteiras__carteira_id__rentabilidade_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                carteira_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RentabilidadeCarteira"];
                 };
             };
             /** @description Unauthorized */
