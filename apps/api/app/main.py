@@ -1,12 +1,14 @@
-"""API interna do analisebolsa. Só a web acessa (rede interna do Coolify)."""
+"""API do analisebolsa. Só a web acessa: na Vercel, com a chave em X-Internal-Key."""
 
+import hmac
 import logging
 
-from fastapi import Depends, FastAPI
+from fastapi import Depends, FastAPI, Request
 
 from app import schemas as s
+from app.config import get_settings
 from app.deps import usuario_opcional
-from app.erros import registrar_handlers
+from app.erros import registrar_handlers, resposta_problema
 from app.rotas import admin, ativos, health, mercado
 
 ERROS = {
@@ -25,6 +27,16 @@ def create_app() -> FastAPI:
         dependencies=[Depends(usuario_opcional)],
     )
     registrar_handlers(app)
+
+    @app.middleware("http")
+    async def exigir_chave_interna(request: Request, call_next):
+        chave = get_settings().internal_api_key
+        if chave and request.url.path != "/v1/health":
+            enviada = request.headers.get("x-internal-key", "")
+            if not hmac.compare_digest(enviada.encode(), chave.encode()):
+                return resposta_problema(request, 401, "Unauthorized", "chave interna inválida")
+        return await call_next(request)
+
     for r in (health.router, ativos.router, mercado.router, admin.router):
         app.include_router(r, prefix="/v1")
     return app

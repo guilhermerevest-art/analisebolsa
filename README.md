@@ -39,7 +39,7 @@ uv run ruff check . && uv run ruff format --check .
 ## API
 
 `uv run uvicorn app.main:app --reload` sobe a API em `http://localhost:8000` (documentação em `/docs`).
-Ela é interna: no Coolify só a web é pública. Rotas em `/v1`: `health`, `ativos`, `ativos/{ticker}`
+Só a web a chama: em produção, com o cabeçalho `X-Internal-Key`. Rotas em `/v1`: `health`, `ativos`, `ativos/{ticker}`
 (+ `/cotacoes`, `/indicadores`, `/fundamentos`, `/proventos`), `mercado/destaques` e
 `admin/execucoes` (exige JWT interno com `role=admin`). Erros seguem a RFC 7807.
 
@@ -64,7 +64,12 @@ pnpm test && pnpm lint && pnpm build
 
 | Comando | O que faz |
 |---|---|
-| `python -m worker.eod` | Catálogo (segundas ou banco vazio), cotações, validação, proventos, indicadores, fundamentos (segundas) e revalidação do cache da web. Agendado no Coolify com `0 22 * * 1-5` (UTC). |
+| `python -m worker.eod` | Catálogo (segundas ou banco vazio), cotações, validação, proventos, indicadores, fundamentos (segundas) e revalidação do cache da web. Agendado no GitHub Actions (workflow `Worker`) com `0 22 * * 1-5` (UTC). |
 | `python -m worker.backfill [--tickers ...] [--desde AAAA-MM-DD]` | Histórico completo. Pode ser retomado: pula ativos que já têm cotações. |
 
 Cada execução fica registrada em `execucoes_job` com status `ok`, `parcial` ou `erro`.
+
+## Deploy
+
+Produção na Vercel (web e api), Postgres gerenciado, migrations e worker no GitHub Actions.
+Passo a passo em [`docs/deploy.md`](docs/deploy.md).

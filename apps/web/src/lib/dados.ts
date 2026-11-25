@@ -1,6 +1,6 @@
 import "server-only";
 
-import { env } from "@/lib/env";
+import { cabecalhosApi, env } from "@/lib/env";
 import type { AtivoDetalhe, Destaques, Fundamentos, PaginaAtivos, Proventos } from "@/lib/tipos-api";
 
 const UMA_HORA = 3600;
@@ -11,7 +11,7 @@ const UMA_HORA = 3600;
  */
 async function lerApi<T>(caminho: string, tags: string[], revalidate = UMA_HORA): Promise<T | null> {
   const resp = await fetch(`${env("API_INTERNAL_URL").replace(/\/$/, "")}${caminho}`, {
-    headers: { Accept: "application/json" },
+    headers: cabecalhosApi(),
     next: { revalidate, tags },
   });
   if (resp.status === 404) return null;

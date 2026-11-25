@@ -13,5 +13,5 @@ EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s \
   CMD python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/v1/health')"
 # api: aplica as migrations e sobe o FastAPI. O worker usa a mesma imagem com
-# outro comando: `python -m worker.eod` (scheduled task no Coolify).
+# outro comando: `python -m worker.eod` (em produção, roda no GitHub Actions).
 CMD ["sh", "-c", "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000 --proxy-headers"]

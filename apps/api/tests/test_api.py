@@ -247,3 +247,31 @@ def test_token_expirado_na_rota_publica_e_401(cliente):
     r = cliente.get("/v1/ativos", headers={"Authorization": f"Bearer {token(validade=-30)}"})
     assert r.status_code == 401
     assert r.headers["www-authenticate"] == "Bearer"
+
+
+# Chave interna (API exposta na Vercel; sem banco)
+
+
+@pytest.fixture
+def cliente_com_chave(monkeypatch):
+    monkeypatch.setenv("INTERNAL_API_KEY", "chave-de-teste")
+    get_settings.cache_clear()
+    yield TestClient(create_app(), raise_server_exceptions=False)
+    get_settings.cache_clear()
+
+
+@pytest.mark.parametrize("cabecalho", [{}, {"X-Internal-Key": "errada"}])
+def test_chave_interna_ausente_ou_errada(cliente_com_chave, cabecalho):
+    r = cliente_com_chave.get("/v1/ativos", headers=cabecalho)
+    assert r.status_code == 401
+    assert r.headers["content-type"].startswith("application/problem+json")
+
+
+def test_chave_interna_nao_vale_para_health(cliente_com_chave):
+    r = cliente_com_chave.get("/v1/health")
+    assert r.status_code != 401
+
+
+def test_chave_interna_correta_passa(cliente_com_chave):
+    r = cliente_com_chave.get("/v1/ativos/XX", headers={"X-Internal-Key": "chave-de-teste"})
+    assert r.status_code == 422  # passou da chave e caiu na validação do ticker

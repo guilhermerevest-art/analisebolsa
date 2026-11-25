@@ -19,7 +19,7 @@ O produto completo tem 8 funcionalidades, entregues em 4 fases. Este documento e
 | Frequência de dados | EOD (fim do dia), um job diário após o pregão |
 | Stack | Next.js (web) + Python FastAPI (api e worker) + PostgreSQL |
 | Autenticação | Auth.js: e-mail e senha + Google |
-| Infraestrutura | VPS Hostinger com Coolify (Docker, Traefik, SSL, deploy via Git) |
+| Infraestrutura | Vercel (web e api, região `gru1`), Postgres gerenciado, worker no GitHub Actions. Mudança de 2026-11-25: antes era Coolify numa VPS. |
 | Arquitetura de cálculo | Híbrida: pré-cálculo no EOD e cálculo sob demanda para o que depende do usuário |
 | UI | shadcn/ui + Tailwind + componentes do Magic UI |
 
@@ -29,7 +29,7 @@ O produto completo tem 8 funcionalidades, entregues em 4 fases. Este documento e
 2. Qualquer visitante abre `/ativo/PETR4` e vê o gráfico de candles com indicadores, os fundamentos e os proventos. A página carrega em menos de 2 s.
 3. O usuário cria conta com e-mail e senha ou com Google, entra e sai.
 4. O admin vê o status das execuções do job.
-5. O deploy no Coolify sai de um push na branch `main`.
+5. O deploy na Vercel sai de um push na branch `main`, e as migrations são aplicadas pelo GitHub Actions.
 
 ### Restrição regulatória
 
@@ -43,18 +43,18 @@ Recomendar investimentos a terceiros exige registro na CVM (Resolução CVM 20).
 
 ```
              Internet
-                │ HTTPS (Traefik/Coolify)
+                │ HTTPS (Vercel)
           ┌─────▼─────┐
           │   web     │  Next.js 15 — UI, Auth.js, BFF (/api/*)
           └─────┬─────┘
-                │ rede interna Coolify, JWT interno 60 s
+                │ HTTPS + X-Internal-Key, JWT interno 60 s
           ┌─────▼─────┐        ┌──────────────┐
-          │   api     │        │   worker     │  mesma imagem da api
-          │  FastAPI  │        │  eod/backfill│  scheduled task Coolify
+          │   api     │        │   worker     │  mesmo código da api
+          │  FastAPI  │        │  eod/backfill│  GitHub Actions (cron)
           └─────┬─────┘        └──────┬───────┘
                 └──────────┬──────────┘
                      ┌─────▼─────┐
-                     │ postgres  │  resource Coolify, backup agendado
+                     │ postgres  │  gerenciado, com backup do provedor
                      └───────────┘
 ```
 
@@ -151,7 +151,7 @@ CREATE INDEX ON execucoes_job (iniciado_em DESC);
 
 ## 4. Ingestão EOD (worker)
 
-**Disparo:** scheduled task do Coolify com cron `0 22 * * 1-5` em UTC (19h em Brasília). Ela executa `python -m worker.eod`.
+**Disparo:** workflow `Worker` do GitHub Actions com cron `0 22 * * 1-5` em UTC (19h em Brasília). Ela executa `python -m worker.eod`.
 
 **Etapas.** Cada etapa grava seu resultado em `execucoes_job`. Em ordem:
 
@@ -184,11 +184,11 @@ class FonteDados(Protocol):
 
 - A falha de um ticker não derruba o job. O ticker entra em `ativos_erro` e o status fica `parcial`.
 - HTTP 429 e 5xx têm até 3 tentativas com backoff exponencial.
-- Se todas as fontes falharem, o status fica `erro`, e o log aparece no Coolify.
+- Se todas as fontes falharem, o status fica `erro`, e o log aparece na execução do GitHub Actions.
 
 ## 5. API (FastAPI)
 
-**Rede:** a API é interna e não tem domínio público no Coolify.
+**Rede:** na Vercel a API tem URL própria, mas toda rota exceto `/v1/health` exige o cabeçalho `X-Internal-Key` igual a `INTERNAL_API_KEY`. Só a web conhece essa chave.
 
 **Autenticação:** a dependency `usuario_opcional()` / `usuario_obrigatorio()` valida o JWT HS256 assinado com `INTERNAL_JWT_SECRET` e exige `exp` de no máximo 60 s. As claims são `sub`, `plano` e `role`. A dependency `exigir_admin()` checa `role == 'admin'`.
 
@@ -196,7 +196,7 @@ class FonteDados(Protocol):
 
 | Método | Rota | Acesso | Descrição |
 |---|---|---|---|
-| GET | `/v1/health` | público | Healthcheck do Coolify; inclui ping no banco |
+| GET | `/v1/health` | público | Healthcheck; inclui ping no banco |
 | GET | `/v1/ativos?busca=&tipo=&pagina=&limite=` | público | Busca por ticker (prefixo) e por nome (trigram) |
 | GET | `/v1/ativos/{ticker}` | público | Cadastro, última cotação e variações de 1 dia, 12 meses e no ano |
 | GET | `/v1/ativos/{ticker}/cotacoes?inicio=&fim=&periodo=1d\|1w\|1M` | público | Candles; semanal e mensal são agregados no SQL com `date_trunc` |
@@ -265,14 +265,16 @@ analisebolsa/
 |---|---|---|
 | `DATABASE_URL` | api, worker, web | String de conexão do Postgres |
 | `INTERNAL_JWT_SECRET` | api, worker, web | Segredo HS256 com pelo menos 32 bytes |
-| `API_INTERNAL_URL` | web | `http://api:8000` no Coolify |
+| `API_INTERNAL_URL` | web | URL do projeto da api na Vercel |
+| `INTERNAL_API_KEY` | api, web | Chave enviada em `X-Internal-Key`; sem ela a API não exige a chave (dev local) |
+| `SITE_URL` | web | URL pública, para canonical e sitemap |
 | `WEB_INTERNAL_URL` | worker | URL da web, para revalidar o cache |
 | `AUTH_SECRET` | web | Segredo do Auth.js |
 | `AUTH_GOOGLE_ID`, `AUTH_GOOGLE_SECRET` | web | OAuth do Google (opcional; sem elas, o botão do Google fica oculto) |
 | `BRAPI_TOKEN` | worker | Opcional |
 | `ADMIN_EMAILS` | web | Lista separada por vírgula; esses e-mails recebem `role=admin` no cadastro |
 
-**Desenvolvimento:** usar um database separado (`analisebolsa_dev`), nunca o de produção. Se o Postgres do Coolify for exposto para acesso local, deve ter porta pública restrita por IP, senha forte e `sslmode=require`.
+**Desenvolvimento:** usar um database separado (`analisebolsa_dev`), nunca o de produção. A conexão com o Postgres de produção usa `sslmode=require`.
 
 ## 9. Testes
 

@@ -10,6 +10,10 @@ class Settings(BaseSettings):
 
     database_url: str = "postgresql+psycopg://postgres:postgres@localhost:5432/analisebolsa_dev"
     internal_jwt_secret: str = ""
+    # Chave enviada pela web em X-Internal-Key. Obrigatória quando a API fica exposta (Vercel).
+    internal_api_key: str = ""
+    # Sem pool próprio e sem prepared statements, para o pooler do Postgres em serverless.
+    db_serverless: bool = False
     web_internal_url: str = ""
     brapi_token: str = ""
     fontes_cotacoes: str = "yahoo,brapi"
