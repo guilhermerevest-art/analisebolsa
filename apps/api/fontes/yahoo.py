@@ -31,8 +31,9 @@ class YahooFonte:
     def __init__(self, http: ClienteHttp | None = None) -> None:
         self.http = http or ClienteHttp()
 
-    def _chart(self, ticker: str, params: dict) -> dict | None:
-        status, dados = self.http.get_json(URL.format(simbolo=f"{ticker}.SA"), params=params)
+    def _chart(self, ticker: str, params: dict, *, simbolo: str | None = None) -> dict | None:
+        simbolo = simbolo or f"{ticker}.SA"
+        status, dados = self.http.get_json(URL.format(simbolo=simbolo), params=params)
         chart = dados.get("chart") or {}
         if status == 404 or not chart.get("result"):
             if status == 404 or (chart.get("error") or {}).get("code") == "Not Found":
@@ -61,6 +62,14 @@ class YahooFonte:
     def cotacoes(self, ticker: str, inicio: date, fim: date) -> list[Candle]:
         r = self._chart_periodo(ticker, inicio, fim)
         return self.parse_cotacoes(r, inicio, fim) if r else []
+
+    def indice(self, simbolo: str, inicio: date, fim: date) -> list[tuple[date, float]]:
+        """Fechamentos de um índice (ex.: ^BVSP), sem o sufixo .SA."""
+        params = {"period1": _epoch(inicio), "period2": _epoch(fim + timedelta(days=1))}
+        r = self._chart(simbolo, params | {"interval": "1d"}, simbolo=simbolo)
+        if not r:
+            return []
+        return [(c.data, float(c.fechamento)) for c in self.parse_cotacoes(r, inicio, fim)]
 
     def proventos(self, ticker: str) -> list[Provento]:
         r = self._chart(ticker, {"range": "max", "interval": "1mo", "events": "div,splits"})

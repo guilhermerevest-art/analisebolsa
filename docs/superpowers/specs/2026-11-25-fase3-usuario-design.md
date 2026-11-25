@@ -40,7 +40,7 @@ público. São quatro:
 
 ## 2. Banco de dados
 
-Uma migration nova (`0003_usuario`). Toda tabela de usuário referencia `users(id)` com
+Uma migration por etapa, a partir da `0003` (índices e watchlist). Toda tabela de usuário referencia `users(id)` com
 `ON DELETE CASCADE`, para que excluir a conta apague tudo (LGPD).
 
 ```sql
@@ -194,7 +194,7 @@ As páginas de usuário são dinâmicas e sem cache; `/simulador` é público e 
 
 ## 7. Entrega em etapas (um PR cada)
 
-1. **Índices e watchlist:** migration `0003`, `worker/indices.py` no EOD e no backfill,
+1. **Índices e watchlist:** migration `0003`, modo `indices` no workflow Worker, `worker/indices.py` no EOD e no backfill,
    `/v1/indices`, `/v1/watchlist`, estrela, `/watchlist` e itens do header.
 2. **Carteira:** `dominio/carteira.py` (posição, PM, eventos, proventos, alocação), rotas de
    carteiras e operações, `/carteira` sem o gráfico de rentabilidade.

@@ -22,7 +22,7 @@ const CLASSE_TENDENCIA = { alta: "text-positivo", baixa: "text-destructive", lat
 const variacao = (v: number | null) => <span className={classeVariacao(v)}>{formatarPct(v)}</span>;
 const pct = (v: number | null) => (v === null ? "—" : `${formatarNumero(v)}%`);
 
-const COLUNAS: Coluna[] = [
+export const COLUNAS: Coluna[] = [
   { chave: "preco", rotulo: "Preço", render: (i) => formatarPreco(i.preco) },
   { chave: "var_1d", rotulo: "Dia", render: (i) => variacao(i.var_1d) },
   { chave: "var_12m", rotulo: "12 meses", render: (i) => variacao(i.var_12m) },

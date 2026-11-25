@@ -16,6 +16,7 @@ from app.db import get_engine
 from fontes.cadeia import CadeiaFontes, criar_cadeia
 from worker import repositorio as repo
 from worker.analise import atualizar_analise
+from worker.indices import atualizar_indices, buscadores
 from worker.processamento import (
     atualizar_fundamentos,
     processar_ativos,
@@ -39,6 +40,7 @@ def executar_eod(
     *,
     forcar_catalogo: bool = False,
     forcar_fundamentos: bool = False,
+    fontes_indices: dict | None = None,
     dormir=None,
 ) -> str:
     with engine.begin() as conn:
@@ -66,6 +68,9 @@ def executar_eod(
         alvo = ativos if fundamentos_novos else repo.ids_por_ticker(conn, res.tickers_atualizados)
     res.detalhes["analise"] = atualizar_analise(engine, alvo)
 
+    if fontes_indices is not None:
+        res.detalhes["indices"] = atualizar_indices(engine, hoje, fontes=fontes_indices)
+
     res.detalhes["revalidacao"] = revalidar_web(
         settings.web_internal_url, settings.internal_jwt_secret, res.tickers_atualizados
     )
@@ -90,6 +95,7 @@ def main(argv: list[str] | None = None) -> int:
         hoje_b3(),
         forcar_catalogo=args.catalogo,
         forcar_fundamentos=args.fundamentos,
+        fontes_indices=buscadores(),
     )
     return 1 if status == "erro" else 0
 

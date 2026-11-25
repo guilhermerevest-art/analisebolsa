@@ -10,7 +10,7 @@ from dominio.modelos import Candle
 
 TABELAS = (
     "cotacoes_diarias, indicadores_diarios, proventos, fundamentos, execucoes_job, ativos, "
-    "accounts, sessions, verification_tokens, users"
+    "indices, accounts, sessions, verification_tokens, users"
 )
 
 

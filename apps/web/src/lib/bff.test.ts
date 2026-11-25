@@ -19,6 +19,7 @@ describe("BFF", () => {
 
   it("admin nunca vai para cache público", () => {
     expect(cacheControl(["admin", "execucoes"])).toContain("no-store");
+    expect(cacheControl(["watchlist", "PETR4"])).toContain("no-store");
     expect(cacheControl(["ativos"])).toContain("s-maxage");
   });
 

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { roleParaEmail, emailsAdmin } from "./env";
-import { errosPorCampo, esquemaCadastro, esquemaEntrar } from "./validacao";
+import { destinoSeguro, errosPorCampo, esquemaCadastro, esquemaEntrar } from "./validacao";
 
 describe("validação dos formulários", () => {
   it("normaliza o e-mail", () => {
@@ -35,5 +35,17 @@ describe("ADMIN_EMAILS", () => {
     expect(roleParaEmail("ADMIN@EX.COM", admins)).toBe("admin");
     expect(roleParaEmail("user@ex.com", admins)).toBe("user");
     expect(roleParaEmail(null, admins)).toBe("user");
+  });
+});
+
+describe("destinoSeguro", () => {
+  it("aceita caminhos internos", () => {
+    expect(destinoSeguro("/ativo/PETR4")).toBe("/ativo/PETR4");
+    expect(destinoSeguro("/watchlist")).toBe("/watchlist");
+  });
+  it("rejeita URLs externas e valores estranhos", () => {
+    for (const v of ["//evil.com", "https://evil.com", "/\\evil.com", "javascript:alert(1)", "", null, 3, "/a b"]) {
+      expect(destinoSeguro(v)).toBe("/conta");
+    }
   });
 });

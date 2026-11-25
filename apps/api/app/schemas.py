@@ -306,3 +306,40 @@ class Sinal(BaseModel):
 class SinaisDoDia(BaseModel):
     data: date | None
     sinais: list[Sinal]
+
+
+# Fase 3: usuário
+
+
+class ItemWatchlist(BaseModel):
+    ticker: str
+    nome: str
+    tipo: TipoAtivo
+    setor: str | None
+    logo_url: str | None
+    adicionado_em: datetime
+    metricas: MetricasAtivo | None
+
+
+class Watchlist(BaseModel):
+    itens: list[ItemWatchlist]
+    limite: int
+
+
+class EstadoWatchlist(BaseModel):
+    ticker: str
+    na_lista: bool
+
+
+SerieIndice = Literal["cdi", "ipca", "ibov"]
+
+
+class PontoIndice(BaseModel):
+    data: date
+    valor: float
+
+
+class Indice(BaseModel):
+    serie: SerieIndice
+    unidade: Literal["pct_dia", "pct_mes", "pontos"]
+    pontos: list[PontoIndice]

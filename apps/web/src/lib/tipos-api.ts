@@ -27,3 +27,7 @@ export type CenarioPreco = S["CenarioPreco"];
 export type CenariosAtivo = S["CenariosAtivo"];
 export type SinaisDoDia = S["SinaisDoDia"];
 export type Sinal = S["Sinal"];
+export type Watchlist = S["Watchlist"];
+export type ItemWatchlist = S["ItemWatchlist"];
+export type EstadoWatchlist = S["EstadoWatchlist"];
+export type Indice = S["Indice"];

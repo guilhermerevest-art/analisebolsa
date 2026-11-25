@@ -9,11 +9,11 @@ from app import schemas as s
 from app.config import get_settings
 from app.deps import usuario_opcional
 from app.erros import registrar_handlers, resposta_problema
-from app.rotas import admin, ativos, health, mercado, screener
+from app.rotas import admin, ativos, health, indices, mercado, screener, watchlist
 
 ERROS = {
     code: {"model": s.Problema, "content": {"application/problem+json": {}}}
-    for code in (401, 403, 404, 422)
+    for code in (401, 403, 404, 409, 422)
 }
 
 
@@ -37,7 +37,8 @@ def create_app() -> FastAPI:
                 return resposta_problema(request, 401, "Unauthorized", "chave interna inválida")
         return await call_next(request)
 
-    for r in (health.router, ativos.router, mercado.router, screener.router, admin.router):
+    rotas = (health, ativos, mercado, indices, screener, watchlist, admin)
+    for r in (m.router for m in rotas):
         app.include_router(r, prefix="/v1")
     return app
 
