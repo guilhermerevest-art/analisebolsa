@@ -2,11 +2,17 @@ name: Variáveis da Vercel
 description: >
   Baixa as variáveis de produção do projeto analisebolsa-api na Vercel para
   apps/api/.env, que a api e o worker leem. Assim a Vercel é o único lugar
-  com configuração; o GitHub só guarda o VERCEL_TOKEN.
+  com configuração; o GitHub só guarda o VERCEL_TOKEN. Exceção: se o time da
+  Vercel obriga variáveis Sensitive (que o GitHub não consegue ler), o
+  DATABASE_URL pode vir do segredo de mesmo nome no GitHub.
 inputs:
   token:
     description: Token da Vercel
     required: true
+  database_url:
+    description: DATABASE_URL vindo de um segredo do GitHub (opcional; tem prioridade)
+    required: false
+    default: ""
 runs:
   using: composite
   steps:
@@ -15,13 +21,19 @@ runs:
       working-directory: apps/api
       env:
         VERCEL_TOKEN: ${{ inputs.token }}
+        DATABASE_URL_GITHUB: ${{ inputs.database_url }}
         VERCEL_ORG_ID: team_fWEuENXE3yFNvvhgguAgrDg8
         VERCEL_PROJECT_ID: prj_EzFOVDRakt67PFaYGSDQo36rsAfZ
       run: |
         test -n "$VERCEL_TOKEN" || { echo "::error::defina o segredo VERCEL_TOKEN no repositório"; exit 1; }
         npx --yes vercel@latest env pull .env --environment=production --yes >/dev/null
+        if [ -n "$DATABASE_URL_GITHUB" ]; then
+          grep -v '^DATABASE_URL=' .env > .env.tmp || true
+          printf 'DATABASE_URL="%s"\n' "$DATABASE_URL_GITHUB" >> .env.tmp
+          mv .env.tmp .env
+        fi
         # Variáveis do tipo "sensitive" vêm vazias: as que o worker usa precisam ser "encrypted".
-        grep -qE '^DATABASE_URL="?postgres(ql)?://' .env || { echo "::error::DATABASE_URL ilegível ou ausente no projeto analisebolsa-api. Variáveis Sensitive não podem ser lidas pelo GitHub: recrie-a com Sensitive desligado."; exit 1; }
+        grep -qE '^DATABASE_URL="?postgres(ql)?://' .env || { echo "::error::DATABASE_URL ilegível ou ausente no projeto analisebolsa-api. Variáveis Sensitive não podem ser lidas pelo GitHub: recrie-a com Sensitive desligado ou crie o segredo DATABASE_URL no GitHub."; exit 1; }
         while IFS= read -r linha; do
           valor="${linha#*=}"; valor="${valor%\"}"; valor="${valor#\"}"
           [ -n "$valor" ] && echo "::add-mask::$valor"
