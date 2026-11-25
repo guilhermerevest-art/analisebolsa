@@ -17,6 +17,11 @@ export async function Cabecalho() {
           <Button asChild variant="ghost" size="sm" className="hidden sm:inline-flex">
             <Link href="/screener">Screener</Link>
           </Button>
+          {sessao?.user && (
+            <Button asChild variant="ghost" size="sm" className="hidden sm:inline-flex">
+              <Link href="/watchlist">Watchlist</Link>
+            </Button>
+          )}
           {sessao?.user?.role === "admin" && (
             <Button asChild variant="ghost" size="sm">
               <Link href="/admin">Admin</Link>

@@ -34,3 +34,9 @@ export function errosPorCampo(erro: z.ZodError): ErrosCampos {
   }
   return saida;
 }
+
+/** Caminho interno para voltar depois do login; qualquer outra coisa vira /conta. */
+export function destinoSeguro(valor: unknown): string {
+  if (typeof valor !== "string" || valor.length > 200) return "/conta";
+  return /^\/(?![/\\])[A-Za-z0-9/_\-?=&%.]*$/.test(valor) ? valor : "/conta";
+}

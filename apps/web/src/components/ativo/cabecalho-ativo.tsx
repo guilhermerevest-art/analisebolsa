@@ -1,5 +1,6 @@
 "use client";
 
+import { EstrelaWatchlist } from "@/components/ativo/estrela-watchlist";
 import { NumberTicker } from "@/components/magic/number-ticker";
 import { classeVariacao, formatarData, formatarPct, formatarPreco, NOMES_TIPO } from "@/lib/formato";
 import type { AtivoDetalhe } from "@/lib/tipos-api";
@@ -26,6 +27,9 @@ export function CabecalhoAtivo({ ativo }: { ativo: AtivoDetalhe }) {
             {ativo.setor && ` · ${ativo.setor}`}
             {ativo.segmento && ` · ${ativo.segmento}`}
           </p>
+          <div className="mt-2">
+            <EstrelaWatchlist ticker={ativo.ticker} />
+          </div>
         </div>
       </div>
       {u && (

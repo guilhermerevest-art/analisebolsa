@@ -6,10 +6,11 @@ import { Campo } from "@/components/campo";
 import { Button } from "@/components/ui/button";
 import { type EstadoForm, entrar } from "@/lib/acoes";
 
-export function FormularioEntrar() {
+export function FormularioEntrar({ voltar }: { voltar?: string }) {
   const [estado, acao, pendente] = useActionState<EstadoForm, FormData>(entrar, {});
   return (
     <form action={acao} className="grid gap-4" noValidate>
+      {voltar && <input type="hidden" name="voltar" value={voltar} />}
       {estado.erros?.form && (
         <p role="alert" className="rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive">
           {estado.erros.form}

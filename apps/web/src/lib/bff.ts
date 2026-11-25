@@ -1,7 +1,9 @@
 /**
  * Regras do BFF: quais caminhos `/api/*` são repassados à API interna (`/v1/*`).
  */
-const PREFIXOS_PERMITIDOS = ["ativos", "mercado", "admin"] as const;
+const PREFIXOS_PERMITIDOS = ["ativos", "mercado", "indices", "admin", "watchlist"] as const;
+/** Rotas com dados do usuário: nunca vão para o cache compartilhado. */
+const PRIVADOS = new Set(["admin", "watchlist"]);
 const SEGMENTO = /^[A-Za-z0-9_-]{1,40}$/;
 
 /** Converte os segmentos de `/api/...` no caminho da API, ou null se não for permitido. */
@@ -12,9 +14,9 @@ export function caminhoApi(segmentos: string[]): string | null {
   return `/v1/${segmentos.join("/")}`;
 }
 
-/** Rotas públicas podem ir para o cache da CDN; admin nunca. */
+/** Rotas públicas podem ir para o cache da CDN; as do usuário e o admin nunca. */
 export function cacheControl(segmentos: string[]): string {
-  return segmentos[0] === "admin" ? "private, no-store" : "public, s-maxage=60, stale-while-revalidate=300";
+  return PRIVADOS.has(segmentos[0]) ? "private, no-store" : "public, s-maxage=60, stale-while-revalidate=300";
 }
 
 /** Tags que o worker pode pedir para revalidar. */

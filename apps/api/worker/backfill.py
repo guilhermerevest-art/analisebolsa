@@ -19,6 +19,7 @@ from fontes.cadeia import CadeiaFontes, criar_cadeia
 from worker import repositorio as repo
 from worker.analise import atualizar_analise
 from worker.eod import hoje_b3
+from worker.indices import atualizar_indices, buscadores
 from worker.processamento import INICIO_HISTORICO, processar_ativos, sincronizar_catalogo
 
 log = logging.getLogger("worker.backfill")
@@ -32,6 +33,7 @@ def executar_backfill(
     *,
     tickers: Sequence[str] | None = None,
     desde: date = INICIO_HISTORICO,
+    fontes_indices: dict | None = None,
     dormir=None,
 ) -> str:
     with engine.begin() as conn:
@@ -54,6 +56,10 @@ def executar_backfill(
         dormir=dormir,
     )
     res.detalhes["analise"] = atualizar_analise(engine, pendentes)
+    if fontes_indices is not None:
+        res.detalhes["indices"] = atualizar_indices(
+            engine, hoje, desde=desde, fontes=fontes_indices
+        )
     res.detalhes["pulados"] = len(candidatos) - len(pendentes)
     res.detalhes["desde"] = desde.isoformat()
     with engine.begin() as conn:
@@ -71,7 +77,13 @@ def main(argv: list[str] | None = None) -> int:
     settings = get_settings()
     tickers = [t.strip().upper() for t in args.tickers.split(",")] if args.tickers else None
     status = executar_backfill(
-        get_engine(), criar_cadeia(settings), settings, hoje_b3(), tickers=tickers, desde=args.desde
+        get_engine(),
+        criar_cadeia(settings),
+        settings,
+        hoje_b3(),
+        tickers=tickers,
+        desde=args.desde,
+        fontes_indices=buscadores(),
     )
     return 1 if status == "erro" else 0
 

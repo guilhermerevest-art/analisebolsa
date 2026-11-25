@@ -68,6 +68,8 @@ O workflow `Migrations` roda `alembic upgrade head` em todo push na `main` que m
 1. Actions → Worker → Run workflow com `modo=eod`. Com o banco vazio, ele sincroniza o catálogo.
 2. Actions → Worker → Run workflow com `modo=backfill`. Pode ser retomado: se passar do
    tempo limite, rode de novo e ele pula os ativos que já têm histórico.
+3. CDI, IPCA e Ibovespa são carregados pelo EOD e pelo backfill. Para carregar só eles,
+   use `modo=indices` (continua de onde parou).
 
 ## 8. Conferência
 

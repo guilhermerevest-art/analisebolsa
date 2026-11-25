@@ -8,9 +8,9 @@ on:
   workflow_dispatch:
     inputs:
       modo:
-        description: "eod, backfill ou analise (recalcula métricas)"
+        description: "eod, backfill, analise (recalcula métricas) ou indices (CDI, IPCA e Ibovespa)"
         type: choice
-        options: [eod, backfill, analise]
+        options: [eod, backfill, analise, indices]
         default: eod
       tickers:
         description: "Backfill/análise: tickers separados por vírgula (vazio = todos)"
@@ -62,3 +62,6 @@ jobs:
           args=()
           if [ -n "$TICKERS" ]; then args+=(--tickers "$TICKERS"); fi
           uv run python -m worker.analise "${args[@]}"
+      - name: Índices
+        if: github.event_name == 'workflow_dispatch' && inputs.modo == 'indices'
+        run: uv run python -m worker.indices

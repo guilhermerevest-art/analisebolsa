@@ -1,0 +1,151 @@
+{
+    "chart": {
+        "result": [
+            {
+                "meta": {
+                    "currency": "BRL",
+                    "symbol": "^BVSP",
+                    "exchangeName": "SAO",
+                    "fullExchangeName": "S\u00e3o Paulo",
+                    "instrumentType": "INDEX",
+                    "firstTradeDate": 735915600,
+                    "regularMarketTime": 1795641480,
+                    "hasPrePostMarketData": false,
+                    "gmtoffset": -10800,
+                    "timezone": "BRT",
+                    "exchangeTimezoneName": "America/Sao_Paulo",
+                    "regularMarketPrice": 166684.61,
+                    "regularMarketChangePercent": 1.581,
+                    "fulldayPrice": 166684.61,
+                    "fulldayChange": 2594.797,
+                    "fulldayChangePercent": 1.581,
+                    "fiftyTwoWeekHigh": 209714.0,
+                    "fiftyTwoWeekLow": 155188.0,
+                    "regularMarketDayHigh": 167105.33,
+                    "regularMarketDayLow": 164042.12,
+                    "regularMarketVolume": 0,
+                    "longName": "IBOVESPA",
+                    "shortName": "IBOVESPA",
+                    "chartPreviousClose": 131816.0,
+                    "priceHint": 2,
+                    "currentTradingPeriod": {
+                        "pre": {
+                            "timezone": "BRT",
+                            "start": 1795610700,
+                            "end": 1795611600,
+                            "gmtoffset": -10800
+                        },
+                        "regular": {
+                            "timezone": "BRT",
+                            "start": 1795611600,
+                            "end": 1795636800,
+                            "gmtoffset": -10800
+                        },
+                        "post": {
+                            "timezone": "BRT",
+                            "start": 1795636800,
+                            "end": 1795640400,
+                            "gmtoffset": -10800
+                        }
+                    },
+                    "dataGranularity": "1d",
+                    "range": "",
+                    "validRanges": [
+                        "1d",
+                        "5d",
+                        "1mo",
+                        "3mo",
+                        "6mo",
+                        "1y",
+                        "2y",
+                        "5y",
+                        "10y",
+                        "ytd",
+                        "max"
+                    ]
+                },
+                "timestamp": [
+                    1727787600,
+                    1727874000,
+                    1727960400,
+                    1728046800,
+                    1728306000,
+                    1728392400,
+                    1728478800,
+                    1728565200
+                ],
+                "indicators": {
+                    "quote": [
+                        {
+                            "open": [
+                                131817.0,
+                                132495.0,
+                                133514.0,
+                                131672.0,
+                                131792.0,
+                                132016.0,
+                                131510.0,
+                                129963.0
+                            ],
+                            "low": [
+                                131817.0,
+                                132495.0,
+                                131176.0,
+                                131156.0,
+                                131676.0,
+                                130371.0,
+                                129719.0,
+                                129835.0
+                            ],
+                            "high": [
+                                133405.0,
+                                134922.0,
+                                133514.0,
+                                131936.0,
+                                132943.0,
+                                132016.0,
+                                131520.0,
+                                130418.0
+                            ],
+                            "close": [
+                                132495.0,
+                                133515.0,
+                                131672.0,
+                                131792.0,
+                                132018.0,
+                                131512.0,
+                                129962.0,
+                                130353.0
+                            ],
+                            "volume": [
+                                9841100,
+                                9398700,
+                                9821200,
+                                7054700,
+                                7702100,
+                                9093200,
+                                9220400,
+                                7617300
+                            ]
+                        }
+                    ],
+                    "adjclose": [
+                        {
+                            "adjclose": [
+                                132495.0,
+                                133515.0,
+                                131672.0,
+                                131792.0,
+                                132018.0,
+                                131512.0,
+                                129962.0,
+                                130353.0
+                            ]
+                        }
+                    ]
+                }
+            }
+        ],
+        "error": null
+    }
+}

@@ -7,7 +7,7 @@ import { AuthError } from "next-auth";
 import { signIn, signOut } from "@/auth";
 import { db, schema } from "@/lib/db";
 import { roleParaEmail } from "@/lib/env";
-import { type ErrosCampos, errosPorCampo, esquemaCadastro, esquemaEntrar } from "@/lib/validacao";
+import { destinoSeguro, type ErrosCampos, errosPorCampo, esquemaCadastro, esquemaEntrar } from "@/lib/validacao";
 
 export type EstadoForm = { erros?: ErrosCampos; valores?: Record<string, string> };
 
@@ -17,10 +17,11 @@ function valores(form: FormData, campos: string[]): Record<string, string> {
 
 export async function entrar(_: EstadoForm, form: FormData): Promise<EstadoForm> {
   const dados = valores(form, ["email", "senha"]);
+  const destino = destinoSeguro(form.get("voltar"));
   const parsed = esquemaEntrar.safeParse(dados);
   if (!parsed.success) return { erros: errosPorCampo(parsed.error), valores: { email: dados.email } };
   try {
-    await signIn("credentials", { ...parsed.data, redirectTo: "/conta" });
+    await signIn("credentials", { ...parsed.data, redirectTo: destino });
   } catch (e) {
     if (e instanceof AuthError) {
       return { erros: { form: "E-mail ou senha incorretos" }, valores: { email: dados.email } };
@@ -51,8 +52,8 @@ export async function cadastrar(_: EstadoForm, form: FormData): Promise<EstadoFo
   return {};
 }
 
-export async function entrarComGoogle() {
-  await signIn("google", { redirectTo: "/conta" });
+export async function entrarComGoogle(form: FormData) {
+  await signIn("google", { redirectTo: destinoSeguro(form.get("voltar")) });
 }
 
 export async function sair() {
