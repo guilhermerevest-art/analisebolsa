@@ -15,6 +15,7 @@ from app.config import Settings, get_settings
 from app.db import get_engine
 from fontes.cadeia import CadeiaFontes, criar_cadeia
 from worker import repositorio as repo
+from worker.analise import atualizar_analise
 from worker.processamento import (
     atualizar_fundamentos,
     processar_ativos,
@@ -53,10 +54,17 @@ def executar_eod(
         engine, fontes, ativos, hoje, pausa_s=settings.pausa_entre_tickers_s, dormir=dormir
     )
 
-    if forcar_fundamentos or segunda or vazio:
+    fundamentos_novos = forcar_fundamentos or segunda or vazio
+    if fundamentos_novos:
         atualizar_fundamentos(
             engine, fontes, hoje, pausa_s=settings.pausa_entre_tickers_s, dormir=dormir
         )
+
+    # Análise (Fase 2): todos os ativos quando os fundamentos mudaram, senão só os com
+    # pregão ou provento novo.
+    with engine.begin() as conn:
+        alvo = ativos if fundamentos_novos else repo.ids_por_ticker(conn, res.tickers_atualizados)
+    res.detalhes["analise"] = atualizar_analise(engine, alvo)
 
     res.detalhes["revalidacao"] = revalidar_web(
         settings.web_internal_url, settings.internal_jwt_secret, res.tickers_atualizados

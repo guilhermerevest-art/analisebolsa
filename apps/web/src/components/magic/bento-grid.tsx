@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { cn } from "@/lib/utils";
 
 /** Grade de funcionalidades (inspirada no BentoGrid do Magic UI). */
@@ -10,15 +12,17 @@ export function BentoCard({
   descricao,
   icone,
   emBreve,
+  href,
   className,
 }: {
   titulo: string;
   descricao: string;
   icone: React.ReactNode;
   emBreve?: boolean;
+  href?: string;
   className?: string;
 }) {
-  return (
+  const conteudo = (
     <div
       className={cn(
         "relative flex flex-col justify-end gap-2 overflow-hidden rounded-xl border bg-card p-6 transition-colors hover:bg-accent/40",
@@ -33,5 +37,12 @@ export function BentoCard({
       </h3>
       <p className="text-sm text-muted-foreground">{descricao}</p>
     </div>
+  );
+  return href ? (
+    <Link href={href} className="contents">
+      {conteudo}
+    </Link>
+  ) : (
+    conteudo
   );
 }

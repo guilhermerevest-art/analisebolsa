@@ -16,3 +16,7 @@ export type Destaques = S["Destaques"];
 export type Execucao = S["Execucao"];
 export type Execucoes = S["Execucoes"];
 export type TipoAtivo = AtivoResumo["tipo"];
+export type ItemScreener = S["ItemScreener"];
+export type PaginaScreener = S["PaginaScreener"];
+export type CampoScreener = S["CampoScreener"];
+export type CamposScreener = S["CamposScreener"];

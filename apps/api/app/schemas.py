@@ -165,7 +165,7 @@ class Destaques(BaseModel):
 
 class Execucao(BaseModel):
     execucao_id: int
-    tipo: Literal["eod", "backfill", "catalogo", "fundamentos"]
+    tipo: Literal["eod", "backfill", "catalogo", "fundamentos", "analise"]
     iniciado_em: datetime
     finalizado_em: datetime | None
     status: Literal["rodando", "ok", "parcial", "erro"]
@@ -176,3 +176,64 @@ class Execucao(BaseModel):
 
 class Execucoes(BaseModel):
     itens: list[Execucao]
+
+
+# Fase 2: screener
+
+Tendencia = Literal["alta", "baixa", "lateral"]
+
+
+class ItemScreener(BaseModel):
+    ticker: str
+    nome: str
+    tipo: TipoAtivo
+    setor: str | None
+    logo_url: str | None
+    data: date
+    preco: Preco
+    var_1d: float | None
+    var_1m: float | None
+    var_3m: float | None
+    var_6m: float | None
+    var_12m: float | None
+    var_ano: float | None
+    volatilidade_12m: float | None
+    drawdown_12m: float | None
+    max_52s: Preco | None
+    min_52s: Preco | None
+    pos_52s: float | None
+    dist_mm50: float | None
+    dist_mm200: float | None
+    rsi14: float | None
+    tendencia: Tendencia | None
+    volume_financeiro_20d: float | None
+    pl: float | None
+    pvp: float | None
+    dy_12m: float | None
+    roe: float | None
+    margem_liquida: float | None
+    div_liq_ebitda: float | None
+    valor_mercado: float | None
+
+
+class PaginaScreener(BaseModel):
+    itens: list[ItemScreener]
+    pagina: int
+    limite: int
+    total: int
+
+
+class CampoScreener(BaseModel):
+    campo: str
+    rotulo: str
+    unidade: Literal["pct", "brl", "numero"]
+    grupo: Literal["preco", "tecnico", "fundamentos"]
+    descricao: str
+    min: float | None
+    max: float | None
+
+
+class CamposScreener(BaseModel):
+    campos: list[CampoScreener]
+    setores: list[str]
+    tipos: list[TipoAtivo]

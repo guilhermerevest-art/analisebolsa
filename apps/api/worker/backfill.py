@@ -17,6 +17,7 @@ from app.config import Settings, get_settings
 from app.db import get_engine
 from fontes.cadeia import CadeiaFontes, criar_cadeia
 from worker import repositorio as repo
+from worker.analise import atualizar_analise
 from worker.eod import hoje_b3
 from worker.processamento import INICIO_HISTORICO, processar_ativos, sincronizar_catalogo
 
@@ -52,6 +53,7 @@ def executar_backfill(
         pausa_s=settings.pausa_entre_tickers_s,
         dormir=dormir,
     )
+    res.detalhes["analise"] = atualizar_analise(engine, pendentes)
     res.detalhes["pulados"] = len(candidatos) - len(pendentes)
     res.detalhes["desde"] = desde.isoformat()
     with engine.begin() as conn:

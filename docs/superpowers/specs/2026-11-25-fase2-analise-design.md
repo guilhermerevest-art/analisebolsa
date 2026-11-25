@@ -54,7 +54,7 @@ CREATE TABLE metricas_ativo (
   volatilidade_12m  DOUBLE PRECISION,           -- desvio dos retornos diários, anualizado
   drawdown_12m      DOUBLE PRECISION,           -- queda máxima do topo ao fundo em 12 meses
   max_52s NUMERIC(14,4), min_52s NUMERIC(14,4),
-  pos_52s           DOUBLE PRECISION,           -- 0 = na mínima, 1 = na máxima de 52 semanas
+  pos_52s           DOUBLE PRECISION,           -- 0 = na mínima, 100 = na máxima de 52 semanas (em pontos percentuais)
   dist_mm50 DOUBLE PRECISION, dist_mm200 DOUBLE PRECISION,  -- (preço / MM) - 1
   rsi14             DOUBLE PRECISION,
   tendencia         TEXT CHECK (tendencia IN ('alta','baixa','lateral')),

@@ -7,7 +7,10 @@ export const revalidate = 86400;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = urlSite();
-  const fixas: MetadataRoute.Sitemap = [{ url: `${base}/`, changeFrequency: "daily", priority: 1 }];
+  const fixas: MetadataRoute.Sitemap = [
+    { url: `${base}/`, changeFrequency: "daily", priority: 1 },
+    { url: `${base}/screener`, changeFrequency: "daily", priority: 0.9 },
+  ];
   try {
     const tickers = await lerTodosTickers();
     return [
