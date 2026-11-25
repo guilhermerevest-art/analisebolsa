@@ -8,12 +8,12 @@ on:
   workflow_dispatch:
     inputs:
       modo:
-        description: "eod ou backfill"
+        description: "eod, backfill ou analise (recalcula métricas)"
         type: choice
-        options: [eod, backfill]
+        options: [eod, backfill, analise]
         default: eod
       tickers:
-        description: "Backfill: tickers separados por vírgula (vazio = todos)"
+        description: "Backfill/análise: tickers separados por vírgula (vazio = todos)"
         required: false
         default: ""
       desde:
@@ -53,3 +53,11 @@ jobs:
           args=(--desde "$DESDE")
           if [ -n "$TICKERS" ]; then args+=(--tickers "$TICKERS"); fi
           uv run python -m worker.backfill "${args[@]}"
+      - name: Análise
+        if: github.event_name == 'workflow_dispatch' && inputs.modo == 'analise'
+        env:
+          TICKERS: ${{ inputs.tickers }}
+        run: |
+          args=()
+          if [ -n "$TICKERS" ]; then args+=(--tickers "$TICKERS"); fi
+          uv run python -m worker.analise "${args[@]}"

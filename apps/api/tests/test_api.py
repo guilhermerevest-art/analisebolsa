@@ -275,3 +275,72 @@ def test_chave_interna_nao_vale_para_health(cliente_com_chave):
 def test_chave_interna_correta_passa(cliente_com_chave):
     r = cliente_com_chave.get("/v1/nao-existe", headers={"X-Internal-Key": "chave-de-teste"})
     assert r.status_code == 404  # passou da chave sem tocar no banco
+
+
+# Screener (Fase 2)
+
+
+@pytest.fixture
+def cliente_screener(cliente, db):
+    from worker.analise import executar
+
+    assert executar(db) == "ok"
+    return cliente
+
+
+@pytest.mark.db
+def test_screener_lista_e_ordena(cliente_screener):
+    r = cliente_screener.get("/v1/screener?ordem=-preco")
+    assert r.status_code == 200
+    corpo = r.json()
+    assert corpo["total"] == 2  # só PETR4 e VALE3 têm cotações
+    assert [i["ticker"] for i in corpo["itens"]] == ["VALE3", "PETR4"]
+    item = corpo["itens"][0]
+    assert isinstance(item["preco"], str)
+    assert item["var_12m"] is not None
+    assert item["pl"] is None
+
+    r = cliente_screener.get("/v1/screener?ordem=ticker")
+    assert [i["ticker"] for i in r.json()["itens"]] == ["PETR4", "VALE3"]
+
+
+@pytest.mark.db
+def test_screener_filtros(cliente_screener):
+    r = cliente_screener.get("/v1/screener?preco_max=40")
+    assert [i["ticker"] for i in r.json()["itens"]] == ["PETR4"]
+    r = cliente_screener.get("/v1/screener?pl_min=4")  # só PETR4 tem fundamentos
+    assert [i["ticker"] for i in r.json()["itens"]] == ["PETR4"]
+    r = cliente_screener.get("/v1/screener?tipo=fii")
+    assert r.json() == {"itens": [], "pagina": 1, "limite": 50, "total": 0}
+    r = cliente_screener.get("/v1/screener?setor=Energia")
+    assert [i["ticker"] for i in r.json()["itens"]] == ["PETR4"]
+
+
+@pytest.mark.db
+def test_screener_paginacao(cliente_screener):
+    r = cliente_screener.get("/v1/screener?limite=1&pagina=2&ordem=ticker")
+    corpo = r.json()
+    assert corpo["total"] == 2
+    assert [i["ticker"] for i in corpo["itens"]] == ["VALE3"]
+    r = cliente_screener.get("/v1/screener?limite=1&pagina=9")
+    assert r.json()["itens"] == [] and r.json()["total"] == 2
+
+
+@pytest.mark.db
+@pytest.mark.parametrize(
+    "consulta", ["foo=1", "ordem=drop", "ordem=-nome", "limite=101", "pl_min=abc", "tipo=x"]
+)
+def test_screener_rejeita_parametros_fora_da_lista(cliente_screener, consulta):
+    r = cliente_screener.get(f"/v1/screener?{consulta}")
+    assert r.status_code == 422
+
+
+@pytest.mark.db
+def test_screener_campos(cliente_screener):
+    corpo = cliente_screener.get("/v1/screener/campos").json()
+    nomes = [c["campo"] for c in corpo["campos"]]
+    assert "dy_12m" in nomes and "rsi14" in nomes
+    preco = next(c for c in corpo["campos"] if c["campo"] == "preco")
+    assert preco["unidade"] == "brl" and preco["min"] < preco["max"]
+    assert corpo["setores"] == ["Energia"]
+    assert corpo["tipos"] == ["acao", "fii", "etf", "bdr"]

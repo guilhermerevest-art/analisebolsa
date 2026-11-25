@@ -140,6 +140,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/screener": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Ativos que passam nos filtros */
+        get: operations["screener_v1_screener_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/screener/campos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Metadados dos filtros */
+        get: operations["campos_v1_screener_campos_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/admin/execucoes": {
         parameters: {
             query?: never;
@@ -198,6 +232,38 @@ export interface components {
             segmento: string | null;
             /** Logo Url */
             logo_url: string | null;
+        };
+        /** CampoScreener */
+        CampoScreener: {
+            /** Campo */
+            campo: string;
+            /** Rotulo */
+            rotulo: string;
+            /**
+             * Unidade
+             * @enum {string}
+             */
+            unidade: "pct" | "brl" | "numero";
+            /**
+             * Grupo
+             * @enum {string}
+             */
+            grupo: "preco" | "tecnico" | "fundamentos";
+            /** Descricao */
+            descricao: string;
+            /** Min */
+            min: number | null;
+            /** Max */
+            max: number | null;
+        };
+        /** CamposScreener */
+        CamposScreener: {
+            /** Campos */
+            campos: components["schemas"]["CampoScreener"][];
+            /** Setores */
+            setores: string[];
+            /** Tipos */
+            tipos: ("acao" | "fii" | "etf" | "bdr")[];
         };
         /** Candle */
         Candle: {
@@ -273,7 +339,7 @@ export interface components {
              * Tipo
              * @enum {string}
              */
-            tipo: "eod" | "backfill" | "catalogo" | "fundamentos";
+            tipo: "eod" | "backfill" | "catalogo" | "fundamentos" | "analise";
             /**
              * Iniciado Em
              * Format: date-time
@@ -390,10 +456,90 @@ export interface components {
             /** Vol Media20 */
             vol_media20: number | null;
         };
+        /** ItemScreener */
+        ItemScreener: {
+            /** Ticker */
+            ticker: string;
+            /** Nome */
+            nome: string;
+            /**
+             * Tipo
+             * @enum {string}
+             */
+            tipo: "acao" | "fii" | "etf" | "bdr";
+            /** Setor */
+            setor: string | null;
+            /** Logo Url */
+            logo_url: string | null;
+            /**
+             * Data
+             * Format: date
+             */
+            data: string;
+            /** Preco */
+            preco: string;
+            /** Var 1D */
+            var_1d: number | null;
+            /** Var 1M */
+            var_1m: number | null;
+            /** Var 3M */
+            var_3m: number | null;
+            /** Var 6M */
+            var_6m: number | null;
+            /** Var 12M */
+            var_12m: number | null;
+            /** Var Ano */
+            var_ano: number | null;
+            /** Volatilidade 12M */
+            volatilidade_12m: number | null;
+            /** Drawdown 12M */
+            drawdown_12m: number | null;
+            /** Max 52S */
+            max_52s: string | null;
+            /** Min 52S */
+            min_52s: string | null;
+            /** Pos 52S */
+            pos_52s: number | null;
+            /** Dist Mm50 */
+            dist_mm50: number | null;
+            /** Dist Mm200 */
+            dist_mm200: number | null;
+            /** Rsi14 */
+            rsi14: number | null;
+            /** Tendencia */
+            tendencia: ("alta" | "baixa" | "lateral") | null;
+            /** Volume Financeiro 20D */
+            volume_financeiro_20d: number | null;
+            /** Pl */
+            pl: number | null;
+            /** Pvp */
+            pvp: number | null;
+            /** Dy 12M */
+            dy_12m: number | null;
+            /** Roe */
+            roe: number | null;
+            /** Margem Liquida */
+            margem_liquida: number | null;
+            /** Div Liq Ebitda */
+            div_liq_ebitda: number | null;
+            /** Valor Mercado */
+            valor_mercado: number | null;
+        };
         /** PaginaAtivos */
         PaginaAtivos: {
             /** Itens */
             itens: components["schemas"]["AtivoResumo"][];
+            /** Pagina */
+            pagina: number;
+            /** Limite */
+            limite: number;
+            /** Total */
+            total: number;
+        };
+        /** PaginaScreener */
+        PaginaScreener: {
+            /** Itens */
+            itens: components["schemas"]["ItemScreener"][];
             /** Pagina */
             pagina: number;
             /** Limite */
@@ -950,6 +1096,163 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Destaques"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+        };
+    };
+    screener_v1_screener_get: {
+        parameters: {
+            query?: {
+                tipo?: ("acao" | "fii" | "etf" | "bdr")[] | null;
+                setor?: string | null;
+                tendencia?: ("alta" | "baixa" | "lateral") | null;
+                ordem?: string;
+                pagina?: number;
+                limite?: number;
+                preco_min?: number | null;
+                preco_max?: number | null;
+                var_1m_min?: number | null;
+                var_1m_max?: number | null;
+                var_12m_min?: number | null;
+                var_12m_max?: number | null;
+                volatilidade_12m_min?: number | null;
+                volatilidade_12m_max?: number | null;
+                pos_52s_min?: number | null;
+                pos_52s_max?: number | null;
+                dist_mm200_min?: number | null;
+                dist_mm200_max?: number | null;
+                rsi14_min?: number | null;
+                rsi14_max?: number | null;
+                volume_financeiro_20d_min?: number | null;
+                volume_financeiro_20d_max?: number | null;
+                pl_min?: number | null;
+                pl_max?: number | null;
+                pvp_min?: number | null;
+                pvp_max?: number | null;
+                dy_12m_min?: number | null;
+                dy_12m_max?: number | null;
+                roe_min?: number | null;
+                roe_max?: number | null;
+                margem_liquida_min?: number | null;
+                margem_liquida_max?: number | null;
+                div_liq_ebitda_min?: number | null;
+                div_liq_ebitda_max?: number | null;
+                valor_mercado_min?: number | null;
+                valor_mercado_max?: number | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginaScreener"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+        };
+    };
+    campos_v1_screener_campos_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CamposScreener"];
                 };
             };
             /** @description Unauthorized */

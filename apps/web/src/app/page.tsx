@@ -18,7 +18,7 @@ const FUNCIONALIDADES = [
   { titulo: "Proventos", descricao: "Histórico de dividendos, JCP e rendimentos, com DY por ano.", icone: <Coins /> },
   { titulo: "Insights", descricao: "Leitura educacional dos sinais técnicos de cada ativo.", icone: <Lightbulb />, emBreve: true },
   { titulo: "Cenários", descricao: "Suportes, resistências e cenários de entrada e saída.", icone: <Target />, emBreve: true },
-  { titulo: "Screener", descricao: "Filtre ativos por indicadores e fundamentos.", icone: <Filter />, emBreve: true, classe: "md:col-span-2" },
+  { titulo: "Screener", descricao: "Filtre ativos por indicadores e fundamentos.", icone: <Filter />, href: "/screener", classe: "md:col-span-2" },
   { titulo: "Carteira", descricao: "Acompanhe posições, rentabilidade e alocação.", icone: <Briefcase />, emBreve: true },
   { titulo: "Simulador", descricao: "Aportes mensais com reinvestimento, comparados ao CDI e ao IPCA.", icone: <Calculator />, emBreve: true },
   { titulo: "Alertas", descricao: "Avisos por e-mail quando um ativo da sua lista se mover.", icone: <Bell />, emBreve: true },
@@ -63,7 +63,7 @@ export default async function Inicio() {
         </h2>
         <BentoGrid>
           {FUNCIONALIDADES.map((f) => (
-            <BentoCard key={f.titulo} titulo={f.titulo} descricao={f.descricao} icone={f.icone} emBreve={f.emBreve} className={f.classe} />
+            <BentoCard key={f.titulo} titulo={f.titulo} descricao={f.descricao} icone={f.icone} emBreve={f.emBreve} href={"href" in f ? f.href : undefined} className={f.classe} />
           ))}
         </BentoGrid>
       </section>

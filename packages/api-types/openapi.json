@@ -772,6 +772,715 @@
         }
       }
     },
+    "/v1/screener": {
+      "get": {
+        "tags": [
+          "screener"
+        ],
+        "summary": "Ativos que passam nos filtros",
+        "operationId": "screener_v1_screener_get",
+        "parameters": [
+          {
+            "name": "tipo",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "enum": [
+                      "acao",
+                      "fii",
+                      "etf",
+                      "bdr"
+                    ],
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Tipo"
+            }
+          },
+          {
+            "name": "setor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 80
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Setor"
+            }
+          },
+          {
+            "name": "tendencia",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "alta",
+                    "baixa",
+                    "lateral"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Tendencia"
+            }
+          },
+          {
+            "name": "ordem",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^-?(preco|var_1m|var_12m|volatilidade_12m|pos_52s|dist_mm200|rsi14|volume_financeiro_20d|pl|pvp|dy_12m|roe|margem_liquida|div_liq_ebitda|valor_mercado|ticker|var_1d|var_ano)$",
+              "default": "-volume_financeiro_20d",
+              "title": "Ordem"
+            }
+          },
+          {
+            "name": "pagina",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1,
+              "title": "Pagina"
+            }
+          },
+          {
+            "name": "limite",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limite"
+            }
+          },
+          {
+            "name": "preco_min",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Preco Min"
+            }
+          },
+          {
+            "name": "preco_max",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Preco Max"
+            }
+          },
+          {
+            "name": "var_1m_min",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Var 1M Min"
+            }
+          },
+          {
+            "name": "var_1m_max",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Var 1M Max"
+            }
+          },
+          {
+            "name": "var_12m_min",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Var 12M Min"
+            }
+          },
+          {
+            "name": "var_12m_max",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Var 12M Max"
+            }
+          },
+          {
+            "name": "volatilidade_12m_min",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Volatilidade 12M Min"
+            }
+          },
+          {
+            "name": "volatilidade_12m_max",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Volatilidade 12M Max"
+            }
+          },
+          {
+            "name": "pos_52s_min",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Pos 52S Min"
+            }
+          },
+          {
+            "name": "pos_52s_max",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Pos 52S Max"
+            }
+          },
+          {
+            "name": "dist_mm200_min",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Dist Mm200 Min"
+            }
+          },
+          {
+            "name": "dist_mm200_max",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Dist Mm200 Max"
+            }
+          },
+          {
+            "name": "rsi14_min",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Rsi14 Min"
+            }
+          },
+          {
+            "name": "rsi14_max",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Rsi14 Max"
+            }
+          },
+          {
+            "name": "volume_financeiro_20d_min",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Volume Financeiro 20D Min"
+            }
+          },
+          {
+            "name": "volume_financeiro_20d_max",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Volume Financeiro 20D Max"
+            }
+          },
+          {
+            "name": "pl_min",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Pl Min"
+            }
+          },
+          {
+            "name": "pl_max",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Pl Max"
+            }
+          },
+          {
+            "name": "pvp_min",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Pvp Min"
+            }
+          },
+          {
+            "name": "pvp_max",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Pvp Max"
+            }
+          },
+          {
+            "name": "dy_12m_min",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Dy 12M Min"
+            }
+          },
+          {
+            "name": "dy_12m_max",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Dy 12M Max"
+            }
+          },
+          {
+            "name": "roe_min",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Roe Min"
+            }
+          },
+          {
+            "name": "roe_max",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Roe Max"
+            }
+          },
+          {
+            "name": "margem_liquida_min",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Margem Liquida Min"
+            }
+          },
+          {
+            "name": "margem_liquida_max",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Margem Liquida Max"
+            }
+          },
+          {
+            "name": "div_liq_ebitda_min",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Div Liq Ebitda Min"
+            }
+          },
+          {
+            "name": "div_liq_ebitda_max",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Div Liq Ebitda Max"
+            }
+          },
+          {
+            "name": "valor_mercado_min",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Valor Mercado Min"
+            }
+          },
+          {
+            "name": "valor_mercado_max",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Valor Mercado Max"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginaScreener"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        }
+      }
+    },
+    "/v1/screener/campos": {
+      "get": {
+        "tags": [
+          "screener"
+        ],
+        "summary": "Metadados dos filtros",
+        "operationId": "campos_v1_screener_campos_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CamposScreener"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/admin/execucoes": {
       "get": {
         "tags": [
@@ -999,6 +1708,111 @@
         ],
         "title": "AtivoResumo"
       },
+      "CampoScreener": {
+        "properties": {
+          "campo": {
+            "type": "string",
+            "title": "Campo"
+          },
+          "rotulo": {
+            "type": "string",
+            "title": "Rotulo"
+          },
+          "unidade": {
+            "type": "string",
+            "enum": [
+              "pct",
+              "brl",
+              "numero"
+            ],
+            "title": "Unidade"
+          },
+          "grupo": {
+            "type": "string",
+            "enum": [
+              "preco",
+              "tecnico",
+              "fundamentos"
+            ],
+            "title": "Grupo"
+          },
+          "descricao": {
+            "type": "string",
+            "title": "Descricao"
+          },
+          "min": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min"
+          },
+          "max": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max"
+          }
+        },
+        "type": "object",
+        "required": [
+          "campo",
+          "rotulo",
+          "unidade",
+          "grupo",
+          "descricao",
+          "min",
+          "max"
+        ],
+        "title": "CampoScreener"
+      },
+      "CamposScreener": {
+        "properties": {
+          "campos": {
+            "items": {
+              "$ref": "#/components/schemas/CampoScreener"
+            },
+            "type": "array",
+            "title": "Campos"
+          },
+          "setores": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Setores"
+          },
+          "tipos": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "acao",
+                "fii",
+                "etf",
+                "bdr"
+              ]
+            },
+            "type": "array",
+            "title": "Tipos"
+          }
+        },
+        "type": "object",
+        "required": [
+          "campos",
+          "setores",
+          "tipos"
+        ],
+        "title": "CamposScreener"
+      },
       "Candle": {
         "properties": {
           "data": {
@@ -1192,7 +2006,8 @@
               "eod",
               "backfill",
               "catalogo",
-              "fundamentos"
+              "fundamentos",
+              "analise"
             ],
             "title": "Tipo"
           },
@@ -1625,6 +2440,351 @@
         ],
         "title": "IndicadoresDia"
       },
+      "ItemScreener": {
+        "properties": {
+          "ticker": {
+            "type": "string",
+            "title": "Ticker"
+          },
+          "nome": {
+            "type": "string",
+            "title": "Nome"
+          },
+          "tipo": {
+            "type": "string",
+            "enum": [
+              "acao",
+              "fii",
+              "etf",
+              "bdr"
+            ],
+            "title": "Tipo"
+          },
+          "setor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Setor"
+          },
+          "logo_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Logo Url"
+          },
+          "data": {
+            "type": "string",
+            "format": "date",
+            "title": "Data"
+          },
+          "preco": {
+            "type": "string",
+            "title": "Preco"
+          },
+          "var_1d": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Var 1D"
+          },
+          "var_1m": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Var 1M"
+          },
+          "var_3m": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Var 3M"
+          },
+          "var_6m": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Var 6M"
+          },
+          "var_12m": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Var 12M"
+          },
+          "var_ano": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Var Ano"
+          },
+          "volatilidade_12m": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Volatilidade 12M"
+          },
+          "drawdown_12m": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Drawdown 12M"
+          },
+          "max_52s": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max 52S"
+          },
+          "min_52s": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min 52S"
+          },
+          "pos_52s": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pos 52S"
+          },
+          "dist_mm50": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dist Mm50"
+          },
+          "dist_mm200": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dist Mm200"
+          },
+          "rsi14": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rsi14"
+          },
+          "tendencia": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "alta",
+                  "baixa",
+                  "lateral"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tendencia"
+          },
+          "volume_financeiro_20d": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Volume Financeiro 20D"
+          },
+          "pl": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pl"
+          },
+          "pvp": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pvp"
+          },
+          "dy_12m": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dy 12M"
+          },
+          "roe": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Roe"
+          },
+          "margem_liquida": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Margem Liquida"
+          },
+          "div_liq_ebitda": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Div Liq Ebitda"
+          },
+          "valor_mercado": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Valor Mercado"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ticker",
+          "nome",
+          "tipo",
+          "setor",
+          "logo_url",
+          "data",
+          "preco",
+          "var_1d",
+          "var_1m",
+          "var_3m",
+          "var_6m",
+          "var_12m",
+          "var_ano",
+          "volatilidade_12m",
+          "drawdown_12m",
+          "max_52s",
+          "min_52s",
+          "pos_52s",
+          "dist_mm50",
+          "dist_mm200",
+          "rsi14",
+          "tendencia",
+          "volume_financeiro_20d",
+          "pl",
+          "pvp",
+          "dy_12m",
+          "roe",
+          "margem_liquida",
+          "div_liq_ebitda",
+          "valor_mercado"
+        ],
+        "title": "ItemScreener"
+      },
       "PaginaAtivos": {
         "properties": {
           "itens": {
@@ -1655,6 +2815,37 @@
           "total"
         ],
         "title": "PaginaAtivos"
+      },
+      "PaginaScreener": {
+        "properties": {
+          "itens": {
+            "items": {
+              "$ref": "#/components/schemas/ItemScreener"
+            },
+            "type": "array",
+            "title": "Itens"
+          },
+          "pagina": {
+            "type": "integer",
+            "title": "Pagina"
+          },
+          "limite": {
+            "type": "integer",
+            "title": "Limite"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          }
+        },
+        "type": "object",
+        "required": [
+          "itens",
+          "pagina",
+          "limite",
+          "total"
+        ],
+        "title": "PaginaScreener"
       },
       "Problema": {
         "properties": {

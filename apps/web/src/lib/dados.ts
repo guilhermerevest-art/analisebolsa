@@ -1,7 +1,7 @@
 import "server-only";
 
 import { cabecalhosApi, env } from "@/lib/env";
-import type { AtivoDetalhe, Destaques, Fundamentos, PaginaAtivos, Proventos } from "@/lib/tipos-api";
+import type { AtivoDetalhe, CamposScreener, Destaques, Fundamentos, PaginaAtivos, PaginaScreener, Proventos } from "@/lib/tipos-api";
 
 const UMA_HORA = 3600;
 
@@ -42,3 +42,9 @@ export async function lerTodosTickers(): Promise<string[]> {
   }
   return tickers;
 }
+
+/** Screener: a query string já vem filtrada por `paramsParaApi`. */
+export const lerScreener = (qs: URLSearchParams) =>
+  lerApi<PaginaScreener>(`/v1/screener?${qs.toString()}`, ["mercado"], 300);
+
+export const lerCamposScreener = () => lerApi<CamposScreener>("/v1/screener/campos", ["mercado"], UMA_HORA);

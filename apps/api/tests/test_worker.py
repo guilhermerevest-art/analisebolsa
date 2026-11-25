@@ -88,8 +88,11 @@ def test_eod_duas_vezes_nao_duplica(db):
         ("catalogo", "ok", 2),
         ("eod", "ok", 2),
         ("fundamentos", "ok", 0),
+        ("analise", "ok", 2),
         ("eod", "ok", 2),
     ]
+    # a segunda rodada não tem pregão novo, então não recalcula a análise
+    assert contar(db, "metricas_ativo") == 2
 
 
 def test_preenche_pregoes_faltantes_e_indicadores_incrementais(db):
@@ -222,3 +225,29 @@ def test_revalidacao_envia_jwt_interno_valido():
 
 def test_revalidacao_ignorada_sem_configuracao():
     assert revalidar_web("", "", ["PETR4"]) == "ignorada"
+
+
+def test_analise_grava_metricas_e_pode_ser_refeita(db):
+    from worker.analise import executar as executar_analise
+
+    assert executar_eod(db, fontes_padrao(), SETTINGS, HOJE) == "ok"
+    with db.connect() as conn:
+        m = (
+            conn.execute(
+                text(
+                    "SELECT a.ticker, m.* FROM metricas_ativo m JOIN ativos a USING (ativo_id) "
+                    "WHERE a.ticker = 'PETR4'"
+                )
+            )
+            .mappings()
+            .one()
+        )
+    assert m["data"] == HOJE
+    assert m["pregoes"] == len(serie_candles(date(2024, 1, 1), HOJE))
+    assert m["var_12m"] is not None and m["rsi14"] is not None
+    assert m["tendencia"] in {"alta", "baixa", "lateral"}
+    assert m["volume_financeiro_20d"] > 0
+
+    assert executar_analise(db, ["PETR4"]) == "ok"
+    assert contar(db, "metricas_ativo") == 2
+    assert execucoes(db, "analise")[-1].ativos_ok == 1

@@ -302,3 +302,92 @@ def finalizar_execucao(
             "d": json.dumps(detalhes, default=str),
         },
     )
+
+
+# análise (Fase 2)
+
+
+def carregar_para_analise(
+    conn: Connection, ativo_id: int, janela_dias: int
+) -> tuple[pd.DataFrame, pd.DataFrame, int]:
+    """Cotações e indicadores dos últimos `janela_dias` corridos antes do último pregão
+    do ativo, e o total de pregões do histórico."""
+    ultima = conn.execute(
+        text("SELECT max(data) FROM cotacoes_diarias WHERE ativo_id = :a"), {"a": ativo_id}
+    ).scalar_one()
+    desde = (ultima or date.min + timedelta(days=janela_dias)) - timedelta(days=janela_dias)
+    cot = conn.execute(
+        text(
+            """
+            SELECT data, maxima, minima, fechamento, fechamento_ajustado, volume
+            FROM cotacoes_diarias WHERE ativo_id = :a AND data >= :d ORDER BY data
+            """
+        ),
+        {"a": ativo_id, "d": desde},
+    ).all()
+    ind = conn.execute(
+        text(
+            """
+            SELECT data, mm20, mm50, mm200, rsi14, macd, macd_sinal, macd_hist,
+                   bb_superior, bb_inferior, atr14, vol_media20
+            FROM indicadores_diarios WHERE ativo_id = :a AND data >= :d ORDER BY data
+            """
+        ),
+        {"a": ativo_id, "d": desde},
+    ).all()
+    total = conn.execute(
+        text("SELECT count(*) FROM cotacoes_diarias WHERE ativo_id = :a"), {"a": ativo_id}
+    ).scalar_one()
+    colunas_cot = ["data", "maxima", "minima", "fechamento", "fechamento_ajustado", "volume"]
+    df_cot = pd.DataFrame(cot, columns=colunas_cot).set_index("data")
+    colunas_ind = ["data", "mm20", "mm50", "mm200", "rsi14", "macd", "macd_sinal", "macd_hist",
+                   "bb_superior", "bb_inferior", "atr14", "vol_media20"]  # fmt: skip
+    df_ind = pd.DataFrame(ind, columns=colunas_ind).set_index("data").astype(float)
+    return df_cot, df_ind, total
+
+
+def ultimos_fundamentos(conn: Connection, ativo_id: int) -> dict | None:
+    r = (
+        conn.execute(
+            text(
+                """
+            SELECT pl, pvp, dy_12m, roe, margem_liquida, div_liq_ebitda, valor_mercado
+            FROM fundamentos WHERE ativo_id = :a ORDER BY data_referencia DESC LIMIT 1
+            """
+            ),
+            {"a": ativo_id},
+        )
+        .mappings()
+        .first()
+    )
+    return dict(r) if r else None
+
+
+COLUNAS_METRICAS = [
+    "data", "preco", "pregoes", "var_1d", "var_1m", "var_3m", "var_6m", "var_12m", "var_ano",
+    "volatilidade_12m", "drawdown_12m", "max_52s", "min_52s", "pos_52s", "dist_mm50",
+    "dist_mm200", "rsi14", "tendencia", "volume_financeiro_20d", "pl", "pvp", "dy_12m", "roe",
+    "margem_liquida", "div_liq_ebitda", "valor_mercado",
+]  # fmt: skip
+
+
+def upsert_metricas(conn: Connection, ativo_id: int, metricas: dict) -> None:
+    colunas = ", ".join(COLUNAS_METRICAS)
+    valores = ", ".join(f":{c}" for c in COLUNAS_METRICAS)
+    atualiza = ", ".join(f"{c} = EXCLUDED.{c}" for c in COLUNAS_METRICAS)
+    conn.execute(
+        text(
+            f"""
+            INSERT INTO metricas_ativo (ativo_id, {colunas}) VALUES (:a, {valores})
+            ON CONFLICT (ativo_id) DO UPDATE SET {atualiza}, atualizado_em = now()
+            """
+        ),
+        {"a": ativo_id, **{c: metricas[c] for c in COLUNAS_METRICAS}},
+    )
+
+
+def ids_por_ticker(conn: Connection, tickers: Iterable[str]) -> list[tuple[int, str]]:
+    tickers = list(tickers)
+    if not tickers:
+        return []
+    return listar_ativos_ativos(conn, tickers)
