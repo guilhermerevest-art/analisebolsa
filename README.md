@@ -72,4 +72,5 @@ Cada execução fica registrada em `execucoes_job` com status `ok`, `parcial` ou
 ## Deploy
 
 Produção na Vercel (web e api), Postgres gerenciado, migrations e worker no GitHub Actions.
+Toda a configuração fica na Vercel; o GitHub só guarda o `VERCEL_TOKEN`.
 Passo a passo em [`docs/deploy.md`](docs/deploy.md).

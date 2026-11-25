@@ -7,7 +7,7 @@ Arquitetura:
 | web (`apps/web`) | Projeto Vercel `analisebolsa`, região `gru1` | Push na `main` |
 | api (`apps/api`) | Projeto Vercel `analisebolsa-api`, função Python (FastAPI), região `gru1` | Push na `main` |
 | Postgres | Gerenciado (Supabase em `sa-east-1`) | Migrations pelo workflow `Migrations` |
-| worker | GitHub Actions, workflow `Worker` | Cron `0 22 * * 1-5` (19h de Brasília) e sob demanda |
+| worker | GitHub Actions, workflow `Worker`, com as variáveis da Vercel | Cron `0 22 * * 1-5` (19h de Brasília) e sob demanda |
 
 ## 1. Banco
 
@@ -40,16 +40,20 @@ Gere três segredos diferentes (por exemplo, `openssl rand -base64 48`):
   - `AUTH_SECRET`, `AUTH_URL=https://<site>`, `SITE_URL=https://<site>`;
   - `ADMIN_EMAILS`, e opcionalmente `AUTH_GOOGLE_ID` e `AUTH_GOOGLE_SECRET`.
 
-## 5. Segredos do GitHub Actions
+## 5. GitHub Actions
 
-Em Settings → Secrets and variables → Actions do repositório:
+Toda a configuração fica na Vercel. Os workflows `Migrations` e `Worker` baixam as
+variáveis de produção do projeto `analisebolsa-api` (`vercel env pull`) antes de rodar.
 
-| Segredo | Valor |
-|---|---|
-| `DATABASE_URL` | Pooler em modo sessão |
-| `INTERNAL_JWT_SECRET` | O mesmo da Vercel |
-| `WEB_INTERNAL_URL` | `https://<site>` (para revalidar o cache) |
-| `BRAPI_TOKEN` | Opcional |
+- No repositório (Settings → Secrets and variables → Actions), crie só o segredo
+  `VERCEL_TOKEN`, gerado em vercel.com/account/tokens com acesso ao time do projeto.
+- No projeto `analisebolsa-api`, além das variáveis da seção 3, ficam as do worker:
+  `WEB_INTERNAL_URL=https://<site>` e, opcionalmente, `BRAPI_TOKEN`.
+- As variáveis que o worker usa (`DATABASE_URL`, `INTERNAL_JWT_SECRET`, `WEB_INTERNAL_URL`,
+  `BRAPI_TOKEN`) precisam ser do tipo **encrypted**, não **sensitive**: a Vercel não devolve
+  o valor de variáveis sensitive, e o workflow falha avisando qual falta.
+- O GitHub Actions só conecta por IPv4. Se o provedor do banco separar as strings, use no
+  projeto da api a do pooler que aceita IPv4.
 
 ## 6. Migrations
 
