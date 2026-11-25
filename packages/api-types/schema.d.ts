@@ -130,7 +130,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Métricas e insights do último pregão */
+        /** Métricas, insights e cenários do último pregão */
         get: operations["analise_v1_ativos__ticker__analise_get"];
         put?: never;
         post?: never;
@@ -229,6 +229,7 @@ export interface components {
             metricas: components["schemas"]["MetricasAtivo"] | null;
             /** Insights */
             insights: components["schemas"]["InsightAtivo"][];
+            cenario: components["schemas"]["CenariosAtivo"] | null;
         };
         /** AtivoDetalhe */
         AtivoDetalhe: {
@@ -319,6 +320,56 @@ export interface components {
             fechamento_ajustado: string;
             /** Volume */
             volume: number;
+        };
+        /** CenarioPreco */
+        CenarioPreco: {
+            /**
+             * Tipo
+             * @enum {string}
+             */
+            tipo: "alta" | "lateral" | "baixa";
+            /** Titulo */
+            titulo: string;
+            /** Texto */
+            texto: string;
+            /** Gatilho */
+            gatilho: number | null;
+            /** Alvo */
+            alvo: number | null;
+            /** Invalidacao */
+            invalidacao: number | null;
+            /** Limite Inferior */
+            limite_inferior: number | null;
+            /** Limite Superior */
+            limite_superior: number | null;
+            /**
+             * Dist Gatilho
+             * @description Distância do preço atual, em %
+             */
+            dist_gatilho: number | null;
+            /** Dist Alvo */
+            dist_alvo: number | null;
+            /** Dist Invalidacao */
+            dist_invalidacao: number | null;
+            /**
+             * Relacao
+             * @description Distância do gatilho ao alvo dividida pela do gatilho à invalidação
+             */
+            relacao: number | null;
+        };
+        /** CenariosAtivo */
+        CenariosAtivo: {
+            /**
+             * Data
+             * Format: date
+             */
+            data: string;
+            /** Atr14 */
+            atr14: number;
+            /** Niveis */
+            niveis: components["schemas"]["NivelPreco"][];
+            /** Cenarios */
+            cenarios: components["schemas"]["CenarioPreco"][];
         };
         /** Cotacoes */
         Cotacoes: {
@@ -639,6 +690,21 @@ export interface components {
             div_liq_ebitda: number | null;
             /** Valor Mercado */
             valor_mercado: number | null;
+        };
+        /** NivelPreco */
+        NivelPreco: {
+            /** Preco */
+            preco: number;
+            /**
+             * Tipo
+             * @enum {string}
+             */
+            tipo: "suporte" | "resistencia" | "max_52s" | "min_52s";
+            /**
+             * Toques
+             * @description Quantos topos ou fundos semanais formaram o nível
+             */
+            toques: number;
         };
         /** PaginaAtivos */
         PaginaAtivos: {

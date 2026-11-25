@@ -277,7 +277,9 @@ def execucoes(conn: Connection, limite: int) -> list[RowMapping]:
     )
 
 
-def analise(conn: Connection, ativo_id: int) -> tuple[RowMapping | None, list[RowMapping]]:
+def analise(
+    conn: Connection, ativo_id: int
+) -> tuple[RowMapping | None, list[RowMapping], RowMapping | None]:
     metricas = (
         conn.execute(
             text(
@@ -298,4 +300,12 @@ def analise(conn: Connection, ativo_id: int) -> tuple[RowMapping | None, list[Ro
             {"a": ativo_id},
         ).mappings()
     )
-    return metricas, insights
+    cenario = (
+        conn.execute(
+            text("SELECT data, atr14, niveis, cenarios FROM cenarios WHERE ativo_id = :a"),
+            {"a": ativo_id},
+        )
+        .mappings()
+        .one_or_none()
+    )
+    return metricas, insights, cenario

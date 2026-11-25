@@ -22,7 +22,7 @@ import {
   paraVolume,
   serieIndicador,
 } from "@/lib/grafico";
-import type { Cotacoes, Indicadores } from "@/lib/tipos-api";
+import type { Cotacoes, Indicadores, NivelPreco } from "@/lib/tipos-api";
 import { cn } from "@/lib/utils";
 
 const ALTA = "#16a34a";
@@ -81,12 +81,20 @@ function Alternador<T extends string>({
   );
 }
 
-export function GraficoAtivo({ ticker }: { ticker: string }) {
+const ESTILO_NIVEL: Record<NivelPreco["tipo"], { cor: string; titulo: (i: number) => string; estilo: number }> = {
+  suporte: { cor: ALTA, titulo: (i) => `S${i}`, estilo: 2 },
+  resistencia: { cor: BAIXA, titulo: (i) => `R${i}`, estilo: 2 },
+  max_52s: { cor: "#64748b", titulo: () => "Máx. 52s", estilo: 1 },
+  min_52s: { cor: "#64748b", titulo: () => "Mín. 52s", estilo: 1 },
+};
+
+export function GraficoAtivo({ ticker, niveis = [] }: { ticker: string; niveis?: NivelPreco[] }) {
   const container = useRef<HTMLDivElement>(null);
   const [periodo, setPeriodo] = useState<Periodo>("1A");
   const [intervalo, setIntervalo] = useState<Intervalo>("D");
   const [overlays, setOverlays] = useState<Set<ChaveOverlay>>(new Set(["mm20", "mm50"]));
   const [osciladores, setOsciladores] = useState({ rsi: true, macd: false });
+  const [mostrarNiveis, setMostrarNiveis] = useState(false);
   const [dados, setDados] = useState<Dados | null>(null);
   const [erro, setErro] = useState(false);
   const escuro = useTemaEscuro();
@@ -158,6 +166,14 @@ export function GraficoAtivo({ ticker }: { ticker: string }) {
       wickDownColor: BAIXA,
     });
     candles.setData(series.candles);
+    if (mostrarNiveis) {
+      const contagem = { suporte: 0, resistencia: 0, max_52s: 0, min_52s: 0 };
+      for (const n of niveis) {
+        const e = ESTILO_NIVEL[n.tipo];
+        contagem[n.tipo] += 1;
+        candles.createPriceLine({ price: n.preco, color: e.cor, lineStyle: e.estilo, lineWidth: 1, axisLabelVisible: true, title: e.titulo(contagem[n.tipo]) });
+      }
+    }
 
     const volume = chart.addSeries(HistogramSeries, {
       priceScaleId: "volume",
@@ -200,7 +216,7 @@ export function GraficoAtivo({ ticker }: { ticker: string }) {
 
     chart.timeScale().fitContent();
     return () => chart.remove();
-  }, [series, overlays, osciladores, diario, escuro]);
+  }, [series, overlays, osciladores, diario, escuro, mostrarNiveis, niveis]);
 
   const alternarOverlay = (chave: ChaveOverlay) =>
     setOverlays((atual) => {
@@ -255,6 +271,18 @@ export function GraficoAtivo({ ticker }: { ticker: string }) {
               {k.toUpperCase()}
             </Button>
           ))}
+          {niveis.length > 0 && (
+            <Button
+              type="button"
+              size="sm"
+              variant={mostrarNiveis ? "default" : "outline"}
+              aria-pressed={mostrarNiveis}
+              title="Suportes, resistências e extremos de 52 semanas"
+              onClick={() => setMostrarNiveis((v) => !v)}
+            >
+              Níveis
+            </Button>
+          )}
         </div>
       </div>
       {!diario && <p className="text-xs text-muted-foreground">Os indicadores aparecem no intervalo diário.</p>}

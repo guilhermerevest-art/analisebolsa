@@ -471,3 +471,47 @@ def substituir_insights(conn: Connection, ativo_id: int, data: date, insights: l
             for i in insights
         ],
     )
+
+
+def carregar_semanal(conn: Connection, ativo_id: int, anos: int = 3) -> pd.DataFrame:
+    """Candles semanais (segunda-feira como data) dos últimos `anos` antes do último pregão."""
+    linhas = conn.execute(
+        text(
+            """
+            SELECT date_trunc('week', data)::date AS semana, max(maxima) AS maxima,
+                   min(minima) AS minima,
+                   (array_agg(fechamento ORDER BY data DESC))[1] AS fechamento
+            FROM cotacoes_diarias
+            WHERE ativo_id = :a AND data > (
+              SELECT max(data) FROM cotacoes_diarias WHERE ativo_id = :a
+            ) - make_interval(years => :anos)
+            GROUP BY 1 ORDER BY 1
+            """
+        ),
+        {"a": ativo_id, "anos": anos},
+    ).all()
+    df = pd.DataFrame(linhas, columns=["semana", "maxima", "minima", "fechamento"])
+    return df.set_index("semana").astype(float)
+
+
+def gravar_cenarios(conn: Connection, ativo_id: int, analise) -> None:
+    if analise is None:
+        conn.execute(text("DELETE FROM cenarios WHERE ativo_id = :a"), {"a": ativo_id})
+        return
+    conn.execute(
+        text(
+            """
+            INSERT INTO cenarios (ativo_id, data, atr14, niveis, cenarios)
+            VALUES (:a, :data, :atr, CAST(:niveis AS JSONB), CAST(:cenarios AS JSONB))
+            ON CONFLICT (ativo_id) DO UPDATE SET data = EXCLUDED.data, atr14 = EXCLUDED.atr14,
+              niveis = EXCLUDED.niveis, cenarios = EXCLUDED.cenarios, atualizado_em = now()
+            """
+        ),
+        {
+            "a": ativo_id,
+            "data": analise.data,
+            "atr": analise.atr14,
+            "niveis": json.dumps(analise.niveis_json()),
+            "cenarios": json.dumps(analise.cenarios_json()),
+        },
+    )

@@ -1,4 +1,4 @@
-"""Recalcula a análise (métricas; depois insights e cenários) sem buscar dados.
+"""Recalcula a análise (métricas, insights e cenários) sem buscar dados.
 
 Uso: `python -m worker.analise [--tickers PETR4,VALE3]`. O EOD chama
 `atualizar_analise` para os ativos com pregão novo; depois do backfill ou de uma
@@ -13,7 +13,8 @@ from collections.abc import Iterable, Sequence
 from sqlalchemy import Engine
 
 from app.db import get_engine
-from dominio.insights import Contexto, gerar_insights
+from dominio.cenarios import calcular_cenarios
+from dominio.insights import Contexto, elegibilidade, gerar_insights
 from dominio.metricas import JANELA_DIAS, calcular_metricas
 from worker import repositorio as repo
 from worker.processamento import status_por_contagem
@@ -22,7 +23,7 @@ log = logging.getLogger("worker.analise")
 
 
 def analisar_ativo(engine: Engine, ativo_id: int) -> bool:
-    """Grava as métricas e os insights de um ativo. Devolve False se ele não tem cotações."""
+    """Grava métricas, insights e cenários de um ativo. Devolve False se ele não tem cotações."""
     with engine.begin() as conn:
         cot, ind, total = repo.carregar_para_analise(conn, ativo_id, JANELA_DIAS)
         if cot.empty:
@@ -41,6 +42,17 @@ def analisar_ativo(engine: Engine, ativo_id: int) -> bool:
             pl_pares=repo.pl_do_setor(conn, ativo_id, setor),
         )
         repo.substituir_insights(conn, ativo_id, metricas.data, gerar_insights(contexto))
+        cenarios = None
+        if elegibilidade(metricas.pregoes, metricas.volume_financeiro_20d)[0]:
+            cenarios = calcular_cenarios(
+                repo.carregar_semanal(conn, ativo_id),
+                metricas.data,
+                float(metricas.preco),
+                contexto.ultimo("atr14"),
+                float(metricas.max_52s) if metricas.max_52s is not None else None,
+                float(metricas.min_52s) if metricas.min_52s is not None else None,
+            )
+        repo.gravar_cenarios(conn, ativo_id, cenarios)
     return True
 
 

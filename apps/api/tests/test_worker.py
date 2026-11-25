@@ -272,3 +272,15 @@ def test_analise_grava_insights_e_substitui(db):
 
     assert executar_analise(db, ["PETR4"]) == "ok"
     assert contar(db, "insights") == len(linhas)
+
+
+def test_analise_grava_cenarios_so_para_elegiveis(db):
+    assert executar_eod(db, fontes_padrao(), SETTINGS, HOJE) == "ok"
+    with db.connect() as conn:
+        linhas = dict(
+            conn.execute(
+                text("SELECT a.ticker, c.cenarios FROM cenarios c JOIN ativos a USING (ativo_id)")
+            ).all()
+        )
+    assert set(linhas) == {"HGLG11"}  # PETR4 fica abaixo da liquidez mínima
+    assert {c["tipo"] for c in linhas["HGLG11"]} <= {"alta", "lateral", "baixa"}
