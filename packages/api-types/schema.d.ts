@@ -225,6 +225,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/simulador": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Aportes mensais no histórico, CDI e IPCA */
+        get: operations["simular_v1_simulador_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/watchlist": {
         parameters: {
             query?: never;
@@ -686,6 +703,20 @@ export interface components {
             /** Nome */
             nome: string;
         };
+        /** FaixaSimulada */
+        FaixaSimulada: {
+            /** Trajetorias */
+            trajetorias: number;
+            /**
+             * Meses Historico
+             * @description Meses de retornos do ativo usados no sorteio
+             */
+            meses_historico: number;
+            /** Explicacao */
+            explicacao: string;
+            /** Pontos */
+            pontos: components["schemas"]["PontoFaixa"][];
+        };
         /** FatiaAlocacao */
         FatiaAlocacao: {
             /** Chave */
@@ -1067,6 +1098,20 @@ export interface components {
             /** Total */
             total: number;
         };
+        /** PontoFaixa */
+        PontoFaixa: {
+            /**
+             * Data
+             * Format: date
+             */
+            data: string;
+            /** P10 */
+            p10: number;
+            /** P50 */
+            p50: number;
+            /** P90 */
+            p90: number;
+        };
         /** PontoIndice */
         PontoIndice: {
             /**
@@ -1101,6 +1146,37 @@ export interface components {
              * @description Ibovespa no mesmo período, em %
              */
             ibov: number | null;
+        };
+        /** PontoSimulacao */
+        PontoSimulacao: {
+            /**
+             * Data
+             * Format: date
+             * @description Último dia do mês com dado
+             */
+            data: string;
+            /** Aportado */
+            aportado: number;
+            /**
+             * Patrimonio
+             * @description Valor no ativo; nulo sem ativo
+             */
+            patrimonio: number | null;
+            /**
+             * Proventos
+             * @description Proventos recebidos acumulados
+             */
+            proventos: number | null;
+            /**
+             * Cdi
+             * @description Mesmos aportes rendendo o CDI
+             */
+            cdi: number | null;
+            /**
+             * Ipca
+             * @description Mesmos aportes corrigidos pelo IPCA
+             */
+            ipca: number | null;
         };
         /** PosicaoCarteira */
         PosicaoCarteira: {
@@ -1216,6 +1292,26 @@ export interface components {
             alocacao: components["schemas"]["AlocacaoCarteira"];
             /** Proventos */
             proventos: components["schemas"]["ProventoRecebido"][];
+        };
+        /** Simulacao */
+        Simulacao: {
+            /** Ticker */
+            ticker: string | null;
+            /** Inicio */
+            inicio: string | null;
+            /** Fim */
+            fim: string | null;
+            /**
+             * Ipca Ate
+             * @description Último mês com IPCA publicado
+             */
+            ipca_ate: string | null;
+            /** Pontos */
+            pontos: components["schemas"]["PontoSimulacao"][];
+            /** @description Faixa de resultados simulados; nula com menos de 5 anos de histórico */
+            faixa: components["schemas"]["FaixaSimulada"] | null;
+            /** Aviso */
+            aviso: string;
         };
         /** SinaisDoDia */
         SinaisDoDia: {
@@ -2239,6 +2335,82 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["CamposScreener"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+        };
+    };
+    simular_v1_simulador_get: {
+        parameters: {
+            query: {
+                inicio: string;
+                ticker?: string | null;
+                aporte_inicial?: number;
+                aporte_mensal?: number;
+                reinvestir?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Simulacao"];
                 };
             };
             /** @description Unauthorized */

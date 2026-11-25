@@ -1896,6 +1896,145 @@
         }
       }
     },
+    "/v1/simulador": {
+      "get": {
+        "tags": [
+          "simulador"
+        ],
+        "summary": "Aportes mensais no histórico, CDI e IPCA",
+        "operationId": "simular_v1_simulador_get",
+        "parameters": [
+          {
+            "name": "inicio",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "title": "Inicio"
+            }
+          },
+          {
+            "name": "ticker",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 6
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Ticker"
+            }
+          },
+          {
+            "name": "aporte_inicial",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "maximum": 1000000000.0,
+              "minimum": 0,
+              "default": 0,
+              "title": "Aporte Inicial"
+            }
+          },
+          {
+            "name": "aporte_mensal",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "maximum": 100000000.0,
+              "minimum": 0,
+              "default": 0,
+              "title": "Aporte Mensal"
+            }
+          },
+          {
+            "name": "reinvestir",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": true,
+              "title": "Reinvestir"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Simulacao"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        }
+      }
+    },
     "/v1/watchlist": {
       "get": {
         "tags": [
@@ -4136,6 +4275,38 @@
         ],
         "title": "ExemploSinal"
       },
+      "FaixaSimulada": {
+        "properties": {
+          "trajetorias": {
+            "type": "integer",
+            "title": "Trajetorias"
+          },
+          "meses_historico": {
+            "type": "integer",
+            "title": "Meses Historico",
+            "description": "Meses de retornos do ativo usados no sorteio"
+          },
+          "explicacao": {
+            "type": "string",
+            "title": "Explicacao"
+          },
+          "pontos": {
+            "items": {
+              "$ref": "#/components/schemas/PontoFaixa"
+            },
+            "type": "array",
+            "title": "Pontos"
+          }
+        },
+        "type": "object",
+        "required": [
+          "trajetorias",
+          "meses_historico",
+          "explicacao",
+          "pontos"
+        ],
+        "title": "FaixaSimulada"
+      },
       "FatiaAlocacao": {
         "properties": {
           "chave": {
@@ -5565,6 +5736,35 @@
         ],
         "title": "PaginaScreener"
       },
+      "PontoFaixa": {
+        "properties": {
+          "data": {
+            "type": "string",
+            "format": "date",
+            "title": "Data"
+          },
+          "p10": {
+            "type": "number",
+            "title": "P10"
+          },
+          "p50": {
+            "type": "number",
+            "title": "P50"
+          },
+          "p90": {
+            "type": "number",
+            "title": "P90"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data",
+          "p10",
+          "p50",
+          "p90"
+        ],
+        "title": "PontoFaixa"
+      },
       "PontoIndice": {
         "properties": {
           "data": {
@@ -5634,6 +5834,78 @@
           "ibov"
         ],
         "title": "PontoRentabilidade"
+      },
+      "PontoSimulacao": {
+        "properties": {
+          "data": {
+            "type": "string",
+            "format": "date",
+            "title": "Data",
+            "description": "Último dia do mês com dado"
+          },
+          "aportado": {
+            "type": "number",
+            "title": "Aportado"
+          },
+          "patrimonio": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Patrimonio",
+            "description": "Valor no ativo; nulo sem ativo"
+          },
+          "proventos": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Proventos",
+            "description": "Proventos recebidos acumulados"
+          },
+          "cdi": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cdi",
+            "description": "Mesmos aportes rendendo o CDI"
+          },
+          "ipca": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ipca",
+            "description": "Mesmos aportes corrigidos pelo IPCA"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data",
+          "aportado",
+          "patrimonio",
+          "proventos",
+          "cdi",
+          "ipca"
+        ],
+        "title": "PontoSimulacao"
       },
       "PosicaoCarteira": {
         "properties": {
@@ -6011,6 +6283,91 @@
           "proventos"
         ],
         "title": "ResumoCarteira"
+      },
+      "Simulacao": {
+        "properties": {
+          "ticker": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ticker"
+          },
+          "inicio": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Inicio"
+          },
+          "fim": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fim"
+          },
+          "ipca_ate": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ipca Ate",
+            "description": "Último mês com IPCA publicado"
+          },
+          "pontos": {
+            "items": {
+              "$ref": "#/components/schemas/PontoSimulacao"
+            },
+            "type": "array",
+            "title": "Pontos"
+          },
+          "faixa": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/FaixaSimulada"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Faixa de resultados simulados; nula com menos de 5 anos de histórico"
+          },
+          "aviso": {
+            "type": "string",
+            "title": "Aviso"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ticker",
+          "inicio",
+          "fim",
+          "ipca_ate",
+          "pontos",
+          "faixa",
+          "aviso"
+        ],
+        "title": "Simulacao"
       },
       "SinaisDoDia": {
         "properties": {

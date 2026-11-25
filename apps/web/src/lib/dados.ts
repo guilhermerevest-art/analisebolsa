@@ -1,7 +1,7 @@
 import "server-only";
 
 import { cabecalhosApi, env } from "@/lib/env";
-import type { AnaliseAtivo, SinaisDoDia, AtivoDetalhe, CamposScreener, Destaques, Fundamentos, PaginaAtivos, PaginaScreener, Proventos } from "@/lib/tipos-api";
+import type { AnaliseAtivo, Simulacao, SinaisDoDia, AtivoDetalhe, CamposScreener, Destaques, Fundamentos, PaginaAtivos, PaginaScreener, Proventos } from "@/lib/tipos-api";
 
 const UMA_HORA = 3600;
 
@@ -58,3 +58,6 @@ export const lerScreener = (qs: URLSearchParams) =>
   lerApi<PaginaScreener>(`/v1/screener?${qs.toString()}`, ["mercado"], 300);
 
 export const lerCamposScreener = () => lerApi<CamposScreener>("/v1/screener/campos", ["mercado"], UMA_HORA);
+
+/** Simulador: público e cacheado por URL; a query string já vem validada por `lerParamsSimulador`. */
+export const lerSimulacao = (qs: URLSearchParams) => lerApi<Simulacao>(`/v1/simulador?${qs.toString()}`, ["mercado"], UMA_HORA);

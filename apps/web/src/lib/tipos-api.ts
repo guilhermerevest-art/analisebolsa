@@ -39,3 +39,6 @@ export type ResumoCarteira = S["ResumoCarteira"];
 export type PosicaoCarteira = S["PosicaoCarteira"];
 export type FatiaAlocacao = S["FatiaAlocacao"];
 export type RentabilidadeCarteira = S["RentabilidadeCarteira"];
+export type Simulacao = S["Simulacao"];
+export type PontoSimulacao = S["PontoSimulacao"];
+export type PontoFaixa = S["PontoFaixa"];
