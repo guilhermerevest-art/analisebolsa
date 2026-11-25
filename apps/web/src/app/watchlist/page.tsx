@@ -1,4 +1,4 @@
-import { X } from "lucide-react";
+import { Bell, X } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -63,8 +63,8 @@ export default async function PaginaWatchlist() {
                       {c.rotulo}
                     </th>
                   ))}
-                  <th scope="col" className="w-10">
-                    <span className="sr-only">Remover</span>
+                  <th scope="col" className="w-20">
+                    <span className="sr-only">Ações</span>
                   </th>
                 </tr>
               </thead>
@@ -84,7 +84,13 @@ export default async function PaginaWatchlist() {
                           {linha ? c.render(linha) : "—"}
                         </td>
                       ))}
-                      <td className="py-2 pl-2 text-right">
+                      <td className="flex justify-end py-2 pl-2">
+                        <Button asChild variant="ghost" size="icon" className="size-8" title={`Criar alerta para ${i.ticker}`}>
+                          <Link href={`/alertas?ticker=${i.ticker}`}>
+                            <Bell aria-hidden />
+                            <span className="sr-only">Criar alerta para {i.ticker}</span>
+                          </Link>
+                        </Button>
                         <form action={removerDaWatchlist}>
                           <input type="hidden" name="ticker" value={i.ticker} />
                           <Button type="submit" variant="ghost" size="icon" className="size-8" title={`Remover ${i.ticker}`}>

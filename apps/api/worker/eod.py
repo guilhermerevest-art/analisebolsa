@@ -15,8 +15,10 @@ from app.config import Settings, get_settings
 from app.db import get_engine
 from fontes.cadeia import CadeiaFontes, criar_cadeia
 from worker import repositorio as repo
+from worker.alertas import processar_alertas
 from worker.analise import atualizar_analise
 from worker.indices import atualizar_indices, buscadores
+from worker.notificacao import Enviador, enviador_configurado
 from worker.processamento import (
     atualizar_fundamentos,
     processar_ativos,
@@ -41,6 +43,7 @@ def executar_eod(
     forcar_catalogo: bool = False,
     forcar_fundamentos: bool = False,
     fontes_indices: dict | None = None,
+    enviador: Enviador | None = None,
     dormir=None,
 ) -> str:
     with engine.begin() as conn:
@@ -71,6 +74,8 @@ def executar_eod(
     if fontes_indices is not None:
         res.detalhes["indices"] = atualizar_indices(engine, hoje, fontes=fontes_indices)
 
+    res.detalhes["alertas"] = processar_alertas(engine, enviador, settings.web_internal_url)
+
     res.detalhes["revalidacao"] = revalidar_web(
         settings.web_internal_url, settings.internal_jwt_secret, res.tickers_atualizados
     )
@@ -96,6 +101,7 @@ def main(argv: list[str] | None = None) -> int:
         forcar_catalogo=args.catalogo,
         forcar_fundamentos=args.fundamentos,
         fontes_indices=buscadores(),
+        enviador=enviador_configurado(settings),
     )
     return 1 if status == "erro" else 0
 

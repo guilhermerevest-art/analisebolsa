@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { roleParaEmail, emailsAdmin } from "./env";
-import { destinoSeguro, errosPorCampo, esquemaCadastro, esquemaEntrar, esquemaOperacao } from "./validacao";
+import { destinoSeguro, errosPorCampo, esquemaAlerta, esquemaCadastro, esquemaEntrar, esquemaOperacao } from "./validacao";
 
 describe("validação dos formulários", () => {
   it("normaliza o e-mail", () => {
@@ -65,5 +65,28 @@ describe("esquemaOperacao", () => {
     expect(erros({ data: "01/03/2024" }).data).toBe("Data inválida");
     expect(erros({ ticker: "PETR-4" }).ticker).toBe("Ticker inválido");
     expect(erros({ tipo: "aluguel" }).tipo).toBeDefined();
+  });
+});
+
+describe("esquemaAlerta", () => {
+  it("preço em formato brasileiro", () => {
+    expect(esquemaAlerta.parse({ ticker: " petr4", tipo: "preco_acima", parametro: "1.040,50", codigo: "" })).toEqual({
+      ticker: "PETR4",
+      tipo: "preco_acima",
+      parametro: 1040.5,
+    });
+  });
+  it("sinal exige código e ignora o parâmetro", () => {
+    expect(esquemaAlerta.parse({ ticker: "VALE3", tipo: "insight", parametro: "x", codigo: "maxima_52s" })).toEqual({
+      ticker: "VALE3",
+      tipo: "insight",
+      codigo: "maxima_52s",
+    });
+    expect(esquemaAlerta.safeParse({ ticker: "VALE3", tipo: "insight", parametro: "", codigo: "" }).success).toBe(false);
+  });
+  it("valida valor e variação", () => {
+    expect(esquemaAlerta.safeParse({ ticker: "VALE3", tipo: "preco_abaixo", parametro: "0", codigo: "" }).success).toBe(false);
+    expect(esquemaAlerta.safeParse({ ticker: "VALE3", tipo: "variacao_dia", parametro: "150", codigo: "" }).success).toBe(false);
+    expect(esquemaAlerta.safeParse({ ticker: "X", tipo: "variacao_dia", parametro: "5", codigo: "" }).success).toBe(false);
   });
 });

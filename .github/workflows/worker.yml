@@ -8,9 +8,9 @@ on:
   workflow_dispatch:
     inputs:
       modo:
-        description: "eod, backfill, analise (recalcula métricas) ou indices (CDI, IPCA e Ibovespa)"
+        description: "eod, backfill, analise (recalcula métricas), indices (CDI, IPCA e Ibovespa) ou alertas (avalia e envia)"
         type: choice
-        options: [eod, backfill, analise, indices]
+        options: [eod, backfill, analise, indices, alertas]
         default: eod
       tickers:
         description: "Backfill/análise: tickers separados por vírgula (vazio = todos)"
@@ -38,6 +38,7 @@ jobs:
         with:
           token: ${{ secrets.VERCEL_TOKEN }}
           database_url: ${{ secrets.DATABASE_URL }}
+          smtp_senha: ${{ secrets.SMTP_SENHA }}
       - uses: astral-sh/setup-uv@v5
         with:
           enable-cache: true
@@ -65,3 +66,6 @@ jobs:
       - name: Índices
         if: github.event_name == 'workflow_dispatch' && inputs.modo == 'indices'
         run: uv run python -m worker.indices
+      - name: Alertas
+        if: github.event_name == 'workflow_dispatch' && inputs.modo == 'alertas'
+        run: uv run python -m worker.alertas

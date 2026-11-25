@@ -147,9 +147,12 @@ escolhido gerado hoje. Devolve o texto fixo do disparo.
 - **Fim do EOD:** avalia os alertas dos ativos com pregão novo, grava `alertas_disparos` e
   envia um e-mail por usuário com todos os disparos do dia. Falha no envio não derruba o
   job; o disparo fica com `enviado_em` nulo e é reenviado no próximo EOD.
-- **E-mail:** um módulo `notificacao/email.py` atrás de uma interface simples, com envio pela
-  API do provedor escolhido (seção 9). Sem a chave configurada, os alertas são avaliados e
-  gravados, mas não enviados (o log avisa).
+- **E-mail:** `worker/notificacao.py`, atrás de uma interface simples, envia por SMTP, que
+  serve tanto para o Resend quanto para o Gmail (seção 9): trocar de provedor é só
+  configuração. Sem SMTP configurado, os alertas são avaliados e gravados, mas não enviados
+  (o log avisa), e saem no primeiro EOD depois da configuração.
+- **Alertas de preço** disparam no pregão em que o fechamento cruza o valor, para não
+  repetir todo dia enquanto o preço fica além dele.
 
 ## 5. API
 

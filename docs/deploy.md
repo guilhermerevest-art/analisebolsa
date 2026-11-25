@@ -58,6 +58,23 @@ variáveis de produção do projeto `analisebolsa-api` (`vercel env pull`) antes
 - O GitHub Actions só conecta por IPv4. Se o provedor do banco separar as strings, use no
   projeto da api a do pooler que aceita IPv4.
 
+### E-mail dos alertas (SMTP)
+
+O EOD avalia os alertas e envia um e-mail por usuário. Sem SMTP configurado, os disparos
+ficam gravados e saem no primeiro EOD depois da configuração (até 7 dias). No projeto
+`analisebolsa-api`, crie como **encrypted**:
+
+| Variável | Resend | Gmail |
+|---|---|---|
+| `SMTP_HOST` | `smtp.resend.com` | `smtp.gmail.com` |
+| `SMTP_PORT` | `587` | `587` |
+| `SMTP_USUARIO` | `resend` | o endereço do Gmail |
+| `EMAIL_REMETENTE` | um endereço do domínio verificado no Resend | o mesmo endereço do Gmail |
+
+A senha (`SMTP_SENHA`: a chave da API do Resend ou a senha de app do Gmail) vai como
+segredo `SMTP_SENHA` no GitHub, porque a Vercel não devolve variáveis sensitive. Para testar
+sem esperar o EOD: Actions → Worker → Run workflow com `modo=alertas`.
+
 ## 6. Migrations
 
 O workflow `Migrations` roda `alembic upgrade head` em todo push na `main` que muda

@@ -3268,6 +3268,488 @@
         }
       }
     },
+    "/v1/alertas": {
+      "get": {
+        "tags": [
+          "usuário"
+        ],
+        "summary": "Alertas, últimos disparos e sinais",
+        "operationId": "listar_v1_alertas_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Alertas"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "usuário"
+        ],
+        "summary": "Cria um alerta",
+        "operationId": "criar_v1_alertas_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NovoAlerta"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Alerta"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/alertas/{alerta_id}": {
+      "patch": {
+        "tags": [
+          "usuário"
+        ],
+        "summary": "Liga ou desliga",
+        "operationId": "alterar_v1_alertas__alerta_id__patch",
+        "parameters": [
+          {
+            "name": "alerta_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Alerta Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AlteracaoAlerta"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Alerta"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "usuário"
+        ],
+        "summary": "Exclui um alerta",
+        "operationId": "excluir_v1_alertas__alerta_id__delete",
+        "parameters": [
+          {
+            "name": "alerta_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Alerta Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        }
+      }
+    },
+    "/v1/conta/exportar": {
+      "get": {
+        "tags": [
+          "usuário"
+        ],
+        "summary": "Todos os dados do usuário",
+        "operationId": "exportar_v1_conta_exportar_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Exportar V1 Conta Exportar Get"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/conta": {
+      "delete": {
+        "tags": [
+          "usuário"
+        ],
+        "summary": "Exclui a conta e todos os dados",
+        "operationId": "excluir_v1_conta_delete",
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/admin/execucoes": {
       "get": {
         "tags": [
@@ -3404,6 +3886,137 @@
         ],
         "title": "AcumuladoCarteira"
       },
+      "Alerta": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "ticker": {
+            "type": "string",
+            "title": "Ticker"
+          },
+          "nome": {
+            "type": "string",
+            "title": "Nome"
+          },
+          "tipo": {
+            "type": "string",
+            "enum": [
+              "preco_acima",
+              "preco_abaixo",
+              "variacao_dia",
+              "insight"
+            ],
+            "title": "Tipo"
+          },
+          "parametro": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parametro"
+          },
+          "codigo": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Codigo"
+          },
+          "ativo": {
+            "type": "boolean",
+            "title": "Ativo"
+          },
+          "descricao": {
+            "type": "string",
+            "title": "Descricao"
+          },
+          "ultimo_disparo": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ultimo Disparo"
+          },
+          "criado_em": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Criado Em"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "ticker",
+          "nome",
+          "tipo",
+          "parametro",
+          "codigo",
+          "ativo",
+          "descricao",
+          "ultimo_disparo",
+          "criado_em"
+        ],
+        "title": "Alerta"
+      },
+      "Alertas": {
+        "properties": {
+          "itens": {
+            "items": {
+              "$ref": "#/components/schemas/Alerta"
+            },
+            "type": "array",
+            "title": "Itens"
+          },
+          "limite": {
+            "type": "integer",
+            "title": "Limite"
+          },
+          "ligados": {
+            "type": "integer",
+            "title": "Ligados"
+          },
+          "disparos": {
+            "items": {
+              "$ref": "#/components/schemas/DisparoAlerta"
+            },
+            "type": "array",
+            "title": "Disparos",
+            "description": "Últimos disparos, do mais recente"
+          },
+          "sinais": {
+            "items": {
+              "$ref": "#/components/schemas/SinalAlerta"
+            },
+            "type": "array",
+            "title": "Sinais",
+            "description": "Sinais que podem virar alerta"
+          }
+        },
+        "type": "object",
+        "required": [
+          "itens",
+          "limite",
+          "ligados",
+          "disparos",
+          "sinais"
+        ],
+        "title": "Alertas"
+      },
       "AlocacaoCarteira": {
         "properties": {
           "ativo": {
@@ -3435,6 +4048,20 @@
           "tipo"
         ],
         "title": "AlocacaoCarteira"
+      },
+      "AlteracaoAlerta": {
+        "properties": {
+          "ativo": {
+            "type": "boolean",
+            "title": "Ativo",
+            "description": "Liga ou desliga o alerta"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ativo"
+        ],
+        "title": "AlteracaoAlerta"
       },
       "AnaliseAtivo": {
         "properties": {
@@ -4121,6 +4748,48 @@
           "baixas"
         ],
         "title": "Destaques"
+      },
+      "DisparoAlerta": {
+        "properties": {
+          "alerta_id": {
+            "type": "integer",
+            "title": "Alerta Id"
+          },
+          "ticker": {
+            "type": "string",
+            "title": "Ticker"
+          },
+          "data": {
+            "type": "string",
+            "format": "date",
+            "title": "Data"
+          },
+          "texto": {
+            "type": "string",
+            "title": "Texto"
+          },
+          "enviado_em": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Enviado Em"
+          }
+        },
+        "type": "object",
+        "required": [
+          "alerta_id",
+          "ticker",
+          "data",
+          "texto",
+          "enviado_em"
+        ],
+        "title": "DisparoAlerta"
       },
       "DyAno": {
         "properties": {
@@ -5605,6 +6274,57 @@
         ],
         "title": "NovaOperacao"
       },
+      "NovoAlerta": {
+        "properties": {
+          "ticker": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9]{4,6}$",
+            "title": "Ticker"
+          },
+          "tipo": {
+            "type": "string",
+            "enum": [
+              "preco_acima",
+              "preco_abaixo",
+              "variacao_dia",
+              "insight"
+            ],
+            "title": "Tipo"
+          },
+          "parametro": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 10000000.0,
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parametro",
+            "description": "Preço em R$ ou variação em %; ignorado no insight"
+          },
+          "codigo": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Codigo",
+            "description": "Código do sinal, no tipo insight"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ticker",
+          "tipo"
+        ],
+        "title": "NovoAlerta"
+      },
       "OperacaoCarteira": {
         "properties": {
           "id": {
@@ -6439,6 +7159,24 @@
           "exemplos"
         ],
         "title": "Sinal"
+      },
+      "SinalAlerta": {
+        "properties": {
+          "codigo": {
+            "type": "string",
+            "title": "Codigo"
+          },
+          "descricao": {
+            "type": "string",
+            "title": "Descricao"
+          }
+        },
+        "type": "object",
+        "required": [
+          "codigo",
+          "descricao"
+        ],
+        "title": "SinalAlerta"
       },
       "TotaisCarteira": {
         "properties": {

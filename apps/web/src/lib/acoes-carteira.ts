@@ -3,22 +3,10 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-import { chamarApi } from "@/lib/api";
+import { enviarApi as enviar } from "@/lib/api";
 import { esquemaOperacao, errosPorCampo, type ErrosCampos } from "@/lib/validacao";
 
 export type EstadoOperacao = { erros?: ErrosCampos; ok?: number };
-
-async function enviar(caminho: string, metodo: string, corpo?: unknown): Promise<{ ok: boolean; status: number; detalhe?: string; dados?: unknown }> {
-  const resp = await chamarApi(caminho, {
-    method: metodo,
-    cache: "no-store",
-    headers: corpo === undefined ? undefined : { "Content-Type": "application/json" },
-    body: corpo === undefined ? undefined : JSON.stringify(corpo),
-  });
-  const dados = resp.status === 204 ? undefined : await resp.json().catch(() => undefined);
-  const detalhe = (dados as { detail?: unknown } | undefined)?.detail;
-  return { ok: resp.ok, status: resp.status, dados, detalhe: typeof detalhe === "string" ? detalhe : undefined };
-}
 
 const id = (v: FormDataEntryValue | null) => {
   const n = Number(v);

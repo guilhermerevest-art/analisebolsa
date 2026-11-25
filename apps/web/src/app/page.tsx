@@ -22,7 +22,7 @@ const FUNCIONALIDADES = [
   { titulo: "Screener", descricao: "Filtre ativos por indicadores e fundamentos.", icone: <Filter />, href: "/screener", classe: "md:col-span-2" },
   { titulo: "Carteira", descricao: "Posições, preço médio, proventos recebidos e alocação.", icone: <Briefcase />, href: "/carteira" },
   { titulo: "Simulador", descricao: "Aportes mensais com reinvestimento, comparados ao CDI e ao IPCA.", icone: <Calculator />, href: "/simulador" },
-  { titulo: "Alertas", descricao: "Avisos por e-mail quando um ativo da sua lista se mover.", icone: <Bell />, emBreve: true },
+  { titulo: "Alertas", descricao: "Avisos por e-mail quando um ativo cruza um preço, varia muito no dia ou gera um sinal.", icone: <Bell />, href: "/alertas" },
 ];
 
 function ItemFaixa({ d }: { d: Destaque }) {
@@ -66,7 +66,7 @@ export default async function Inicio() {
         </h2>
         <BentoGrid>
           {FUNCIONALIDADES.map((f) => (
-            <BentoCard key={f.titulo} titulo={f.titulo} descricao={f.descricao} icone={f.icone} emBreve={f.emBreve} href={"href" in f ? f.href : undefined} className={f.classe} />
+            <BentoCard key={f.titulo} titulo={f.titulo} descricao={f.descricao} icone={f.icone} href={"href" in f ? f.href : undefined} className={f.classe} />
           ))}
         </BentoGrid>
       </section>
