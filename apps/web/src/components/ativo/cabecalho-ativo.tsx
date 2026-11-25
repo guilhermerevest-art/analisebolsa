@@ -1,0 +1,53 @@
+"use client";
+
+import { NumberTicker } from "@/components/magic/number-ticker";
+import { classeVariacao, formatarData, formatarPct, formatarPreco, NOMES_TIPO } from "@/lib/formato";
+import type { AtivoDetalhe } from "@/lib/tipos-api";
+import { cn } from "@/lib/utils";
+
+const fmt = (n: number) => formatarPreco(n);
+
+export function CabecalhoAtivo({ ativo }: { ativo: AtivoDetalhe }) {
+  const u = ativo.ultima_cotacao;
+  const v = ativo.variacoes;
+  return (
+    <header className="flex flex-wrap items-end justify-between gap-6">
+      <div className="flex items-center gap-4">
+        {ativo.logo_url && (
+          // eslint-disable-next-line @next/next/no-img-element -- logos externos em SVG
+          <img src={ativo.logo_url} alt="" width={48} height={48} className="size-12 rounded-lg border bg-white object-contain p-1" />
+        )}
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">
+            {ativo.ticker} <span className="text-base font-normal text-muted-foreground">{ativo.nome}</span>
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            {NOMES_TIPO[ativo.tipo]}
+            {ativo.setor && ` · ${ativo.setor}`}
+            {ativo.segmento && ` · ${ativo.segmento}`}
+          </p>
+        </div>
+      </div>
+      {u && (
+        <div className="text-right">
+          <NumberTicker valor={Number(u.fechamento)} formatar={fmt} className="text-3xl font-semibold" />
+          <dl className="mt-1 flex justify-end gap-4 text-sm">
+            {(
+              [
+                ["Dia", v.dia],
+                ["12 meses", v.doze_meses],
+                ["No ano", v.ano],
+              ] as const
+            ).map(([rotulo, valor]) => (
+              <div key={rotulo} className="flex gap-1">
+                <dt className="text-muted-foreground">{rotulo}</dt>
+                <dd className={cn("font-medium", classeVariacao(valor))}>{formatarPct(valor)}</dd>
+              </div>
+            ))}
+          </dl>
+          <p className="mt-1 text-xs text-muted-foreground">Fechamento de {formatarData(u.data)}</p>
+        </div>
+      )}
+    </header>
+  );
+}

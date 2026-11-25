@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { auth } from "@/auth";
+import { BuscaGlobal } from "@/components/busca-global";
 import { Button } from "@/components/ui/button";
 
 export async function Cabecalho() {
@@ -12,6 +13,12 @@ export async function Cabecalho() {
           analisebolsa
         </Link>
         <nav className="flex items-center gap-2">
+          <BuscaGlobal />
+          {sessao?.user?.role === "admin" && (
+            <Button asChild variant="ghost" size="sm">
+              <Link href="/admin">Admin</Link>
+            </Button>
+          )}
           {sessao?.user ? (
             <Button asChild variant="outline" size="sm">
               <Link href="/conta">Minha conta</Link>
