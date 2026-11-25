@@ -2,7 +2,6 @@
 tests
 worker
 fontes
-dominio
 migrations
 alembic.ini
 Dockerfile
