@@ -31,7 +31,7 @@ class PontoRentabilidade:
     ibov: float | None
 
 
-def _fator_ate_eventos(eventos: list[Provento]) -> Callable[[date], Decimal]:
+def fator_ate_eventos(eventos: list[Provento]) -> Callable[[date], Decimal]:
     """f(d) = produto dos fatores dos eventos com data-com >= d."""
     datas = [e.data_com for e in eventos]
     sufixo = [Decimal(1)] * (len(eventos) + 1)
@@ -66,7 +66,7 @@ def serie_rentabilidade(
     for ticker in {o.ticker for o in ops}:
         lista = sorted(proventos.get(ticker, []), key=lambda p: p.data_com)
         societarios = [p for p in lista if p.societario and p.valor > 0]
-        fator[ticker] = _fator_ate_eventos(societarios)
+        fator[ticker] = fator_ate_eventos(societarios)
         for p in lista:
             if p.data_com < inicio or p.valor <= 0:
                 continue

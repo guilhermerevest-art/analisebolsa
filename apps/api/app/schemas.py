@@ -466,3 +466,38 @@ class RentabilidadeCarteira(BaseModel):
     inicio: date | None
     pontos: list[PontoRentabilidade]
     acumulado: AcumuladoCarteira | None
+
+
+class PontoSimulacao(BaseModel):
+    data: date = Field(description="Último dia do mês com dado")
+    aportado: float
+    patrimonio: float | None = Field(description="Valor no ativo; nulo sem ativo")
+    proventos: float | None = Field(description="Proventos recebidos acumulados")
+    cdi: float | None = Field(description="Mesmos aportes rendendo o CDI")
+    ipca: float | None = Field(description="Mesmos aportes corrigidos pelo IPCA")
+
+
+class PontoFaixa(BaseModel):
+    data: date
+    p10: float
+    p50: float
+    p90: float
+
+
+class FaixaSimulada(BaseModel):
+    trajetorias: int
+    meses_historico: int = Field(description="Meses de retornos do ativo usados no sorteio")
+    explicacao: str
+    pontos: list[PontoFaixa]
+
+
+class Simulacao(BaseModel):
+    ticker: str | None
+    inicio: date | None
+    fim: date | None
+    ipca_ate: date | None = Field(description="Último mês com IPCA publicado")
+    pontos: list[PontoSimulacao]
+    faixa: FaixaSimulada | None = Field(
+        description="Faixa de resultados simulados; nula com menos de 5 anos de histórico"
+    )
+    aviso: str
