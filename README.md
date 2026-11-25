@@ -12,7 +12,7 @@ gráficos, indicadores, fundamentos e proventos, com conteúdo **educacional**.
 
 ```
 apps/api/            Python 3.12 (uv): API FastAPI, domínio, fontes de dados e worker EOD
-apps/web/            Next.js (em breve)
+apps/web/            Next.js 15: site, login (Auth.js) e BFF /api/*
 packages/api-types/  OpenAPI da API e tipos TypeScript gerados (pnpm gerar)
 docs/         specs e planos
 ```
@@ -45,6 +45,20 @@ Ela é interna: no Coolify só a web é pública. Rotas em `/v1`: `health`, `ati
 
 Depois de mudar a API, regenere os tipos com `pnpm gerar` em `packages/api-types` (o CI confere
 se o `openapi.json` está atualizado).
+
+## Web (apps/web)
+
+```bash
+pnpm install          # na raiz do repositório
+pnpm dev              # http://localhost:3000 (precisa da API rodando e do .env)
+pnpm test && pnpm lint && pnpm build
+```
+
+- Login com e-mail e senha (argon2id) e com Google, se `AUTH_GOOGLE_ID` e `AUTH_GOOGLE_SECRET`
+  estiverem definidos. A sessão é um JWT em cookie httpOnly.
+- `/api/<rota>` repassa para a API interna (`/v1/<rota>`), com o JWT interno quando há sessão.
+- `/api/internal/revalidate` é chamado pelo worker no fim do EOD para renovar o cache.
+- Imagem Docker: `docker build -f apps/web/Dockerfile .` (a partir da raiz).
 
 ## Worker
 
