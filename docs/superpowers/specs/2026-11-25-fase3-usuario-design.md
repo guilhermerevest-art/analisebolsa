@@ -117,7 +117,8 @@ por carteira e 30 alertas ativos. A API devolve 409 com mensagem clara ao passar
 - **Proventos recebidos:** para cada dividendo, JCP ou rendimento, quantidade em custódia no
   fim da data-com × valor. JCP aparece bruto, com nota de que há IR retido na fonte.
 - **Rentabilidade:** série diária do patrimônio (quantidades × fechamento) e retorno ponderado
-  pelo tempo (TWR), que neutraliza aportes e retiradas. Proventos entram como caixa recebido.
+  pelo tempo (TWR), que neutraliza aportes e retiradas. Os fluxos do dia contam no fechamento;
+  proventos saem como caixa no pregão seguinte à data-com (quando o preço cai).
   A mesma série acumulada é calculada para CDI e Ibovespa desde a primeira operação.
 - **Alocação:** valor atual por ativo, setor e tipo.
 

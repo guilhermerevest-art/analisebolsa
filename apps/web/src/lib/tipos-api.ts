@@ -38,3 +38,4 @@ export type Operacoes = S["Operacoes"];
 export type ResumoCarteira = S["ResumoCarteira"];
 export type PosicaoCarteira = S["PosicaoCarteira"];
 export type FatiaAlocacao = S["FatiaAlocacao"];
+export type RentabilidadeCarteira = S["RentabilidadeCarteira"];

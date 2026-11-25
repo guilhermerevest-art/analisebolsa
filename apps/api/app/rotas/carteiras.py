@@ -102,3 +102,13 @@ def remover(conn: Conn, usuario: Logado, carteira_id: CarteiraId, operacao_id: O
 def resumo(conn: Conn, usuario: Logado, carteira_id: CarteiraId, response: Response):
     _privado(response)
     return c.resumo(conn, usuario.id, carteira_id, date.today())
+
+
+@router.get(
+    "/{carteira_id}/rentabilidade",
+    response_model=s.RentabilidadeCarteira,
+    summary="Rentabilidade acumulada (TWR) contra CDI e Ibovespa",
+)
+def rentabilidade(conn: Conn, usuario: Logado, carteira_id: CarteiraId, response: Response):
+    _privado(response)
+    return c.rentabilidade(conn, usuario.id, carteira_id)

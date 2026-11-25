@@ -10,6 +10,7 @@ from app.erros import Problema
 from app.usuario import exigir_usuario_existente
 from dominio.carteira import Consolidacao, Operacao, VendaAcimaDaPosicao, alocacao, consolidar
 from dominio.modelos import Provento
+from dominio.rentabilidade import reduzir, serie_rentabilidade
 
 LIMITE_CARTEIRAS = 5
 LIMITE_OPERACOES = 2000
@@ -308,4 +309,60 @@ def resumo(conn: Connection, user_id: str, carteira_id: int, hoje: date) -> dict
             }
             for r in reversed(cons.proventos)
         ],
+    }
+
+
+# Rentabilidade (etapa 3)
+
+
+def _precos(conn: Connection, tickers: list[str], inicio: date) -> dict[str, dict[date, Decimal]]:
+    saida: dict[str, dict[date, Decimal]] = defaultdict(dict)
+    linhas = conn.execute(
+        text(
+            """
+            SELECT a.ticker, c.data, c.fechamento
+            FROM cotacoes_diarias c JOIN ativos a USING (ativo_id)
+            WHERE a.ticker = ANY(:t) AND c.data >= :i
+            """
+        ),
+        {"t": tickers, "i": inicio},
+    )
+    for ticker, d, fechamento in linhas:
+        saida[ticker][d] = fechamento
+    return saida
+
+
+def _indice(conn: Connection, serie: str, inicio: date) -> dict[date, float]:
+    return dict(
+        conn.execute(
+            text("SELECT data, valor FROM indices WHERE serie = :s AND data >= :i"),
+            {"s": serie, "i": inicio},
+        ).all()
+    )
+
+
+def rentabilidade(conn: Connection, user_id: str, carteira_id: int) -> dict:
+    obter(conn, user_id, carteira_id)
+    ops = _operacoes_dominio(conn, carteira_id)
+    if not ops:
+        return {"inicio": None, "pontos": [], "acumulado": None}
+    inicio = min(o.data for o in ops)
+    tickers = sorted({o.ticker for o in ops})
+    pontos = serie_rentabilidade(
+        ops,
+        _proventos_e_eventos(conn, tickers),
+        _precos(conn, tickers, inicio),
+        cdi=_indice(conn, "cdi", inicio),
+        ibov=_indice(conn, "ibov", inicio),
+    )
+    ultimo = pontos[-1]
+    return {
+        "inicio": inicio,
+        "pontos": reduzir(pontos),
+        "acumulado": {
+            "data": ultimo.data,
+            "carteira": ultimo.carteira,
+            "cdi": ultimo.cdi,
+            "ibov": ultimo.ibov,
+        },
     }

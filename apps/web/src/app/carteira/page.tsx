@@ -6,13 +6,14 @@ import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { BarrasAlocacao } from "@/components/carteira/alocacao";
 import { FormularioOperacao } from "@/components/carteira/formulario-operacao";
+import { GraficoRentabilidadeCliente } from "@/components/carteira/grafico-rentabilidade-cliente";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { criarCarteira, excluirCarteira, removerOperacao, renomearCarteira } from "@/lib/acoes-carteira";
 import { chamarApi } from "@/lib/api";
 import { classeVariacao, formatarData, formatarNumero, formatarPct, formatarPreco, NOMES_PROVENTO } from "@/lib/formato";
-import type { Carteiras, Operacoes, ResumoCarteira } from "@/lib/tipos-api";
+import type { Carteiras, Operacoes, RentabilidadeCarteira, ResumoCarteira } from "@/lib/tipos-api";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Minha carteira", robots: { index: false } };
@@ -82,10 +83,13 @@ export default async function PaginaCarteira({ searchParams }: Props) {
 
   const pedida = Number((await searchParams).c);
   const atual = lista.itens.find((c) => c.id === pedida) ?? lista.itens[0];
-  const [resumo, ops] = await Promise.all([
+  const [resumo, ops, rent] = await Promise.all([
     ler<ResumoCarteira>(`/v1/carteiras/${atual.id}/resumo`),
     ler<Operacoes>(`/v1/carteiras/${atual.id}/operacoes`),
+    ler<RentabilidadeCarteira>(`/v1/carteiras/${atual.id}/rentabilidade`),
   ]);
+  // Tabela da rentabilidade: o último ponto de cada mês.
+  const mensal = (rent?.pontos ?? []).filter((p, i, todos) => todos[i + 1]?.data.slice(0, 7) !== p.data.slice(0, 7)).reverse();
   const hoje = new Date().toLocaleDateString("sv-SE", { timeZone: "America/Sao_Paulo" });
   const t = resumo?.totais;
   const variacaoTotal = t && Number(t.custo) > 0 ? ((Number(t.patrimonio) - Number(t.custo)) / Number(t.custo)) * 100 : null;
@@ -131,6 +135,50 @@ export default async function PaginaCarteira({ searchParams }: Props) {
               <Valor rotulo="Resultado realizado" valor={formatarPreco(t.resultado_realizado)} classe={classeVariacao(Number(t.resultado_realizado))} detalhe="Nas vendas" />
               <Valor rotulo="Proventos recebidos" valor={formatarPreco(t.proventos)} detalhe="Valor bruto" />
             </dl>
+          )}
+
+          {rent && rent.pontos.length > 1 && (
+            <section aria-labelledby="titulo-rentabilidade" className="grid gap-3">
+              <div>
+                <h2 id="titulo-rentabilidade" className="text-xl font-semibold">
+                  Rentabilidade
+                </h2>
+                <p className="text-sm text-muted-foreground">
+                  Retorno acumulado desde {formatarData(rent.inicio)}, ponderado pelo tempo (aportes e retiradas não distorcem), com proventos. CDI e Ibovespa no mesmo período.
+                </p>
+              </div>
+              <div className="rounded-lg border p-4">
+                <GraficoRentabilidadeCliente dados={rent} />
+              </div>
+              <details className="text-sm">
+                <summary className="cursor-pointer text-muted-foreground">Ver em tabela (fim de cada mês)</summary>
+                <div className="relative mt-2 max-h-80 overflow-auto">
+                  <table className="w-full">
+                    <thead className="sticky top-0 bg-background text-muted-foreground">
+                      <tr>
+                        <th scope="col" className="py-2 text-left font-normal">Data</th>
+                        <th scope="col" className="py-2 pl-3 text-right font-normal">Patrimônio</th>
+                        <th scope="col" className="py-2 pl-3 text-right font-normal">Carteira</th>
+                        <th scope="col" className="py-2 pl-3 text-right font-normal">CDI</th>
+                        <th scope="col" className="py-2 pl-3 text-right font-normal">Ibovespa</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {mensal.map((p) => (
+                        <tr key={p.data} className="border-t">
+                          <td className="py-1.5 tabular-nums">{formatarData(p.data)}</td>
+                          <td className="py-1.5 pl-3 text-right tabular-nums">{formatarPreco(p.patrimonio)}</td>
+                          <td className="py-1.5 pl-3 text-right tabular-nums">{formatarPct(p.carteira)}</td>
+                          <td className="py-1.5 pl-3 text-right tabular-nums">{formatarPct(p.cdi)}</td>
+                          <td className="py-1.5 pl-3 text-right tabular-nums">{formatarPct(p.ibov)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </details>
+              <p className="text-xs text-muted-foreground">Rentabilidade passada não garante resultado futuro.</p>
+            </section>
           )}
 
           <section aria-labelledby="titulo-posicoes" className="grid gap-3">
