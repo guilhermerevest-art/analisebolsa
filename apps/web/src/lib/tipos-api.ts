@@ -25,3 +25,5 @@ export type InsightAtivo = S["InsightAtivo"];
 export type NivelPreco = S["NivelPreco"];
 export type CenarioPreco = S["CenarioPreco"];
 export type CenariosAtivo = S["CenariosAtivo"];
+export type SinaisDoDia = S["SinaisDoDia"];
+export type Sinal = S["Sinal"];

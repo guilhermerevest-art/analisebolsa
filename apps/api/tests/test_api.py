@@ -369,3 +369,29 @@ def test_analise_sem_calculo_e_ativo_inexistente(cliente):
     assert r.status_code == 200
     assert r.json()["elegivel"] is False and r.json()["insights"] == []
     assert cliente.get("/v1/ativos/XXXX3/analise").status_code == 404
+
+
+@pytest.mark.db
+def test_sinais_do_dia_contam_so_o_ultimo_pregao(cliente, db):
+    from dominio.insights import Insight
+
+    def gravar(ticker, data, *codigos):
+        with db.begin() as conn:
+            a = conn.execute(
+                text("SELECT ativo_id FROM ativos WHERE ticker = :t"), {"t": ticker}
+            ).scalar_one()
+            insights = [Insight(c, "momento", "neutro", 5, "t", "x") for c in codigos]
+            repo.substituir_insights(conn, a, data, insights)
+
+    assert cliente.get("/v1/mercado/sinais").json() == {"data": None, "sinais": []}
+    gravar("PETR4", date(2025, 6, 4), "maxima_52s", "tendencia")
+    gravar("VALE3", date(2025, 6, 4), "maxima_52s", "rsi_sobrecompra")
+    gravar("PETR3", date(2025, 6, 3), "maxima_52s")  # pregão anterior: não conta
+    corpo = cliente.get("/v1/mercado/sinais?exemplos=1").json()
+    assert corpo["data"] == "2025-06-04"
+    por_codigo = {s["codigo"]: s for s in corpo["sinais"]}
+    assert set(por_codigo) == {"maxima_52s", "rsi_sobrecompra"}  # "tendencia" fica de fora
+    assert por_codigo["maxima_52s"]["total"] == 2
+    assert len(por_codigo["maxima_52s"]["exemplos"]) == 1
+    assert por_codigo["maxima_52s"]["frase"] == "renovaram a máxima de 52 semanas"
+    assert corpo["sinais"][0]["codigo"] == "maxima_52s"

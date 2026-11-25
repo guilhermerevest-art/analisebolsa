@@ -309,3 +309,33 @@ def analise(
         .one_or_none()
     )
     return metricas, insights, cenario
+
+
+def sinais_do_dia(conn: Connection, codigos: list[str], exemplos: int) -> tuple[date | None, list]:
+    """Contagem dos insights do último pregão por código, com os mais líquidos de exemplo."""
+    linhas = conn.execute(
+        text(
+            """
+            WITH ult AS (SELECT max(data) AS d FROM insights),
+            base AS (
+              SELECT i.codigo, i.data, a.ticker, a.nome,
+                     row_number() OVER (PARTITION BY i.codigo
+                       ORDER BY m.volume_financeiro_20d DESC NULLS LAST, a.ticker) AS pos,
+                     count(*) OVER (PARTITION BY i.codigo) AS total
+              FROM insights i JOIN ativos a USING (ativo_id)
+              LEFT JOIN metricas_ativo m USING (ativo_id)
+              WHERE i.data = (SELECT d FROM ult) AND a.ativo AND i.codigo = ANY(:codigos)
+            )
+            SELECT codigo, data, ticker, nome, total FROM base WHERE pos <= :n
+            ORDER BY total DESC, codigo, pos
+            """
+        ),
+        {"codigos": codigos, "n": exemplos},
+    ).all()
+    if not linhas:
+        return None, []
+    grupos: dict[str, dict] = {}
+    for codigo, _, ticker, nome, total in linhas:
+        g = grupos.setdefault(codigo, {"codigo": codigo, "total": total, "exemplos": []})
+        g["exemplos"].append({"ticker": ticker, "nome": nome})
+    return linhas[0][1], list(grupos.values())

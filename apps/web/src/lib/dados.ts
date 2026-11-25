@@ -1,7 +1,7 @@
 import "server-only";
 
 import { cabecalhosApi, env } from "@/lib/env";
-import type { AnaliseAtivo, AtivoDetalhe, CamposScreener, Destaques, Fundamentos, PaginaAtivos, PaginaScreener, Proventos } from "@/lib/tipos-api";
+import type { AnaliseAtivo, SinaisDoDia, AtivoDetalhe, CamposScreener, Destaques, Fundamentos, PaginaAtivos, PaginaScreener, Proventos } from "@/lib/tipos-api";
 
 const UMA_HORA = 3600;
 
@@ -30,6 +30,14 @@ export async function lerDestaques(): Promise<Destaques | null> {
     return await lerApi<Destaques>("/v1/mercado/destaques?limite=12", ["mercado"], 300);
   } catch {
     return null; // a landing continua de pé sem a faixa de cotações
+  }
+}
+
+export async function lerSinais(): Promise<SinaisDoDia | null> {
+  try {
+    return await lerApi<SinaisDoDia>("/v1/mercado/sinais?exemplos=4", ["mercado"], 300);
+  } catch {
+    return null;
   }
 }
 

@@ -413,3 +413,19 @@ def gerar_insights(c: Contexto) -> list[Insight]:
     regras = (REGRAS_TECNICAS if elegivel else ()) + REGRAS_FUNDAMENTOS
     saida = [i for regra in regras if (i := regra(c)) is not None]
     return sorted(saida, key=lambda i: (-i.prioridade, i.codigo))
+
+
+# Frases da faixa "Sinais de hoje" da landing: "{n} ativos {frase}". Só sinais factuais.
+SINAIS_DO_DIA: dict[str, tuple[str, str]] = {
+    "maxima_52s": ("renovaram a máxima de 52 semanas", "positivo"),
+    "minima_52s": ("renovaram a mínima de 52 semanas", "atencao"),
+    "cruzamento_mm50_mm200_alta": ("tiveram a MM50 cruzando a MM200 para cima", "positivo"),
+    "cruzamento_mm50_mm200_baixa": ("tiveram a MM50 cruzando a MM200 para baixo", "atencao"),
+    "preco_mm200_acima": ("passaram para cima da média de 200 pregões", "positivo"),
+    "preco_mm200_abaixo": ("passaram para baixo da média de 200 pregões", "atencao"),
+    "rsi_sobrecompra": ("estão com RSI acima de 70", "atencao"),
+    "rsi_sobrevenda": ("estão com RSI abaixo de 30", "neutro"),
+    "volume_anormal": ("negociaram mais de 2,5 vezes o volume médio", "neutro"),
+    "macd_cruzamento_alta": ("tiveram o MACD cruzando a linha de sinal para cima", "positivo"),
+    "macd_cruzamento_baixa": ("tiveram o MACD cruzando a linha de sinal para baixo", "atencao"),
+}

@@ -288,3 +288,21 @@ class CamposScreener(BaseModel):
     campos: list[CampoScreener]
     setores: list[str]
     tipos: list[TipoAtivo]
+
+
+class ExemploSinal(BaseModel):
+    ticker: str
+    nome: str
+
+
+class Sinal(BaseModel):
+    codigo: str
+    frase: str = Field(description='Completa "{total} ativos ..."')
+    tom: Literal["positivo", "neutro", "atencao"]
+    total: int
+    exemplos: list[ExemploSinal]
+
+
+class SinaisDoDia(BaseModel):
+    data: date | None
+    sinais: list[Sinal]
