@@ -193,6 +193,7 @@ def test_nenhum_texto_tem_linguagem_de_recomendacao():
         for t in (i.titulo, i.texto)
     ]
     textos += [elegibilidade(10, 1e6)[1], elegibilidade(500, 0)[1]]
+    textos += [frase for frase, _ in ins.SINAIS_DO_DIA.values()]
     assert len(textos) > 40
     for t in textos:
         assert not PROIBIDAS.search(t), t

@@ -2,10 +2,11 @@ import { BarChart3, Bell, Briefcase, Calculator, CandlestickChart, Coins, Filter
 import Link from "next/link";
 
 import { BuscaGlobal } from "@/components/busca-global";
+import { SinaisDeHoje } from "@/components/landing/sinais";
 import { BentoCard, BentoGrid } from "@/components/magic/bento-grid";
 import { Marquee } from "@/components/magic/marquee";
 import { Button } from "@/components/ui/button";
-import { lerDestaques } from "@/lib/dados";
+import { lerDestaques, lerSinais } from "@/lib/dados";
 import { classeVariacao, formatarPct, formatarPreco } from "@/lib/formato";
 import type { Destaque } from "@/lib/tipos-api";
 import { cn } from "@/lib/utils";
@@ -35,10 +36,10 @@ function ItemFaixa({ d }: { d: Destaque }) {
 }
 
 export default async function Inicio() {
-  const destaques = await lerDestaques();
+  const [destaques, sinais] = await Promise.all([lerDestaques(), lerSinais()]);
   const faixa = destaques ? [...destaques.altas, ...destaques.baixas] : [];
   return (
-    <div className="grid gap-16">
+    <div className="grid grid-cols-[minmax(0,1fr)] gap-16">
       <section className="mx-auto flex max-w-2xl flex-col items-center gap-6 pt-10 text-center">
         <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">Entenda os ativos da B3</h1>
         <p className="text-lg text-muted-foreground">
@@ -48,7 +49,7 @@ export default async function Inicio() {
       </section>
 
       {faixa.length > 0 && (
-        <section aria-label="Maiores altas e baixas do último pregão" className="-mx-4 border-y py-3">
+        <section aria-label="Maiores altas e baixas do último pregão" className="-mx-4 overflow-hidden border-y py-3">
           <Marquee>
             {faixa.map((d) => (
               <ItemFaixa key={d.ticker} d={d} />
@@ -56,6 +57,8 @@ export default async function Inicio() {
           </Marquee>
         </section>
       )}
+
+      {sinais && <SinaisDeHoje dados={sinais} />}
 
       <section aria-labelledby="funcionalidades">
         <h2 id="funcionalidades" className="mb-6 text-2xl font-semibold tracking-tight">

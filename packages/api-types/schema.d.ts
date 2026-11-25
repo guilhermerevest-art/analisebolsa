@@ -157,6 +157,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/mercado/sinais": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Contagem dos sinais técnicos do último pregão */
+        get: operations["sinais_v1_mercado_sinais_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/screener": {
         parameters: {
             query?: never;
@@ -451,6 +468,13 @@ export interface components {
         Execucoes: {
             /** Itens */
             itens: components["schemas"]["Execucao"][];
+        };
+        /** ExemploSinal */
+        ExemploSinal: {
+            /** Ticker */
+            ticker: string;
+            /** Nome */
+            nome: string;
         };
         /** Fundamentos */
         Fundamentos: {
@@ -769,6 +793,32 @@ export interface components {
             itens: components["schemas"]["ProventoItem"][];
             /** Dy Por Ano */
             dy_por_ano: components["schemas"]["DyAno"][];
+        };
+        /** SinaisDoDia */
+        SinaisDoDia: {
+            /** Data */
+            data: string | null;
+            /** Sinais */
+            sinais: components["schemas"]["Sinal"][];
+        };
+        /** Sinal */
+        Sinal: {
+            /** Codigo */
+            codigo: string;
+            /**
+             * Frase
+             * @description Completa "{total} ativos ..."
+             */
+            frase: string;
+            /**
+             * Tom
+             * @enum {string}
+             */
+            tom: "positivo" | "neutro" | "atencao";
+            /** Total */
+            total: number;
+            /** Exemplos */
+            exemplos: components["schemas"]["ExemploSinal"][];
         };
         /** UltimaCotacao */
         UltimaCotacao: {
@@ -1340,6 +1390,68 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Destaques"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+        };
+    };
+    sinais_v1_mercado_sinais_get: {
+        parameters: {
+            query?: {
+                exemplos?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SinaisDoDia"];
                 };
             };
             /** @description Unauthorized */
