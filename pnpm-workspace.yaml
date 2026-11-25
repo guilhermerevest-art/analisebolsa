@@ -1,0 +1,8 @@
+packages:
+  - apps/web
+  - packages/*
+onlyBuiltDependencies:
+  - "@node-rs/argon2"
+  - "@tailwindcss/oxide"
+  - sharp
+  - unrs-resolver
