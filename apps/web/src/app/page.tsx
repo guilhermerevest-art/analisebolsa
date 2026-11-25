@@ -20,7 +20,7 @@ const FUNCIONALIDADES = [
   { titulo: "Insights", descricao: "Leitura educacional dos sinais técnicos de cada ativo, na aba Análise.", icone: <Lightbulb /> },
   { titulo: "Cenários", descricao: "Suportes, resistências e cenários condicionais de alta, lateral e baixa.", icone: <Target /> },
   { titulo: "Screener", descricao: "Filtre ativos por indicadores e fundamentos.", icone: <Filter />, href: "/screener", classe: "md:col-span-2" },
-  { titulo: "Carteira", descricao: "Acompanhe posições, rentabilidade e alocação.", icone: <Briefcase />, emBreve: true },
+  { titulo: "Carteira", descricao: "Posições, preço médio, proventos recebidos e alocação.", icone: <Briefcase />, href: "/carteira" },
   { titulo: "Simulador", descricao: "Aportes mensais com reinvestimento, comparados ao CDI e ao IPCA.", icone: <Calculator />, emBreve: true },
   { titulo: "Alertas", descricao: "Avisos por e-mail quando um ativo da sua lista se mover.", icone: <Bell />, emBreve: true },
 ];

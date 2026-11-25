@@ -343,3 +343,105 @@ class Indice(BaseModel):
     serie: SerieIndice
     unidade: Literal["pct_dia", "pct_mes", "pontos"]
     pontos: list[PontoIndice]
+
+
+class Carteira(BaseModel):
+    id: int
+    nome: str
+    criado_em: datetime
+    operacoes: int
+
+
+class Carteiras(BaseModel):
+    itens: list[Carteira]
+    limite: int
+
+
+class NovaCarteira(BaseModel):
+    nome: Annotated[str, Field(min_length=1, max_length=60)]
+
+
+class NovaOperacao(BaseModel):
+    ticker: Annotated[str, Field(pattern=r"^[A-Za-z0-9]{4,6}$")]
+    tipo: Literal["compra", "venda"]
+    data: date
+    quantidade: Annotated[Decimal, Field(gt=0, max_digits=18, decimal_places=4)]
+    preco: Annotated[Decimal, Field(gt=0, max_digits=14, decimal_places=4)]
+    custos: Annotated[Decimal, Field(ge=0, max_digits=14, decimal_places=2)] = Decimal(0)
+
+
+def _quantidade_str(d: Decimal) -> str:
+    return format(d.normalize(), "f")
+
+
+Quantidade = Annotated[Decimal, PlainSerializer(_quantidade_str, return_type=str, when_used="json")]
+
+
+class OperacaoCarteira(BaseModel):
+    id: int
+    ticker: str
+    nome: str
+    tipo: Literal["compra", "venda"]
+    data: date
+    quantidade: Quantidade
+    preco: Preco
+    custos: Preco
+
+
+class Operacoes(BaseModel):
+    itens: list[OperacaoCarteira]
+
+
+class PosicaoCarteira(BaseModel):
+    ticker: str
+    nome: str
+    tipo: TipoAtivo
+    setor: str | None
+    quantidade: Quantidade
+    preco_medio: Preco | None
+    custo: Preco
+    preco_atual: Preco | None
+    data_preco: date | None
+    valor_atual: Preco | None
+    resultado: Preco | None
+    variacao: float | None = Field(description="Valor atual sobre o custo, em %")
+    proventos: Preco
+
+
+class TotaisCarteira(BaseModel):
+    patrimonio: Preco
+    custo: Preco
+    resultado_nao_realizado: Preco
+    resultado_realizado: Preco
+    proventos: Preco
+    resultado_total: Preco
+
+
+class FatiaAlocacao(BaseModel):
+    chave: str
+    valor: Preco
+    percentual: float
+
+
+class AlocacaoCarteira(BaseModel):
+    ativo: list[FatiaAlocacao]
+    setor: list[FatiaAlocacao]
+    tipo: list[FatiaAlocacao]
+
+
+class ProventoRecebido(BaseModel):
+    ticker: str
+    tipo: str
+    data_com: date
+    data_pagamento: date | None
+    valor_unitario: Preco
+    quantidade: Quantidade
+    total: Preco
+
+
+class ResumoCarteira(BaseModel):
+    carteira: Carteira
+    totais: TotaisCarteira
+    posicoes: list[PosicaoCarteira]
+    alocacao: AlocacaoCarteira
+    proventos: list[ProventoRecebido]

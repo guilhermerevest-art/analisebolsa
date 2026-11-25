@@ -2235,6 +2235,812 @@
         }
       }
     },
+    "/v1/carteiras": {
+      "get": {
+        "tags": [
+          "usuário"
+        ],
+        "summary": "Carteiras do usuário",
+        "operationId": "listar_v1_carteiras_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Carteiras"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "usuário"
+        ],
+        "summary": "Cria uma carteira",
+        "operationId": "criar_v1_carteiras_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NovaCarteira"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Carteira"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/carteiras/{carteira_id}": {
+      "patch": {
+        "tags": [
+          "usuário"
+        ],
+        "summary": "Renomeia a carteira",
+        "operationId": "renomear_v1_carteiras__carteira_id__patch",
+        "parameters": [
+          {
+            "name": "carteira_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "title": "Carteira Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NovaCarteira"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Carteira"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "usuário"
+        ],
+        "summary": "Exclui a carteira e as operações",
+        "operationId": "excluir_v1_carteiras__carteira_id__delete",
+        "parameters": [
+          {
+            "name": "carteira_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "title": "Carteira Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        }
+      }
+    },
+    "/v1/carteiras/{carteira_id}/operacoes": {
+      "get": {
+        "tags": [
+          "usuário"
+        ],
+        "summary": "Operações",
+        "operationId": "operacoes_v1_carteiras__carteira_id__operacoes_get",
+        "parameters": [
+          {
+            "name": "carteira_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "title": "Carteira Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Operacoes"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "usuário"
+        ],
+        "summary": "Lança uma compra ou venda",
+        "operationId": "lancar_v1_carteiras__carteira_id__operacoes_post",
+        "parameters": [
+          {
+            "name": "carteira_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "title": "Carteira Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NovaOperacao"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OperacaoCarteira"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        }
+      }
+    },
+    "/v1/carteiras/{carteira_id}/operacoes/{operacao_id}": {
+      "put": {
+        "tags": [
+          "usuário"
+        ],
+        "summary": "Edita uma operação",
+        "operationId": "editar_v1_carteiras__carteira_id__operacoes__operacao_id__put",
+        "parameters": [
+          {
+            "name": "carteira_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "title": "Carteira Id"
+            }
+          },
+          {
+            "name": "operacao_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "title": "Operacao Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NovaOperacao"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OperacaoCarteira"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "usuário"
+        ],
+        "summary": "Exclui uma operação",
+        "operationId": "remover_v1_carteiras__carteira_id__operacoes__operacao_id__delete",
+        "parameters": [
+          {
+            "name": "carteira_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "title": "Carteira Id"
+            }
+          },
+          {
+            "name": "operacao_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "title": "Operacao Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        }
+      }
+    },
+    "/v1/carteiras/{carteira_id}/resumo": {
+      "get": {
+        "tags": [
+          "usuário"
+        ],
+        "summary": "Posições, proventos recebidos, alocação e resultado",
+        "operationId": "resumo_v1_carteiras__carteira_id__resumo_get",
+        "parameters": [
+          {
+            "name": "carteira_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "title": "Carteira Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResumoCarteira"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        }
+      }
+    },
     "/v1/admin/execucoes": {
       "get": {
         "tags": [
@@ -2328,6 +3134,38 @@
   },
   "components": {
     "schemas": {
+      "AlocacaoCarteira": {
+        "properties": {
+          "ativo": {
+            "items": {
+              "$ref": "#/components/schemas/FatiaAlocacao"
+            },
+            "type": "array",
+            "title": "Ativo"
+          },
+          "setor": {
+            "items": {
+              "$ref": "#/components/schemas/FatiaAlocacao"
+            },
+            "type": "array",
+            "title": "Setor"
+          },
+          "tipo": {
+            "items": {
+              "$ref": "#/components/schemas/FatiaAlocacao"
+            },
+            "type": "array",
+            "title": "Tipo"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ativo",
+          "setor",
+          "tipo"
+        ],
+        "title": "AlocacaoCarteira"
+      },
       "AnaliseAtivo": {
         "properties": {
           "ticker": {
@@ -2683,6 +3521,56 @@
           "volume"
         ],
         "title": "Candle"
+      },
+      "Carteira": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "nome": {
+            "type": "string",
+            "title": "Nome"
+          },
+          "criado_em": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Criado Em"
+          },
+          "operacoes": {
+            "type": "integer",
+            "title": "Operacoes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "nome",
+          "criado_em",
+          "operacoes"
+        ],
+        "title": "Carteira"
+      },
+      "Carteiras": {
+        "properties": {
+          "itens": {
+            "items": {
+              "$ref": "#/components/schemas/Carteira"
+            },
+            "type": "array",
+            "title": "Itens"
+          },
+          "limite": {
+            "type": "integer",
+            "title": "Limite"
+          }
+        },
+        "type": "object",
+        "required": [
+          "itens",
+          "limite"
+        ],
+        "title": "Carteiras"
       },
       "CenarioPreco": {
         "properties": {
@@ -3116,6 +4004,29 @@
           "nome"
         ],
         "title": "ExemploSinal"
+      },
+      "FatiaAlocacao": {
+        "properties": {
+          "chave": {
+            "type": "string",
+            "title": "Chave"
+          },
+          "valor": {
+            "type": "string",
+            "title": "Valor"
+          },
+          "percentual": {
+            "type": "number",
+            "title": "Percentual"
+          }
+        },
+        "type": "object",
+        "required": [
+          "chave",
+          "valor",
+          "percentual"
+        ],
+        "title": "FatiaAlocacao"
       },
       "Fundamentos": {
         "properties": {
@@ -4309,6 +5220,158 @@
         ],
         "title": "NivelPreco"
       },
+      "NovaCarteira": {
+        "properties": {
+          "nome": {
+            "type": "string",
+            "maxLength": 60,
+            "minLength": 1,
+            "title": "Nome"
+          }
+        },
+        "type": "object",
+        "required": [
+          "nome"
+        ],
+        "title": "NovaCarteira"
+      },
+      "NovaOperacao": {
+        "properties": {
+          "ticker": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9]{4,6}$",
+            "title": "Ticker"
+          },
+          "tipo": {
+            "type": "string",
+            "enum": [
+              "compra",
+              "venda"
+            ],
+            "title": "Tipo"
+          },
+          "data": {
+            "type": "string",
+            "format": "date",
+            "title": "Data"
+          },
+          "quantidade": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Quantidade"
+          },
+          "preco": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Preco"
+          },
+          "custos": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Custos",
+            "default": "0"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ticker",
+          "tipo",
+          "data",
+          "quantidade",
+          "preco"
+        ],
+        "title": "NovaOperacao"
+      },
+      "OperacaoCarteira": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "ticker": {
+            "type": "string",
+            "title": "Ticker"
+          },
+          "nome": {
+            "type": "string",
+            "title": "Nome"
+          },
+          "tipo": {
+            "type": "string",
+            "enum": [
+              "compra",
+              "venda"
+            ],
+            "title": "Tipo"
+          },
+          "data": {
+            "type": "string",
+            "format": "date",
+            "title": "Data"
+          },
+          "quantidade": {
+            "type": "string",
+            "title": "Quantidade"
+          },
+          "preco": {
+            "type": "string",
+            "title": "Preco"
+          },
+          "custos": {
+            "type": "string",
+            "title": "Custos"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "ticker",
+          "nome",
+          "tipo",
+          "data",
+          "quantidade",
+          "preco",
+          "custos"
+        ],
+        "title": "OperacaoCarteira"
+      },
+      "Operacoes": {
+        "properties": {
+          "itens": {
+            "items": {
+              "$ref": "#/components/schemas/OperacaoCarteira"
+            },
+            "type": "array",
+            "title": "Itens"
+          }
+        },
+        "type": "object",
+        "required": [
+          "itens"
+        ],
+        "title": "Operacoes"
+      },
       "PaginaAtivos": {
         "properties": {
           "itens": {
@@ -4389,6 +5452,136 @@
           "valor"
         ],
         "title": "PontoIndice"
+      },
+      "PosicaoCarteira": {
+        "properties": {
+          "ticker": {
+            "type": "string",
+            "title": "Ticker"
+          },
+          "nome": {
+            "type": "string",
+            "title": "Nome"
+          },
+          "tipo": {
+            "type": "string",
+            "enum": [
+              "acao",
+              "fii",
+              "etf",
+              "bdr"
+            ],
+            "title": "Tipo"
+          },
+          "setor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Setor"
+          },
+          "quantidade": {
+            "type": "string",
+            "title": "Quantidade"
+          },
+          "preco_medio": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Preco Medio"
+          },
+          "custo": {
+            "type": "string",
+            "title": "Custo"
+          },
+          "preco_atual": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Preco Atual"
+          },
+          "data_preco": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Data Preco"
+          },
+          "valor_atual": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Valor Atual"
+          },
+          "resultado": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resultado"
+          },
+          "variacao": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Variacao",
+            "description": "Valor atual sobre o custo, em %"
+          },
+          "proventos": {
+            "type": "string",
+            "title": "Proventos"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ticker",
+          "nome",
+          "tipo",
+          "setor",
+          "quantidade",
+          "preco_medio",
+          "custo",
+          "preco_atual",
+          "data_preco",
+          "valor_atual",
+          "resultado",
+          "variacao",
+          "proventos"
+        ],
+        "title": "PosicaoCarteira"
       },
       "Problema": {
         "properties": {
@@ -4480,6 +5673,58 @@
         ],
         "title": "ProventoItem"
       },
+      "ProventoRecebido": {
+        "properties": {
+          "ticker": {
+            "type": "string",
+            "title": "Ticker"
+          },
+          "tipo": {
+            "type": "string",
+            "title": "Tipo"
+          },
+          "data_com": {
+            "type": "string",
+            "format": "date",
+            "title": "Data Com"
+          },
+          "data_pagamento": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Data Pagamento"
+          },
+          "valor_unitario": {
+            "type": "string",
+            "title": "Valor Unitario"
+          },
+          "quantidade": {
+            "type": "string",
+            "title": "Quantidade"
+          },
+          "total": {
+            "type": "string",
+            "title": "Total"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ticker",
+          "tipo",
+          "data_com",
+          "data_pagamento",
+          "valor_unitario",
+          "quantidade",
+          "total"
+        ],
+        "title": "ProventoRecebido"
+      },
       "Proventos": {
         "properties": {
           "ticker": {
@@ -4508,6 +5753,42 @@
           "dy_por_ano"
         ],
         "title": "Proventos"
+      },
+      "ResumoCarteira": {
+        "properties": {
+          "carteira": {
+            "$ref": "#/components/schemas/Carteira"
+          },
+          "totais": {
+            "$ref": "#/components/schemas/TotaisCarteira"
+          },
+          "posicoes": {
+            "items": {
+              "$ref": "#/components/schemas/PosicaoCarteira"
+            },
+            "type": "array",
+            "title": "Posicoes"
+          },
+          "alocacao": {
+            "$ref": "#/components/schemas/AlocacaoCarteira"
+          },
+          "proventos": {
+            "items": {
+              "$ref": "#/components/schemas/ProventoRecebido"
+            },
+            "type": "array",
+            "title": "Proventos"
+          }
+        },
+        "type": "object",
+        "required": [
+          "carteira",
+          "totais",
+          "posicoes",
+          "alocacao",
+          "proventos"
+        ],
+        "title": "ResumoCarteira"
       },
       "SinaisDoDia": {
         "properties": {
@@ -4579,6 +5860,44 @@
           "exemplos"
         ],
         "title": "Sinal"
+      },
+      "TotaisCarteira": {
+        "properties": {
+          "patrimonio": {
+            "type": "string",
+            "title": "Patrimonio"
+          },
+          "custo": {
+            "type": "string",
+            "title": "Custo"
+          },
+          "resultado_nao_realizado": {
+            "type": "string",
+            "title": "Resultado Nao Realizado"
+          },
+          "resultado_realizado": {
+            "type": "string",
+            "title": "Resultado Realizado"
+          },
+          "proventos": {
+            "type": "string",
+            "title": "Proventos"
+          },
+          "resultado_total": {
+            "type": "string",
+            "title": "Resultado Total"
+          }
+        },
+        "type": "object",
+        "required": [
+          "patrimonio",
+          "custo",
+          "resultado_nao_realizado",
+          "resultado_realizado",
+          "proventos",
+          "resultado_total"
+        ],
+        "title": "TotaisCarteira"
       },
       "UltimaCotacao": {
         "properties": {

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { roleParaEmail, emailsAdmin } from "./env";
-import { destinoSeguro, errosPorCampo, esquemaCadastro, esquemaEntrar } from "./validacao";
+import { destinoSeguro, errosPorCampo, esquemaCadastro, esquemaEntrar, esquemaOperacao } from "./validacao";
 
 describe("validação dos formulários", () => {
   it("normaliza o e-mail", () => {
@@ -47,5 +47,23 @@ describe("destinoSeguro", () => {
     for (const v of ["//evil.com", "https://evil.com", "/\\evil.com", "javascript:alert(1)", "", null, 3, "/a b"]) {
       expect(destinoSeguro(v)).toBe("/conta");
     }
+  });
+});
+
+describe("esquemaOperacao", () => {
+  const base = { ticker: "petr4", tipo: "compra", data: "2024-03-01", quantidade: "100", preco: "38,63", custos: "" };
+  it("normaliza números no formato brasileiro", () => {
+    const r = esquemaOperacao.parse({ ...base, quantidade: "1.000", preco: "R$ 1.234,56", custos: "4,90" });
+    expect(r).toEqual({ ticker: "PETR4", tipo: "compra", data: "2024-03-01", quantidade: "1000", preco: "1234.56", custos: "4.90" });
+    expect(esquemaOperacao.parse(base).custos).toBe("0");
+  });
+  it("rejeita valores inválidos", () => {
+    const erros = (campos: object) => errosPorCampo(esquemaOperacao.safeParse({ ...base, ...campos }).error!);
+    expect(erros({ quantidade: "0" }).quantidade).toMatch(/maior que zero/);
+    expect(erros({ preco: "abc" }).preco).toMatch(/inválido/);
+    expect(erros({ preco: "1,23456" }).preco).toMatch(/4 casas/);
+    expect(erros({ data: "01/03/2024" }).data).toBe("Data inválida");
+    expect(erros({ ticker: "PETR-4" }).ticker).toBe("Ticker inválido");
+    expect(erros({ tipo: "aluguel" }).tipo).toBeDefined();
   });
 });
