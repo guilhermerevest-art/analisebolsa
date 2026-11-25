@@ -261,6 +261,95 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/carteiras": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Carteiras do usuário */
+        get: operations["listar_v1_carteiras_get"];
+        put?: never;
+        /** Cria uma carteira */
+        post: operations["criar_v1_carteiras_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/carteiras/{carteira_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Exclui a carteira e as operações */
+        delete: operations["excluir_v1_carteiras__carteira_id__delete"];
+        options?: never;
+        head?: never;
+        /** Renomeia a carteira */
+        patch: operations["renomear_v1_carteiras__carteira_id__patch"];
+        trace?: never;
+    };
+    "/v1/carteiras/{carteira_id}/operacoes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Operações */
+        get: operations["operacoes_v1_carteiras__carteira_id__operacoes_get"];
+        put?: never;
+        /** Lança uma compra ou venda */
+        post: operations["lancar_v1_carteiras__carteira_id__operacoes_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/carteiras/{carteira_id}/operacoes/{operacao_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Edita uma operação */
+        put: operations["editar_v1_carteiras__carteira_id__operacoes__operacao_id__put"];
+        post?: never;
+        /** Exclui uma operação */
+        delete: operations["remover_v1_carteiras__carteira_id__operacoes__operacao_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/carteiras/{carteira_id}/resumo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Posições, proventos recebidos, alocação e resultado */
+        get: operations["resumo_v1_carteiras__carteira_id__resumo_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/admin/execucoes": {
         parameters: {
             query?: never;
@@ -282,6 +371,15 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** AlocacaoCarteira */
+        AlocacaoCarteira: {
+            /** Ativo */
+            ativo: components["schemas"]["FatiaAlocacao"][];
+            /** Setor */
+            setor: components["schemas"]["FatiaAlocacao"][];
+            /** Tipo */
+            tipo: components["schemas"]["FatiaAlocacao"][];
+        };
         /** AnaliseAtivo */
         AnaliseAtivo: {
             /** Ticker */
@@ -390,6 +488,27 @@ export interface components {
             fechamento_ajustado: string;
             /** Volume */
             volume: number;
+        };
+        /** Carteira */
+        Carteira: {
+            /** Id */
+            id: number;
+            /** Nome */
+            nome: string;
+            /**
+             * Criado Em
+             * Format: date-time
+             */
+            criado_em: string;
+            /** Operacoes */
+            operacoes: number;
+        };
+        /** Carteiras */
+        Carteiras: {
+            /** Itens */
+            itens: components["schemas"]["Carteira"][];
+            /** Limite */
+            limite: number;
         };
         /** CenarioPreco */
         CenarioPreco: {
@@ -535,6 +654,15 @@ export interface components {
             ticker: string;
             /** Nome */
             nome: string;
+        };
+        /** FatiaAlocacao */
+        FatiaAlocacao: {
+            /** Chave */
+            chave: string;
+            /** Valor */
+            valor: string;
+            /** Percentual */
+            percentual: number;
         };
         /** Fundamentos */
         Fundamentos: {
@@ -827,6 +955,65 @@ export interface components {
              */
             toques: number;
         };
+        /** NovaCarteira */
+        NovaCarteira: {
+            /** Nome */
+            nome: string;
+        };
+        /** NovaOperacao */
+        NovaOperacao: {
+            /** Ticker */
+            ticker: string;
+            /**
+             * Tipo
+             * @enum {string}
+             */
+            tipo: "compra" | "venda";
+            /**
+             * Data
+             * Format: date
+             */
+            data: string;
+            /** Quantidade */
+            quantidade: number | string;
+            /** Preco */
+            preco: number | string;
+            /**
+             * Custos
+             * @default 0
+             */
+            custos: number | string;
+        };
+        /** OperacaoCarteira */
+        OperacaoCarteira: {
+            /** Id */
+            id: number;
+            /** Ticker */
+            ticker: string;
+            /** Nome */
+            nome: string;
+            /**
+             * Tipo
+             * @enum {string}
+             */
+            tipo: "compra" | "venda";
+            /**
+             * Data
+             * Format: date
+             */
+            data: string;
+            /** Quantidade */
+            quantidade: string;
+            /** Preco */
+            preco: string;
+            /** Custos */
+            custos: string;
+        };
+        /** Operacoes */
+        Operacoes: {
+            /** Itens */
+            itens: components["schemas"]["OperacaoCarteira"][];
+        };
         /** PaginaAtivos */
         PaginaAtivos: {
             /** Itens */
@@ -858,6 +1045,41 @@ export interface components {
             data: string;
             /** Valor */
             valor: number;
+        };
+        /** PosicaoCarteira */
+        PosicaoCarteira: {
+            /** Ticker */
+            ticker: string;
+            /** Nome */
+            nome: string;
+            /**
+             * Tipo
+             * @enum {string}
+             */
+            tipo: "acao" | "fii" | "etf" | "bdr";
+            /** Setor */
+            setor: string | null;
+            /** Quantidade */
+            quantidade: string;
+            /** Preco Medio */
+            preco_medio: string | null;
+            /** Custo */
+            custo: string;
+            /** Preco Atual */
+            preco_atual: string | null;
+            /** Data Preco */
+            data_preco: string | null;
+            /** Valor Atual */
+            valor_atual: string | null;
+            /** Resultado */
+            resultado: string | null;
+            /**
+             * Variacao
+             * @description Valor atual sobre o custo, em %
+             */
+            variacao: number | null;
+            /** Proventos */
+            proventos: string;
         };
         /** Problema */
         Problema: {
@@ -892,6 +1114,26 @@ export interface components {
             /** Valor */
             valor: string;
         };
+        /** ProventoRecebido */
+        ProventoRecebido: {
+            /** Ticker */
+            ticker: string;
+            /** Tipo */
+            tipo: string;
+            /**
+             * Data Com
+             * Format: date
+             */
+            data_com: string;
+            /** Data Pagamento */
+            data_pagamento: string | null;
+            /** Valor Unitario */
+            valor_unitario: string;
+            /** Quantidade */
+            quantidade: string;
+            /** Total */
+            total: string;
+        };
         /** Proventos */
         Proventos: {
             /** Ticker */
@@ -900,6 +1142,16 @@ export interface components {
             itens: components["schemas"]["ProventoItem"][];
             /** Dy Por Ano */
             dy_por_ano: components["schemas"]["DyAno"][];
+        };
+        /** ResumoCarteira */
+        ResumoCarteira: {
+            carteira: components["schemas"]["Carteira"];
+            totais: components["schemas"]["TotaisCarteira"];
+            /** Posicoes */
+            posicoes: components["schemas"]["PosicaoCarteira"][];
+            alocacao: components["schemas"]["AlocacaoCarteira"];
+            /** Proventos */
+            proventos: components["schemas"]["ProventoRecebido"][];
         };
         /** SinaisDoDia */
         SinaisDoDia: {
@@ -926,6 +1178,21 @@ export interface components {
             total: number;
             /** Exemplos */
             exemplos: components["schemas"]["ExemploSinal"][];
+        };
+        /** TotaisCarteira */
+        TotaisCarteira: {
+            /** Patrimonio */
+            patrimonio: string;
+            /** Custo */
+            custo: string;
+            /** Resultado Nao Realizado */
+            resultado_nao_realizado: string;
+            /** Resultado Realizado */
+            resultado_realizado: string;
+            /** Proventos */
+            proventos: string;
+            /** Resultado Total */
+            resultado_total: string;
         };
         /** UltimaCotacao */
         UltimaCotacao: {
@@ -2197,6 +2464,664 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["EstadoWatchlist"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+        };
+    };
+    listar_v1_carteiras_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Carteiras"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+        };
+    };
+    criar_v1_carteiras_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NovaCarteira"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Carteira"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+        };
+    };
+    excluir_v1_carteiras__carteira_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                carteira_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+        };
+    };
+    renomear_v1_carteiras__carteira_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                carteira_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NovaCarteira"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Carteira"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+        };
+    };
+    operacoes_v1_carteiras__carteira_id__operacoes_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                carteira_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Operacoes"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+        };
+    };
+    lancar_v1_carteiras__carteira_id__operacoes_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                carteira_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NovaOperacao"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OperacaoCarteira"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+        };
+    };
+    editar_v1_carteiras__carteira_id__operacoes__operacao_id__put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                carteira_id: number;
+                operacao_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NovaOperacao"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OperacaoCarteira"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+        };
+    };
+    remover_v1_carteiras__carteira_id__operacoes__operacao_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                carteira_id: number;
+                operacao_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+        };
+    };
+    resumo_v1_carteiras__carteira_id__resumo_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                carteira_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResumoCarteira"];
                 };
             };
             /** @description Unauthorized */
