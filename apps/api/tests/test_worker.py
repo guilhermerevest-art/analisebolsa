@@ -251,3 +251,24 @@ def test_analise_grava_metricas_e_pode_ser_refeita(db):
     assert executar_analise(db, ["PETR4"]) == "ok"
     assert contar(db, "metricas_ativo") == 2
     assert execucoes(db, "analise")[-1].ativos_ok == 1
+
+
+def test_analise_grava_insights_e_substitui(db):
+    assert executar_eod(db, fontes_padrao(), SETTINGS, HOJE) == "ok"
+    with db.connect() as conn:
+        linhas = conn.execute(
+            text(
+                "SELECT a.ticker, i.codigo, i.texto, i.data FROM insights i "
+                "JOIN ativos a USING (ativo_id)"
+            )
+        ).all()
+    # HGLG11 (R$ 160 × ~1.300 cotas/dia) passa no mínimo de liquidez e ganha a leitura de
+    # tendência; PETR4 (R$ 20) fica abaixo de R$ 100 mil/dia e não recebe insights técnicos
+    tickers = {t for t, *_ in linhas}
+    assert ("HGLG11", "tendencia") in {(t, c) for t, c, *_ in linhas}
+    assert "PETR4" not in tickers
+    assert all(d == HOJE for *_, d in linhas)
+    from worker.analise import executar as executar_analise
+
+    assert executar_analise(db, ["PETR4"]) == "ok"
+    assert contar(db, "insights") == len(linhas)

@@ -1,7 +1,7 @@
 import "server-only";
 
 import { cabecalhosApi, env } from "@/lib/env";
-import type { AtivoDetalhe, CamposScreener, Destaques, Fundamentos, PaginaAtivos, PaginaScreener, Proventos } from "@/lib/tipos-api";
+import type { AnaliseAtivo, AtivoDetalhe, CamposScreener, Destaques, Fundamentos, PaginaAtivos, PaginaScreener, Proventos } from "@/lib/tipos-api";
 
 const UMA_HORA = 3600;
 
@@ -21,6 +21,8 @@ async function lerApi<T>(caminho: string, tags: string[], revalidate = UMA_HORA)
 
 export const lerAtivo = (t: string) => lerApi<AtivoDetalhe>(`/v1/ativos/${t}`, [`ativo:${t}`]);
 export const lerFundamentos = (t: string) => lerApi<Fundamentos>(`/v1/ativos/${t}/fundamentos`, [`ativo:${t}`]);
+export const lerAnalise = (t: string) =>
+  lerApi<AnaliseAtivo>(`/v1/ativos/${t}/analise`, [`ativo:${t}`]).catch(() => null);
 export const lerProventos = (t: string) => lerApi<Proventos>(`/v1/ativos/${t}/proventos`, [`ativo:${t}`]);
 
 export async function lerDestaques(): Promise<Destaques | null> {

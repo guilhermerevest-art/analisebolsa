@@ -20,3 +20,5 @@ export type ItemScreener = S["ItemScreener"];
 export type PaginaScreener = S["PaginaScreener"];
 export type CampoScreener = S["CampoScreener"];
 export type CamposScreener = S["CamposScreener"];
+export type AnaliseAtivo = S["AnaliseAtivo"];
+export type InsightAtivo = S["InsightAtivo"];

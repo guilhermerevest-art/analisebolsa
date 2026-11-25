@@ -2,12 +2,13 @@ import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 
 import { Abas } from "@/components/ativo/abas";
+import { PainelAnalise } from "@/components/ativo/analise";
 import { CabecalhoAtivo } from "@/components/ativo/cabecalho-ativo";
 import { PainelFundamentos } from "@/components/ativo/fundamentos";
 import { GraficoCliente } from "@/components/ativo/grafico-cliente";
 import { PainelProventos } from "@/components/ativo/proventos";
 import { AvisoEducacional } from "@/components/aviso-educacional";
-import { lerAtivo, lerFundamentos, lerProventos } from "@/lib/dados";
+import { lerAnalise, lerAtivo, lerFundamentos, lerProventos } from "@/lib/dados";
 import { formatarPct, formatarPreco, NOMES_TIPO } from "@/lib/formato";
 
 export const revalidate = 3600;
@@ -40,7 +41,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function PaginaAtivo({ params }: Props) {
   const ticker = await tickerDaUrl(params);
-  const [ativo, fundamentos, proventos] = await Promise.all([lerAtivo(ticker), lerFundamentos(ticker), lerProventos(ticker)]);
+  const [ativo, fundamentos, proventos, analise] = await Promise.all([
+    lerAtivo(ticker),
+    lerFundamentos(ticker),
+    lerProventos(ticker),
+    lerAnalise(ticker),
+  ]);
   if (!ativo) notFound();
 
   return (
@@ -51,6 +57,7 @@ export default async function PaginaAtivo({ params }: Props) {
       </section>
       <Abas
         abas={[
+          { id: "analise", rotulo: "Análise", conteudo: <PainelAnalise dados={analise} /> },
           { id: "fundamentos", rotulo: "Fundamentos", conteudo: <PainelFundamentos dados={fundamentos} /> },
           { id: "proventos", rotulo: "Proventos", conteudo: <PainelProventos dados={proventos} /> },
           {

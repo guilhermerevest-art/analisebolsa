@@ -391,3 +391,83 @@ def ids_por_ticker(conn: Connection, tickers: Iterable[str]) -> list[tuple[int, 
     if not tickers:
         return []
     return listar_ativos_ativos(conn, tickers)
+
+
+def setor_do_ativo(conn: Connection, ativo_id: int) -> str | None:
+    return conn.execute(
+        text("SELECT setor FROM ativos WHERE ativo_id = :a"), {"a": ativo_id}
+    ).scalar_one_or_none()
+
+
+def dy_anos_anteriores(conn: Connection, ativo_id: int, ano_atual: int, anos: int = 5) -> list:
+    """DY (%) de cada ano completo antes de `ano_atual`: proventos em dinheiro do ano sobre
+    o último fechamento do ano. Anos sem cotação ficam de fora; sem proventos contam 0."""
+    linhas = conn.execute(
+        text(
+            """
+            WITH preco AS (
+              SELECT DISTINCT ON (extract(year FROM data)::int)
+                     extract(year FROM data)::int AS ano, fechamento
+              FROM cotacoes_diarias
+              WHERE ativo_id = :a AND data >= make_date(:ini, 1, 1) AND data < make_date(:fim, 1, 1)
+              ORDER BY extract(year FROM data)::int, data DESC
+            ), soma AS (
+              SELECT extract(year FROM data_com)::int AS ano, sum(valor) AS total
+              FROM proventos
+              WHERE ativo_id = :a AND tipo IN ('dividendo','jcp','rendimento')
+              GROUP BY 1
+            )
+            SELECT p.ano, coalesce(s.total, 0) AS total, p.fechamento
+            FROM preco p LEFT JOIN soma s USING (ano) ORDER BY p.ano
+            """
+        ),
+        {"a": ativo_id, "ini": ano_atual - anos, "fim": ano_atual},
+    ).all()
+    return [float(total / preco * 100) for _, total, preco in linhas if preco]
+
+
+def pl_do_setor(conn: Connection, ativo_id: int, setor: str | None) -> list[float]:
+    if not setor:
+        return []
+    return list(
+        conn.execute(
+            text(
+                """
+                SELECT m.pl FROM metricas_ativo m JOIN ativos a USING (ativo_id)
+                WHERE a.ativo AND a.tipo = 'acao' AND a.setor = :s AND a.ativo_id <> :a
+                  AND m.pl > 0
+                """
+            ),
+            {"s": setor, "a": ativo_id},
+        ).scalars()
+    )
+
+
+def substituir_insights(conn: Connection, ativo_id: int, data: date, insights: list) -> None:
+    conn.execute(text("DELETE FROM insights WHERE ativo_id = :a"), {"a": ativo_id})
+    if not insights:
+        return
+    conn.execute(
+        text(
+            """
+            INSERT INTO insights
+              (ativo_id, codigo, data, categoria, tom, prioridade, titulo, texto, dados)
+            VALUES (:a, :codigo, :data, :categoria, :tom, :prioridade, :titulo, :texto,
+                    CAST(:dados AS JSONB))
+            """
+        ),
+        [
+            {
+                "a": ativo_id,
+                "data": data,
+                "codigo": i.codigo,
+                "categoria": i.categoria,
+                "tom": i.tom,
+                "prioridade": i.prioridade,
+                "titulo": i.titulo,
+                "texto": i.texto,
+                "dados": json.dumps(i.dados, default=float),
+            }
+            for i in insights
+        ],
+    )

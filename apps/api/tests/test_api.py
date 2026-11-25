@@ -344,3 +344,25 @@ def test_screener_campos(cliente_screener):
     assert preco["unidade"] == "brl" and preco["min"] < preco["max"]
     assert corpo["setores"] == ["Energia"]
     assert corpo["tipos"] == ["acao", "fii", "etf", "bdr"]
+
+
+@pytest.mark.db
+def test_analise_do_ativo(cliente_screener):
+    r = cliente_screener.get("/v1/ativos/PETR4/analise")
+    assert r.status_code == 200
+    corpo = r.json()
+    assert corpo["ticker"] == "PETR4"
+    assert corpo["metricas"]["preco"] is not None
+    assert isinstance(corpo["elegivel"], bool)
+    if not corpo["elegivel"]:
+        assert corpo["motivo"]
+    for i in corpo["insights"]:
+        assert {"codigo", "categoria", "tom", "titulo", "texto", "data"} <= i.keys()
+
+
+@pytest.mark.db
+def test_analise_sem_calculo_e_ativo_inexistente(cliente):
+    r = cliente.get("/v1/ativos/PETR4/analise")
+    assert r.status_code == 200
+    assert r.json()["elegivel"] is False and r.json()["insights"] == []
+    assert cliente.get("/v1/ativos/XXXX3/analise").status_code == 404

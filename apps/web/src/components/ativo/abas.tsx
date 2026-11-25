@@ -9,7 +9,7 @@ export function Abas({ abas }: { abas: { id: string; rotulo: string; conteudo: R
   const base = useId();
   return (
     <div>
-      <div role="tablist" className="flex gap-1 border-b">
+      <div role="tablist" className="flex gap-1 overflow-x-auto border-b">
         {abas.map((a) => (
           <button
             key={a.id}
@@ -19,7 +19,7 @@ export function Abas({ abas }: { abas: { id: string; rotulo: string; conteudo: R
             aria-controls={`${base}-${a.id}-painel`}
             onClick={() => setAtiva(a.id)}
             className={cn(
-              "-mb-px border-b-2 px-4 py-2 text-sm font-medium transition-colors",
+              "-mb-px shrink-0 border-b-2 px-3 py-2 text-sm font-medium transition-colors sm:px-4",
               ativa === a.id ? "border-primary text-foreground" : "border-transparent text-muted-foreground hover:text-foreground",
             )}
           >

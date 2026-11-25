@@ -4,7 +4,7 @@ from datetime import date, datetime
 from decimal import Decimal
 from typing import Annotated, Literal
 
-from pydantic import BaseModel, PlainSerializer
+from pydantic import BaseModel, Field, PlainSerializer
 
 CENTAVO = Decimal("0.01")
 
@@ -183,12 +183,7 @@ class Execucoes(BaseModel):
 Tendencia = Literal["alta", "baixa", "lateral"]
 
 
-class ItemScreener(BaseModel):
-    ticker: str
-    nome: str
-    tipo: TipoAtivo
-    setor: str | None
-    logo_url: str | None
+class MetricasAtivo(BaseModel):
     data: date
     preco: Preco
     var_1d: float | None
@@ -214,6 +209,31 @@ class ItemScreener(BaseModel):
     margem_liquida: float | None
     div_liq_ebitda: float | None
     valor_mercado: float | None
+
+
+class ItemScreener(MetricasAtivo):
+    ticker: str
+    nome: str
+    tipo: TipoAtivo
+    setor: str | None
+    logo_url: str | None
+
+
+class InsightAtivo(BaseModel):
+    codigo: str
+    categoria: Literal["tendencia", "momento", "volatilidade", "volume", "fundamentos", "proventos"]
+    tom: Literal["positivo", "neutro", "atencao"]
+    titulo: str
+    texto: str
+    data: date
+
+
+class AnaliseAtivo(BaseModel):
+    ticker: str
+    elegivel: bool = Field(description="Se a análise técnica (insights técnicos e cenários) vale")
+    motivo: str | None = Field(description="Por que a análise técnica não vale, se for o caso")
+    metricas: MetricasAtivo | None
+    insights: list[InsightAtivo]
 
 
 class PaginaScreener(BaseModel):
