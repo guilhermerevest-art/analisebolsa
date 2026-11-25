@@ -83,15 +83,15 @@ def proventos(conn: Conn, ticker: Ticker):
 @router.get(
     "/{ticker}/analise",
     response_model=s.AnaliseAtivo,
-    summary="Métricas e insights do último pregão",
+    summary="Métricas, insights e cenários do último pregão",
 )
 def analise(conn: Conn, ticker: Ticker):
     ativo = q.ativo_por_ticker(conn, ticker)
-    metricas, insights = q.analise(conn, ativo["ativo_id"])
+    metricas, insights, cenario = q.analise(conn, ativo["ativo_id"])
     if metricas is None:
         motivo = "Ainda não há análise calculada para este ativo."
         return {"ticker": ticker, "elegivel": False, "motivo": motivo, "metricas": None,
-                "insights": []}  # fmt: skip
+                "insights": [], "cenario": None}  # fmt: skip
     elegivel, motivo = elegibilidade(metricas["pregoes"], metricas["volume_financeiro_20d"])
     return {
         "ticker": ticker,
@@ -99,4 +99,5 @@ def analise(conn: Conn, ticker: Ticker):
         "motivo": motivo,
         "metricas": metricas,
         "insights": insights,
+        "cenario": cenario if elegivel else None,
     }

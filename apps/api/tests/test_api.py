@@ -358,6 +358,9 @@ def test_analise_do_ativo(cliente_screener):
         assert corpo["motivo"]
     for i in corpo["insights"]:
         assert {"codigo", "categoria", "tom", "titulo", "texto", "data"} <= i.keys()
+    assert "cenario" in corpo
+    if not corpo["elegivel"]:
+        assert corpo["cenario"] is None
 
 
 @pytest.mark.db

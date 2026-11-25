@@ -678,7 +678,7 @@
         "tags": [
           "ativos"
         ],
-        "summary": "Métricas e insights do último pregão",
+        "summary": "Métricas, insights e cenários do último pregão",
         "operationId": "analise_v1_ativos__ticker__analise_get",
         "parameters": [
           {
@@ -1680,6 +1680,16 @@
             },
             "type": "array",
             "title": "Insights"
+          },
+          "cenario": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CenariosAtivo"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "type": "object",
@@ -1688,7 +1698,8 @@
           "elegivel",
           "motivo",
           "metricas",
-          "insights"
+          "insights",
+          "cenario"
         ],
         "title": "AnaliseAtivo"
       },
@@ -1985,6 +1996,179 @@
           "volume"
         ],
         "title": "Candle"
+      },
+      "CenarioPreco": {
+        "properties": {
+          "tipo": {
+            "type": "string",
+            "enum": [
+              "alta",
+              "lateral",
+              "baixa"
+            ],
+            "title": "Tipo"
+          },
+          "titulo": {
+            "type": "string",
+            "title": "Titulo"
+          },
+          "texto": {
+            "type": "string",
+            "title": "Texto"
+          },
+          "gatilho": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gatilho"
+          },
+          "alvo": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Alvo"
+          },
+          "invalidacao": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Invalidacao"
+          },
+          "limite_inferior": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Limite Inferior"
+          },
+          "limite_superior": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Limite Superior"
+          },
+          "dist_gatilho": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dist Gatilho",
+            "description": "Distância do preço atual, em %"
+          },
+          "dist_alvo": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dist Alvo"
+          },
+          "dist_invalidacao": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dist Invalidacao"
+          },
+          "relacao": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Relacao",
+            "description": "Distância do gatilho ao alvo dividida pela do gatilho à invalidação"
+          }
+        },
+        "type": "object",
+        "required": [
+          "tipo",
+          "titulo",
+          "texto",
+          "gatilho",
+          "alvo",
+          "invalidacao",
+          "limite_inferior",
+          "limite_superior",
+          "dist_gatilho",
+          "dist_alvo",
+          "dist_invalidacao",
+          "relacao"
+        ],
+        "title": "CenarioPreco"
+      },
+      "CenariosAtivo": {
+        "properties": {
+          "data": {
+            "type": "string",
+            "format": "date",
+            "title": "Data"
+          },
+          "atr14": {
+            "type": "number",
+            "title": "Atr14"
+          },
+          "niveis": {
+            "items": {
+              "$ref": "#/components/schemas/NivelPreco"
+            },
+            "type": "array",
+            "title": "Niveis"
+          },
+          "cenarios": {
+            "items": {
+              "$ref": "#/components/schemas/CenarioPreco"
+            },
+            "type": "array",
+            "title": "Cenarios"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data",
+          "atr14",
+          "niveis",
+          "cenarios"
+        ],
+        "title": "CenariosAtivo"
       },
       "Cotacoes": {
         "properties": {
@@ -3265,6 +3449,36 @@
           "valor_mercado"
         ],
         "title": "MetricasAtivo"
+      },
+      "NivelPreco": {
+        "properties": {
+          "preco": {
+            "type": "number",
+            "title": "Preco"
+          },
+          "tipo": {
+            "type": "string",
+            "enum": [
+              "suporte",
+              "resistencia",
+              "max_52s",
+              "min_52s"
+            ],
+            "title": "Tipo"
+          },
+          "toques": {
+            "type": "integer",
+            "title": "Toques",
+            "description": "Quantos topos ou fundos semanais formaram o nível"
+          }
+        },
+        "type": "object",
+        "required": [
+          "preco",
+          "tipo",
+          "toques"
+        ],
+        "title": "NivelPreco"
       },
       "PaginaAtivos": {
         "properties": {

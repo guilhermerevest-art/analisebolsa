@@ -1,5 +1,6 @@
 import { AlertTriangle, Info, TrendingDown, TrendingUp, type LucideIcon } from "lucide-react";
 
+import { PainelCenarios } from "@/components/ativo/cenarios";
 import { formatarData } from "@/lib/formato";
 import type { AnaliseAtivo, InsightAtivo } from "@/lib/tipos-api";
 import { cn } from "@/lib/utils";
@@ -80,6 +81,7 @@ export function PainelAnalise({ dados }: { dados: AnaliseAtivo | null }) {
       ) : (
         dados.elegivel && <p className="text-sm text-muted-foreground">Nenhum sinal técnico relevante no último pregão.</p>
       )}
+      {dados.cenario && <PainelCenarios dados={dados.cenario} />}
       <p className="text-xs text-muted-foreground">
         Leituras automáticas dos indicadores com dados de {formatarData(dados.metricas.data)}. Elas descrevem o que os números mostram e não indicam
         o que fazer com o ativo.

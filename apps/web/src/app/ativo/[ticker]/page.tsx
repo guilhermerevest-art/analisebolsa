@@ -53,7 +53,7 @@ export default async function PaginaAtivo({ params }: Props) {
     <div className="grid gap-8">
       <CabecalhoAtivo ativo={ativo} />
       <section aria-label="Gráfico">
-        <GraficoCliente ticker={ativo.ticker} />
+        <GraficoCliente ticker={ativo.ticker} niveis={analise?.cenario?.niveis} />
       </section>
       <Abas
         abas={[

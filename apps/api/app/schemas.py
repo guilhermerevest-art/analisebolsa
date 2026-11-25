@@ -228,12 +228,43 @@ class InsightAtivo(BaseModel):
     data: date
 
 
+class NivelPreco(BaseModel):
+    preco: float
+    tipo: Literal["suporte", "resistencia", "max_52s", "min_52s"]
+    toques: int = Field(description="Quantos topos ou fundos semanais formaram o nível")
+
+
+class CenarioPreco(BaseModel):
+    tipo: Literal["alta", "lateral", "baixa"]
+    titulo: str
+    texto: str
+    gatilho: float | None
+    alvo: float | None
+    invalidacao: float | None
+    limite_inferior: float | None
+    limite_superior: float | None
+    dist_gatilho: float | None = Field(description="Distância do preço atual, em %")
+    dist_alvo: float | None
+    dist_invalidacao: float | None
+    relacao: float | None = Field(
+        description="Distância do gatilho ao alvo dividida pela do gatilho à invalidação"
+    )
+
+
+class CenariosAtivo(BaseModel):
+    data: date
+    atr14: float
+    niveis: list[NivelPreco]
+    cenarios: list[CenarioPreco]
+
+
 class AnaliseAtivo(BaseModel):
     ticker: str
     elegivel: bool = Field(description="Se a análise técnica (insights técnicos e cenários) vale")
     motivo: str | None = Field(description="Por que a análise técnica não vale, se for o caso")
     metricas: MetricasAtivo | None
     insights: list[InsightAtivo]
+    cenario: CenariosAtivo | None
 
 
 class PaginaScreener(BaseModel):

@@ -22,3 +22,6 @@ export type CampoScreener = S["CampoScreener"];
 export type CamposScreener = S["CamposScreener"];
 export type AnaliseAtivo = S["AnaliseAtivo"];
 export type InsightAtivo = S["InsightAtivo"];
+export type NivelPreco = S["NivelPreco"];
+export type CenarioPreco = S["CenarioPreco"];
+export type CenariosAtivo = S["CenariosAtivo"];

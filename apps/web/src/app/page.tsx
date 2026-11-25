@@ -17,7 +17,7 @@ const FUNCIONALIDADES = [
   { titulo: "Fundamentos", descricao: "P/L, P/VP, ROE, margem, dívida e mais.", icone: <BarChart3 /> },
   { titulo: "Proventos", descricao: "Histórico de dividendos, JCP e rendimentos, com DY por ano.", icone: <Coins /> },
   { titulo: "Insights", descricao: "Leitura educacional dos sinais técnicos de cada ativo, na aba Análise.", icone: <Lightbulb /> },
-  { titulo: "Cenários", descricao: "Suportes, resistências e cenários de entrada e saída.", icone: <Target />, emBreve: true },
+  { titulo: "Cenários", descricao: "Suportes, resistências e cenários condicionais de alta, lateral e baixa.", icone: <Target /> },
   { titulo: "Screener", descricao: "Filtre ativos por indicadores e fundamentos.", icone: <Filter />, href: "/screener", classe: "md:col-span-2" },
   { titulo: "Carteira", descricao: "Acompanhe posições, rentabilidade e alocação.", icone: <Briefcase />, emBreve: true },
   { titulo: "Simulador", descricao: "Aportes mensais com reinvestimento, comparados ao CDI e ao IPCA.", icone: <Calculator />, emBreve: true },
