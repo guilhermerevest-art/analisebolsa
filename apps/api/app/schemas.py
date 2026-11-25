@@ -501,3 +501,53 @@ class Simulacao(BaseModel):
         description="Faixa de resultados simulados; nula com menos de 5 anos de histórico"
     )
     aviso: str
+
+
+TipoAlerta = Literal["preco_acima", "preco_abaixo", "variacao_dia", "insight"]
+
+
+class NovoAlerta(BaseModel):
+    ticker: Annotated[str, Field(pattern=r"^[A-Za-z0-9]{4,6}$")]
+    tipo: TipoAlerta
+    parametro: float | None = Field(
+        default=None, gt=0, le=1e7, description="Preço em R$ ou variação em %; ignorado no insight"
+    )
+    codigo: str | None = Field(default=None, description="Código do sinal, no tipo insight")
+
+
+class AlteracaoAlerta(BaseModel):
+    ativo: bool = Field(description="Liga ou desliga o alerta")
+
+
+class Alerta(BaseModel):
+    id: int
+    ticker: str
+    nome: str
+    tipo: TipoAlerta
+    parametro: float | None
+    codigo: str | None
+    ativo: bool
+    descricao: str
+    ultimo_disparo: date | None
+    criado_em: datetime
+
+
+class DisparoAlerta(BaseModel):
+    alerta_id: int
+    ticker: str
+    data: date
+    texto: str
+    enviado_em: datetime | None
+
+
+class SinalAlerta(BaseModel):
+    codigo: str
+    descricao: str
+
+
+class Alertas(BaseModel):
+    itens: list[Alerta]
+    limite: int
+    ligados: int
+    disparos: list[DisparoAlerta] = Field(description="Últimos disparos, do mais recente")
+    sinais: list[SinalAlerta] = Field(description="Sinais que podem virar alerta")

@@ -13,6 +13,10 @@ inputs:
     description: DATABASE_URL vindo de um segredo do GitHub (opcional; tem prioridade)
     required: false
     default: ""
+  smtp_senha:
+    description: SMTP_SENHA vindo de um segredo do GitHub (opcional; tem prioridade)
+    required: false
+    default: ""
 runs:
   using: composite
   steps:
@@ -22,6 +26,7 @@ runs:
       env:
         VERCEL_TOKEN: ${{ inputs.token }}
         DATABASE_URL_GITHUB: ${{ inputs.database_url }}
+        SMTP_SENHA_GITHUB: ${{ inputs.smtp_senha }}
         VERCEL_ORG_ID: team_fWEuENXE3yFNvvhgguAgrDg8
         VERCEL_PROJECT_ID: prj_EzFOVDRakt67PFaYGSDQo36rsAfZ
       run: |
@@ -30,6 +35,11 @@ runs:
         if [ -n "$DATABASE_URL_GITHUB" ]; then
           grep -v '^DATABASE_URL=' .env > .env.tmp || true
           printf 'DATABASE_URL="%s"\n' "$DATABASE_URL_GITHUB" >> .env.tmp
+          mv .env.tmp .env
+        fi
+        if [ -n "$SMTP_SENHA_GITHUB" ]; then
+          grep -v '^SMTP_SENHA=' .env > .env.tmp || true
+          printf 'SMTP_SENHA="%s"\n' "$SMTP_SENHA_GITHUB" >> .env.tmp
           mv .env.tmp .env
         fi
         # Variáveis do tipo "sensitive" vêm vazias: as que o worker usa precisam ser "encrypted".

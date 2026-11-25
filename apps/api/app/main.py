@@ -11,8 +11,10 @@ from app.deps import usuario_opcional
 from app.erros import registrar_handlers, resposta_problema
 from app.rotas import (
     admin,
+    alertas,
     ativos,
     carteiras,
+    conta,
     health,
     indices,
     mercado,
@@ -47,7 +49,19 @@ def create_app() -> FastAPI:
                 return resposta_problema(request, 401, "Unauthorized", "chave interna inválida")
         return await call_next(request)
 
-    rotas = (health, ativos, mercado, indices, screener, simulador, watchlist, carteiras, admin)
+    rotas = (
+        health,
+        ativos,
+        mercado,
+        indices,
+        screener,
+        simulador,
+        watchlist,
+        carteiras,
+        alertas,
+        conta,
+        admin,
+    )
     for r in (m.router for m in rotas):
         app.include_router(r, prefix="/v1")
     return app

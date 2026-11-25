@@ -30,6 +30,11 @@ export async function Cabecalho() {
               <Link href="/carteira">Carteira</Link>
             </Button>
           )}
+          {sessao?.user && (
+            <Button asChild variant="ghost" size="sm" className="hidden lg:inline-flex">
+              <Link href="/alertas">Alertas</Link>
+            </Button>
+          )}
           {sessao?.user?.role === "admin" && (
             <Button asChild variant="ghost" size="sm">
               <Link href="/admin">Admin</Link>

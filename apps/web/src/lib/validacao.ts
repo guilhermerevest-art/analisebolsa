@@ -83,3 +83,30 @@ export const esquemaOperacao = z.object({
   preco: campoDecimal("Preço", 4, "positivo"),
   custos: campoDecimal("Custos", 2, "zero"),
 });
+
+export const TIPOS_ALERTA = {
+  preco_acima: "Fechamento acima de (R$)",
+  preco_abaixo: "Fechamento abaixo de (R$)",
+  variacao_dia: "Variação do dia maior que (%)",
+  insight: "Sinal do dia",
+} as const;
+
+/** Formulário de alerta: o parâmetro é preço ou % conforme o tipo; o sinal só no tipo insight. */
+export const esquemaAlerta = z
+  .object({
+    ticker: z.string().trim().toUpperCase().regex(/^[A-Z0-9]{4,6}$/, "Ticker inválido"),
+    tipo: z.enum(Object.keys(TIPOS_ALERTA) as [keyof typeof TIPOS_ALERTA, ...(keyof typeof TIPOS_ALERTA)[]], { message: "Escolha o tipo" }),
+    parametro: z.string(),
+    codigo: z.string(),
+  })
+  .transform((v, ctx) => {
+    if (v.tipo === "insight") {
+      if (!v.codigo) ctx.addIssue({ code: "custom", path: ["codigo"], message: "Escolha o sinal" });
+      return { ticker: v.ticker, tipo: v.tipo, codigo: v.codigo };
+    }
+    const d = decimalBr(v.parametro);
+    const n = d === null ? NaN : Number(d);
+    if (!(n > 0)) ctx.addIssue({ code: "custom", path: ["parametro"], message: "Informe um valor maior que zero" });
+    else if (v.tipo === "variacao_dia" && n > 100) ctx.addIssue({ code: "custom", path: ["parametro"], message: "A variação vai até 100%" });
+    return { ticker: v.ticker, tipo: v.tipo, parametro: n };
+  });

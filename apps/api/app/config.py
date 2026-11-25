@@ -20,6 +20,13 @@ class Settings(BaseSettings):
     fontes_proventos: str = "brapi,yahoo"
     http_timeout_s: float = 20.0
     pausa_entre_tickers_s: float = 0.3
+    # E-mail dos alertas por SMTP (Resend: smtp.resend.com, usuário "resend", senha = chave da
+    # API; Gmail: smtp.gmail.com com senha de app). Sem host, os alertas não são enviados.
+    smtp_host: str = ""
+    smtp_port: int = 587
+    smtp_usuario: str = ""
+    smtp_senha: str = ""
+    email_remetente: str = ""
 
     @property
     def lista_fontes_cotacoes(self) -> list[str]:

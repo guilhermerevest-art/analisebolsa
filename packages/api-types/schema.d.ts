@@ -384,6 +384,76 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/alertas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Alertas, últimos disparos e sinais */
+        get: operations["listar_v1_alertas_get"];
+        put?: never;
+        /** Cria um alerta */
+        post: operations["criar_v1_alertas_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/alertas/{alerta_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Exclui um alerta */
+        delete: operations["excluir_v1_alertas__alerta_id__delete"];
+        options?: never;
+        head?: never;
+        /** Liga ou desliga */
+        patch: operations["alterar_v1_alertas__alerta_id__patch"];
+        trace?: never;
+    };
+    "/v1/conta/exportar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Todos os dados do usuário */
+        get: operations["exportar_v1_conta_exportar_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/conta": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Exclui a conta e todos os dados */
+        delete: operations["excluir_v1_conta_delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/admin/execucoes": {
         parameters: {
             query?: never;
@@ -419,6 +489,54 @@ export interface components {
             /** Ibov */
             ibov: number | null;
         };
+        /** Alerta */
+        Alerta: {
+            /** Id */
+            id: number;
+            /** Ticker */
+            ticker: string;
+            /** Nome */
+            nome: string;
+            /**
+             * Tipo
+             * @enum {string}
+             */
+            tipo: "preco_acima" | "preco_abaixo" | "variacao_dia" | "insight";
+            /** Parametro */
+            parametro: number | null;
+            /** Codigo */
+            codigo: string | null;
+            /** Ativo */
+            ativo: boolean;
+            /** Descricao */
+            descricao: string;
+            /** Ultimo Disparo */
+            ultimo_disparo: string | null;
+            /**
+             * Criado Em
+             * Format: date-time
+             */
+            criado_em: string;
+        };
+        /** Alertas */
+        Alertas: {
+            /** Itens */
+            itens: components["schemas"]["Alerta"][];
+            /** Limite */
+            limite: number;
+            /** Ligados */
+            ligados: number;
+            /**
+             * Disparos
+             * @description Últimos disparos, do mais recente
+             */
+            disparos: components["schemas"]["DisparoAlerta"][];
+            /**
+             * Sinais
+             * @description Sinais que podem virar alerta
+             */
+            sinais: components["schemas"]["SinalAlerta"][];
+        };
         /** AlocacaoCarteira */
         AlocacaoCarteira: {
             /** Ativo */
@@ -427,6 +545,14 @@ export interface components {
             setor: components["schemas"]["FatiaAlocacao"][];
             /** Tipo */
             tipo: components["schemas"]["FatiaAlocacao"][];
+        };
+        /** AlteracaoAlerta */
+        AlteracaoAlerta: {
+            /**
+             * Ativo
+             * @description Liga ou desliga o alerta
+             */
+            ativo: boolean;
         };
         /** AnaliseAtivo */
         AnaliseAtivo: {
@@ -644,6 +770,22 @@ export interface components {
             altas: components["schemas"]["Destaque"][];
             /** Baixas */
             baixas: components["schemas"]["Destaque"][];
+        };
+        /** DisparoAlerta */
+        DisparoAlerta: {
+            /** Alerta Id */
+            alerta_id: number;
+            /** Ticker */
+            ticker: string;
+            /**
+             * Data
+             * Format: date
+             */
+            data: string;
+            /** Texto */
+            texto: string;
+            /** Enviado Em */
+            enviado_em: string | null;
         };
         /** DyAno */
         DyAno: {
@@ -1046,6 +1188,26 @@ export interface components {
              */
             custos: number | string;
         };
+        /** NovoAlerta */
+        NovoAlerta: {
+            /** Ticker */
+            ticker: string;
+            /**
+             * Tipo
+             * @enum {string}
+             */
+            tipo: "preco_acima" | "preco_abaixo" | "variacao_dia" | "insight";
+            /**
+             * Parametro
+             * @description Preço em R$ ou variação em %; ignorado no insight
+             */
+            parametro?: number | null;
+            /**
+             * Codigo
+             * @description Código do sinal, no tipo insight
+             */
+            codigo?: string | null;
+        };
         /** OperacaoCarteira */
         OperacaoCarteira: {
             /** Id */
@@ -1338,6 +1500,13 @@ export interface components {
             total: number;
             /** Exemplos */
             exemplos: components["schemas"]["ExemploSinal"][];
+        };
+        /** SinalAlerta */
+        SinalAlerta: {
+            /** Codigo */
+            codigo: string;
+            /** Descricao */
+            descricao: string;
         };
         /** TotaisCarteira */
         TotaisCarteira: {
@@ -3431,6 +3600,436 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["RentabilidadeCarteira"];
                 };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+        };
+    };
+    listar_v1_alertas_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Alertas"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+        };
+    };
+    criar_v1_alertas_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NovoAlerta"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Alerta"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+        };
+    };
+    excluir_v1_alertas__alerta_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                alerta_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+        };
+    };
+    alterar_v1_alertas__alerta_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                alerta_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AlteracaoAlerta"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Alerta"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+        };
+    };
+    exportar_v1_conta_exportar_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+        };
+    };
+    excluir_v1_conta_delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Unauthorized */
             401: {
