@@ -3,7 +3,7 @@ import binascii
 from datetime import date
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Path, Response
+from fastapi import APIRouter, Depends, Path, Query, Response
 
 from app import carteira as c
 from app import importacao as imp
@@ -115,6 +115,22 @@ def resumo(conn: Conn, usuario: Logado, carteira_id: CarteiraId, response: Respo
 def imposto(conn: Conn, usuario: Logado, carteira_id: CarteiraId, response: Response):
     _privado(response)
     return c.imposto(conn, usuario.id, carteira_id)
+
+
+@router.get(
+    "/{carteira_id}/declaracao",
+    response_model=s.DeclaracaoCarteira,
+    summary="Bens e direitos, proventos e renda variável para a declaração anual",
+)
+def declaracao(
+    conn: Conn,
+    usuario: Logado,
+    carteira_id: CarteiraId,
+    response: Response,
+    ano: Annotated[int | None, Query(ge=2000, le=2100)] = None,
+):
+    _privado(response)
+    return c.declaracao(conn, usuario.id, carteira_id, ano, date.today())
 
 
 @router.get(

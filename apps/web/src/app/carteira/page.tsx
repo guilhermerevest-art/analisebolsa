@@ -109,6 +109,9 @@ export default async function PaginaCarteira({ searchParams }: Props) {
           <Button asChild variant="outline">
             <Link href={`/carteira/imposto?c=${atual.id}`}>Imposto de renda</Link>
           </Button>
+          <Button asChild variant="outline">
+            <Link href={`/carteira/declaracao?c=${atual.id}`}>Declaração anual</Link>
+          </Button>
           {lista.itens.length < lista.limite && <NovaCarteira primeira={false} />}
         </div>
       </div>

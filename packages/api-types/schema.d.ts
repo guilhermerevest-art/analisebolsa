@@ -418,6 +418,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/carteiras/{carteira_id}/declaracao": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Bens e direitos, proventos e renda variável para a declaração anual */
+        get: operations["declaracao_v1_carteiras__carteira_id__declaracao_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/carteiras/{carteira_id}/rentabilidade": {
         parameters: {
             query?: never;
@@ -984,6 +1001,46 @@ export interface components {
             /** Aviso */
             aviso: string;
         };
+        /** BemDeclaracao */
+        BemDeclaracao: {
+            /** Ticker */
+            ticker: string;
+            /** Nome */
+            nome: string;
+            /**
+             * Tipo
+             * @enum {string}
+             */
+            tipo: "acao" | "fii" | "etf" | "bdr";
+            /**
+             * Grupo
+             * @description Grupo da ficha Bens e Direitos, quando fixo
+             */
+            grupo: string | null;
+            /** Codigo */
+            codigo: string | null;
+            /** Descricao Grupo */
+            descricao_grupo: string;
+            /**
+             * Quantidade Anterior
+             * @description Em 31/12 do ano anterior
+             */
+            quantidade_anterior: string;
+            /** Custo Anterior */
+            custo_anterior: string;
+            /**
+             * Quantidade
+             * @description Em 31/12 do ano
+             */
+            quantidade: string;
+            /** Custo */
+            custo: string;
+            /**
+             * Discriminacao
+             * @description Texto pronto para o campo Discriminação
+             */
+            discriminacao: string;
+        };
         /** CampoScreener */
         CampoScreener: {
             /** Campo */
@@ -1187,6 +1244,38 @@ export interface components {
              * @description R$ gastos no período
              */
             total: number;
+        };
+        /** DeclaracaoCarteira */
+        DeclaracaoCarteira: {
+            /** Ano */
+            ano: number;
+            /**
+             * Anos
+             * @description Anos com operações, do mais recente
+             */
+            anos: number[];
+            /** Bens */
+            bens: components["schemas"]["BemDeclaracao"][];
+            /** Dividendos */
+            dividendos: components["schemas"]["RendimentoDeclaracao"][];
+            /** Rendimentos Fii */
+            rendimentos_fii: components["schemas"]["RendimentoDeclaracao"][];
+            /** Jcp */
+            jcp: components["schemas"]["RendimentoDeclaracao"][];
+            /**
+             * Ganho Isento Acoes
+             * @description Ganhos com ações em meses isentos
+             */
+            ganho_isento_acoes: string;
+            /**
+             * Darfs
+             * @description DARFs de renda variável apurados no ano
+             */
+            darfs: string;
+            /** Meses Com Venda */
+            meses_com_venda: number;
+            /** Aviso */
+            aviso: string;
         };
         /** Destaque */
         Destaque: {
@@ -2292,6 +2381,22 @@ export interface components {
             itens: components["schemas"]["ProventoItem"][];
             /** Dy Por Ano */
             dy_por_ano: components["schemas"]["DyAno"][];
+        };
+        /** RendimentoDeclaracao */
+        RendimentoDeclaracao: {
+            /** Ticker */
+            ticker: string;
+            /** Nome */
+            nome: string;
+            /** Bruto */
+            bruto: string;
+            /**
+             * Ir
+             * @description IR retido na fonte (JCP: 15%)
+             */
+            ir: string;
+            /** Liquido */
+            liquido: string;
         };
         /** RentabilidadeCarteira */
         RentabilidadeCarteira: {
@@ -4658,6 +4763,80 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ImpostoCarteira"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+        };
+    };
+    declaracao_v1_carteiras__carteira_id__declaracao_get: {
+        parameters: {
+            query?: {
+                ano?: number | null;
+            };
+            header?: never;
+            path: {
+                carteira_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DeclaracaoCarteira"];
                 };
             };
             /** @description Unauthorized */

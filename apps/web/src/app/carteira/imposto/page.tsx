@@ -229,7 +229,10 @@ export default async function PaginaImposto({ searchParams }: Props) {
                 ))}
               </ul>
               <p className="text-xs text-muted-foreground">
-                Os ganhos isentos vão em Rendimentos Isentos e Não Tributáveis; o mês a mês vai em Renda Variável.
+                Os ganhos isentos vão em Rendimentos Isentos e Não Tributáveis; o mês a mês vai em Renda Variável.{" "}
+                <Link href={`/carteira/declaracao?c=${carteira.id}`} className="text-cobalto underline-offset-2 hover:underline">
+                  Ver tudo para a declaração
+                </Link>
               </p>
             </div>
           </section>

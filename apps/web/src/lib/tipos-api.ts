@@ -52,3 +52,4 @@ export type PreviaImportacao = S["PreviaImportacao"];
 export type ConfigWhatsApp = S["ConfigWhatsApp"];
 export type EstadoInstancia = S["EstadoInstancia"];
 export type ImpostoCarteira = S["ImpostoCarteira"];
+export type DeclaracaoCarteira = S["DeclaracaoCarteira"];

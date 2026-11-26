@@ -821,3 +821,38 @@ class ImpostoCarteira(BaseModel):
         description="Dias com compra e venda do mesmo ativo, apurados como day trade"
     )
     aviso: str
+
+
+class BemDeclaracao(BaseModel):
+    ticker: str
+    nome: str
+    tipo: Literal["acao", "fii", "etf", "bdr"]
+    grupo: str | None = Field(description="Grupo da ficha Bens e Direitos, quando fixo")
+    codigo: str | None
+    descricao_grupo: str
+    quantidade_anterior: Quantidade = Field(description="Em 31/12 do ano anterior")
+    custo_anterior: Preco
+    quantidade: Quantidade = Field(description="Em 31/12 do ano")
+    custo: Preco
+    discriminacao: str = Field(description="Texto pronto para o campo Discriminação")
+
+
+class RendimentoDeclaracao(BaseModel):
+    ticker: str
+    nome: str
+    bruto: Preco
+    ir: Preco = Field(description="IR retido na fonte (JCP: 15%)")
+    liquido: Preco
+
+
+class DeclaracaoCarteira(BaseModel):
+    ano: int
+    anos: list[int] = Field(description="Anos com operações, do mais recente")
+    bens: list[BemDeclaracao]
+    dividendos: list[RendimentoDeclaracao]
+    rendimentos_fii: list[RendimentoDeclaracao]
+    jcp: list[RendimentoDeclaracao]
+    ganho_isento_acoes: Preco = Field(description="Ganhos com ações em meses isentos")
+    darfs: Preco = Field(description="DARFs de renda variável apurados no ano")
+    meses_com_venda: int
+    aviso: str
