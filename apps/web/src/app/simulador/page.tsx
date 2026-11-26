@@ -24,16 +24,16 @@ type Props = { searchParams: Promise<Record<string, string | string[] | undefine
 // Paleta validada (scripts/validate_palette.js do dataviz) no claro e no escuro; o total
 // aportado é a referência, em cinza tracejado.
 const SERIES_HISTORICO: SerieLinha[] = [
-  { chave: "patrimonio", rotulo: "No ativo", claro: "#1f51ff", escuro: "#5b87ff" },
+  { chave: "patrimonio", rotulo: "No ativo", claro: "#2f6bff", escuro: "#5a88ff" },
   { chave: "cdi", rotulo: "No CDI", claro: "#d97706", escuro: "#d97706" },
   { chave: "ipca", rotulo: "Corrigido pelo IPCA", claro: "#9333ea", escuro: "#a855f7" },
   { chave: "dolar", rotulo: "No dólar", claro: "#0e9f8e", escuro: "#2dd4bf" },
   { chave: "aportado", rotulo: "Total aportado", claro: "#6b7180", escuro: "#9aa0ac", tracejada: true },
 ];
 const SERIES_FAIXA: SerieLinha[] = [
-  { chave: "p90", rotulo: "Percentil 90", claro: "#1f51ff", escuro: "#5b87ff", tracejada: true },
-  { chave: "p50", rotulo: "Mediana", claro: "#1f51ff", escuro: "#5b87ff" },
-  { chave: "p10", rotulo: "Percentil 10", claro: "#1f51ff", escuro: "#5b87ff", tracejada: true },
+  { chave: "p90", rotulo: "Percentil 90", claro: "#2f6bff", escuro: "#5a88ff", tracejada: true },
+  { chave: "p50", rotulo: "Mediana", claro: "#2f6bff", escuro: "#5a88ff" },
+  { chave: "p10", rotulo: "Percentil 10", claro: "#2f6bff", escuro: "#5a88ff", tracejada: true },
   { chave: "real", rotulo: "Histórico real", claro: "#3a3f4a", escuro: "#c9ccd3" },
 ];
 

@@ -33,12 +33,12 @@ const n = (v: string) => Number(v);
 
 function Cartao({ rotulo, valor, detalhe, destaque, termo }: { rotulo: string; valor: string; detalhe?: string; destaque?: boolean; termo?: ChaveGlossario }) {
   return (
-    <div className={cn("grid content-start gap-1 rounded-xl border p-4", destaque ? "border-transparent bg-tinta text-[#f3f4f6]" : "bg-card")}>
-      <dt className={cn("text-sm", destaque ? "text-[#f3f4f6]/75 [&_button]:text-[#f3f4f6]/75" : "text-muted-foreground")}>
+    <div className={cn("grid content-start gap-1 rounded-xl border p-4", destaque ? "border-transparent bg-safira text-white" : "bg-card")}>
+      <dt className={cn("text-sm", destaque ? "text-white [&_button]:text-white" : "text-muted-foreground")}>
         {termo ? <Termo termo={termo}>{rotulo}</Termo> : rotulo}
       </dt>
       <dd className="font-display text-2xl font-semibold tracking-tight tabular-nums">{valor}</dd>
-      {detalhe && <dd className={cn("text-xs", destaque ? "text-[#f3f4f6]/75" : "text-muted-foreground")}>{detalhe}</dd>}
+      {detalhe && <dd className={cn("text-xs", destaque ? "text-white" : "text-muted-foreground")}>{detalhe}</dd>}
     </div>
   );
 }

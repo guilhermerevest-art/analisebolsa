@@ -25,7 +25,7 @@ type Ativo = Comparacao["ativos"][number];
 
 // Mesma paleta validada dos outros gráficos, uma cor por ativo.
 const CORES = [
-  { claro: "#1f51ff", escuro: "#5b87ff" },
+  { claro: "#2f6bff", escuro: "#5a88ff" },
   { claro: "#d97706", escuro: "#d97706" },
   { claro: "#9333ea", escuro: "#a855f7" },
   { claro: "#0e9f8e", escuro: "#2dd4bf" },

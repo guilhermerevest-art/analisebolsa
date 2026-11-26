@@ -170,16 +170,16 @@ export default async function Inicio() {
         </div>
       </section>
 
-      <section className="grid items-center gap-6 rounded-2xl border border-transparent bg-tinta px-6 py-12 text-[#f3f4f6] sm:px-12 dark:border-border md:grid-cols-[1fr_auto]">
+      <section className="grid items-center gap-6 rounded-2xl bg-safira px-6 py-12 text-white sm:px-12 md:grid-cols-[1fr_auto]">
         <div className="grid gap-2">
           <h2 className="text-3xl font-semibold tracking-tight">Crie sua conta grátis</h2>
-          <p className="max-w-lg text-[#f3f4f6]/75">Guarde sua carteira, sua watchlist e seus alertas, e acesse de qualquer aparelho.</p>
+          <p className="max-w-lg text-white">Guarde sua carteira, sua watchlist e seus alertas, e acesse de qualquer aparelho.</p>
         </div>
         <div className="flex flex-wrap gap-3">
-          <Button asChild size="lg">
+          <Button asChild size="lg" className="bg-giz text-tinta hover:bg-white">
             <Link href="/cadastro">Criar conta</Link>
           </Button>
-          <Button asChild size="lg" variant="ghost" className="text-[#f3f4f6] hover:bg-white/10 hover:text-white">
+          <Button asChild size="lg" variant="ghost" className="border border-white/70 text-white hover:bg-white/10 hover:text-white">
             <Link href="/entrar">Já tenho conta</Link>
           </Button>
         </div>

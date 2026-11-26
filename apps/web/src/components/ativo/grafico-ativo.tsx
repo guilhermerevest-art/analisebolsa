@@ -29,7 +29,7 @@ import { cn } from "@/lib/utils";
 const ALTA = "#16a34a";
 const BAIXA = "#dc2626";
 const OVERLAYS = [
-  { chave: "mm20", rotulo: "MM20", cor: "#1f51ff" },
+  { chave: "mm20", rotulo: "MM20", cor: "#5a88ff" },
   { chave: "mm50", rotulo: "MM50", cor: "#f59e0b" },
   { chave: "mm200", rotulo: "MM200", cor: "#a855f7" },
   { chave: "bb", rotulo: "Bollinger", cor: "#6b7180" },
@@ -196,7 +196,7 @@ export function GraficoAtivo({ ticker, niveis = [] }: { ticker: string; niveis?:
         chart.addSeries(HistogramSeries, { lastValueVisible: false, priceLineVisible: false }, pane).setData(
           histogramaMacd(series.ind, `${ALTA}99`, `${BAIXA}99`),
         );
-        chart.addSeries(LineSeries, { ...linha, color: "#1f51ff" }, pane).setData(serieIndicador(series.ind, "macd"));
+        chart.addSeries(LineSeries, { ...linha, color: "#2f6bff" }, pane).setData(serieIndicador(series.ind, "macd"));
         chart.addSeries(LineSeries, { ...linha, color: "#f59e0b" }, pane).setData(serieIndicador(series.ind, "macd_sinal"));
       }
       const panes = chart.panes();
@@ -243,7 +243,7 @@ export function GraficoAtivo({ ticker, niveis = [] }: { ticker: string; niveis?:
               aria-pressed={overlays.has(o.chave)}
               onClick={() => alternarOverlay(o.chave)}
             >
-              <span className="size-2 rounded-full" style={{ background: o.cor }} aria-hidden />
+              <span className="size-2 rounded-full ring-1 ring-white/70" style={{ background: o.cor }} aria-hidden />
               {o.rotulo}
             </Button>
           ))}

@@ -16,10 +16,8 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f3f4f6" },
-    { media: "(prefers-color-scheme: dark)", color: "#08090c" },
-  ],
+  themeColor: "#111317",
+  colorScheme: "dark",
 };
 
 const RODAPE = [
@@ -29,7 +27,7 @@ const RODAPE = [
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pt-BR" className={`${titulo.variable} ${texto.variable}`}>
+    <html lang="pt-BR" className={`dark ${titulo.variable} ${texto.variable}`}>
       <body className="flex min-h-dvh flex-col">
         <a
           href="#conteudo"
