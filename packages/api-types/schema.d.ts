@@ -401,6 +401,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/carteiras/{carteira_id}/imposto": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Apuração mensal do imposto sobre as vendas (operações comuns) */
+        get: operations["imposto_v1_carteiras__carteira_id__imposto_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/carteiras/{carteira_id}/rentabilidade": {
         parameters: {
             query?: never;
@@ -832,6 +849,20 @@ export interface components {
             /** Insights */
             insights: components["schemas"]["InsightAtivo"][];
             cenario: components["schemas"]["CenariosAtivo"] | null;
+        };
+        /** AnoImposto */
+        AnoImposto: {
+            /** Ano */
+            ano: number;
+            /**
+             * Ganho Isento
+             * @description Ganhos isentos com ações no ano (para a declaração)
+             */
+            ganho_isento: string;
+            /** Darf */
+            darf: string;
+            /** Vendas */
+            vendas: string;
         };
         /** AparelhoPush */
         AparelhoPush: {
@@ -1382,6 +1413,36 @@ export interface components {
              */
             banco: "ok";
         };
+        /** ImpostoCarteira */
+        ImpostoCarteira: {
+            /**
+             * Meses
+             * @description Meses com venda, do mais recente
+             */
+            meses: components["schemas"]["MesImposto"][];
+            /** Anos */
+            anos: components["schemas"]["AnoImposto"][];
+            /** Prejuizo Comum */
+            prejuizo_comum: string;
+            /** Prejuizo Fii */
+            prejuizo_fii: string;
+            /**
+             * Pendente
+             * @description DARF abaixo de R$ 10 ainda não pago
+             */
+            pendente: string;
+            /** Saldo Irrf */
+            saldo_irrf: string;
+            /** Codigo Darf */
+            codigo_darf: string;
+            /**
+             * Day Trade
+             * @description Vendas no mesmo dia de uma compra do mesmo ativo (podem ser day trade)
+             */
+            day_trade: components["schemas"]["PossivelDayTrade"][];
+            /** Aviso */
+            aviso: string;
+        };
         /** Indicadores */
         Indicadores: {
             /** Ticker */
@@ -1583,6 +1644,80 @@ export interface components {
             situacao: "nova" | "duplicada" | "ignorada";
             /** Motivo */
             motivo: string | null;
+        };
+        /** MesImposto */
+        MesImposto: {
+            /**
+             * Mes
+             * Format: date
+             * @description Primeiro dia do mês de apuração
+             */
+            mes: string;
+            /**
+             * Vendas Acoes
+             * @description Total vendido em ações (isenção até R$ 20 mil)
+             */
+            vendas_acoes: string;
+            /** Vendas Total */
+            vendas_total: string;
+            /** Isento Acoes */
+            isento_acoes: boolean;
+            /** Resultado Acoes */
+            resultado_acoes: string;
+            /**
+             * Ganho Isento
+             * @description Ganho em ações num mês isento
+             */
+            ganho_isento: string;
+            /** Resultado Etf Bdr */
+            resultado_etf_bdr: string;
+            /** Resultado Fii */
+            resultado_fii: string;
+            /**
+             * Compensado
+             * @description Prejuízo de meses anteriores usado no mês
+             */
+            compensado: string;
+            /**
+             * Base Comum
+             * @description Base de ações, ETFs e BDRs (15%)
+             */
+            base_comum: string;
+            /**
+             * Base Fii
+             * @description Base de FIIs (20%)
+             */
+            base_fii: string;
+            /** Imposto Devido */
+            imposto_devido: string;
+            /**
+             * Irrf
+             * @description IRRF estimado do mês (0,005% das vendas)
+             */
+            irrf: string;
+            /** Irrf Usado */
+            irrf_usado: string;
+            /**
+             * Acumulado Anterior
+             * @description DARF abaixo de R$ 10 de meses anteriores
+             */
+            acumulado_anterior: string;
+            /**
+             * Darf
+             * @description Valor a pagar no mês (zero abaixo de R$ 10)
+             */
+            darf: string;
+            /** Vencimento */
+            vencimento: string | null;
+            /** Fica Para Depois */
+            fica_para_depois: string;
+            /**
+             * Prejuizo Comum
+             * @description Saldo de prejuízo de ações, ETFs e BDRs
+             */
+            prejuizo_comum: string;
+            /** Prejuizo Fii */
+            prejuizo_fii: string;
         };
         /** MetricasAtivo */
         MetricasAtivo: {
@@ -2060,6 +2195,16 @@ export interface components {
             variacao: number | null;
             /** Proventos */
             proventos: string;
+        };
+        /** PossivelDayTrade */
+        PossivelDayTrade: {
+            /** Ticker */
+            ticker: string;
+            /**
+             * Data
+             * Format: date
+             */
+            data: string;
         };
         /** PreviaImportacao */
         PreviaImportacao: {
@@ -4427,6 +4572,78 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ResumoCarteira"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+        };
+    };
+    imposto_v1_carteiras__carteira_id__imposto_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                carteira_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImpostoCarteira"];
                 };
             };
             /** @description Unauthorized */

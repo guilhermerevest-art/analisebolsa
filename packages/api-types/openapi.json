@@ -3833,6 +3833,94 @@
         }
       }
     },
+    "/v1/carteiras/{carteira_id}/imposto": {
+      "get": {
+        "tags": [
+          "usuário"
+        ],
+        "summary": "Apuração mensal do imposto sobre as vendas (operações comuns)",
+        "operationId": "imposto_v1_carteiras__carteira_id__imposto_get",
+        "parameters": [
+          {
+            "name": "carteira_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "title": "Carteira Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImpostoCarteira"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        }
+      }
+    },
     "/v1/carteiras/{carteira_id}/rentabilidade": {
       "get": {
         "tags": [
@@ -6102,6 +6190,35 @@
         ],
         "title": "AnaliseAtivo"
       },
+      "AnoImposto": {
+        "properties": {
+          "ano": {
+            "type": "integer",
+            "title": "Ano"
+          },
+          "ganho_isento": {
+            "type": "string",
+            "title": "Ganho Isento",
+            "description": "Ganhos isentos com ações no ano (para a declaração)"
+          },
+          "darf": {
+            "type": "string",
+            "title": "Darf"
+          },
+          "vendas": {
+            "type": "string",
+            "title": "Vendas"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ano",
+          "ganho_isento",
+          "darf",
+          "vendas"
+        ],
+        "title": "AnoImposto"
+      },
       "AparelhoPush": {
         "properties": {
           "id": {
@@ -7665,6 +7782,71 @@
         ],
         "title": "Health"
       },
+      "ImpostoCarteira": {
+        "properties": {
+          "meses": {
+            "items": {
+              "$ref": "#/components/schemas/MesImposto"
+            },
+            "type": "array",
+            "title": "Meses",
+            "description": "Meses com venda, do mais recente"
+          },
+          "anos": {
+            "items": {
+              "$ref": "#/components/schemas/AnoImposto"
+            },
+            "type": "array",
+            "title": "Anos"
+          },
+          "prejuizo_comum": {
+            "type": "string",
+            "title": "Prejuizo Comum"
+          },
+          "prejuizo_fii": {
+            "type": "string",
+            "title": "Prejuizo Fii"
+          },
+          "pendente": {
+            "type": "string",
+            "title": "Pendente",
+            "description": "DARF abaixo de R$ 10 ainda não pago"
+          },
+          "saldo_irrf": {
+            "type": "string",
+            "title": "Saldo Irrf"
+          },
+          "codigo_darf": {
+            "type": "string",
+            "title": "Codigo Darf"
+          },
+          "day_trade": {
+            "items": {
+              "$ref": "#/components/schemas/PossivelDayTrade"
+            },
+            "type": "array",
+            "title": "Day Trade",
+            "description": "Vendas no mesmo dia de uma compra do mesmo ativo (podem ser day trade)"
+          },
+          "aviso": {
+            "type": "string",
+            "title": "Aviso"
+          }
+        },
+        "type": "object",
+        "required": [
+          "meses",
+          "anos",
+          "prejuizo_comum",
+          "prejuizo_fii",
+          "pendente",
+          "saldo_irrf",
+          "codigo_darf",
+          "day_trade",
+          "aviso"
+        ],
+        "title": "ImpostoCarteira"
+      },
       "Indicadores": {
         "properties": {
           "ticker": {
@@ -8478,6 +8660,133 @@
           "motivo"
         ],
         "title": "LinhaImportacao"
+      },
+      "MesImposto": {
+        "properties": {
+          "mes": {
+            "type": "string",
+            "format": "date",
+            "title": "Mes",
+            "description": "Primeiro dia do mês de apuração"
+          },
+          "vendas_acoes": {
+            "type": "string",
+            "title": "Vendas Acoes",
+            "description": "Total vendido em ações (isenção até R$ 20 mil)"
+          },
+          "vendas_total": {
+            "type": "string",
+            "title": "Vendas Total"
+          },
+          "isento_acoes": {
+            "type": "boolean",
+            "title": "Isento Acoes"
+          },
+          "resultado_acoes": {
+            "type": "string",
+            "title": "Resultado Acoes"
+          },
+          "ganho_isento": {
+            "type": "string",
+            "title": "Ganho Isento",
+            "description": "Ganho em ações num mês isento"
+          },
+          "resultado_etf_bdr": {
+            "type": "string",
+            "title": "Resultado Etf Bdr"
+          },
+          "resultado_fii": {
+            "type": "string",
+            "title": "Resultado Fii"
+          },
+          "compensado": {
+            "type": "string",
+            "title": "Compensado",
+            "description": "Prejuízo de meses anteriores usado no mês"
+          },
+          "base_comum": {
+            "type": "string",
+            "title": "Base Comum",
+            "description": "Base de ações, ETFs e BDRs (15%)"
+          },
+          "base_fii": {
+            "type": "string",
+            "title": "Base Fii",
+            "description": "Base de FIIs (20%)"
+          },
+          "imposto_devido": {
+            "type": "string",
+            "title": "Imposto Devido"
+          },
+          "irrf": {
+            "type": "string",
+            "title": "Irrf",
+            "description": "IRRF estimado do mês (0,005% das vendas)"
+          },
+          "irrf_usado": {
+            "type": "string",
+            "title": "Irrf Usado"
+          },
+          "acumulado_anterior": {
+            "type": "string",
+            "title": "Acumulado Anterior",
+            "description": "DARF abaixo de R$ 10 de meses anteriores"
+          },
+          "darf": {
+            "type": "string",
+            "title": "Darf",
+            "description": "Valor a pagar no mês (zero abaixo de R$ 10)"
+          },
+          "vencimento": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Vencimento"
+          },
+          "fica_para_depois": {
+            "type": "string",
+            "title": "Fica Para Depois"
+          },
+          "prejuizo_comum": {
+            "type": "string",
+            "title": "Prejuizo Comum",
+            "description": "Saldo de prejuízo de ações, ETFs e BDRs"
+          },
+          "prejuizo_fii": {
+            "type": "string",
+            "title": "Prejuizo Fii"
+          }
+        },
+        "type": "object",
+        "required": [
+          "mes",
+          "vendas_acoes",
+          "vendas_total",
+          "isento_acoes",
+          "resultado_acoes",
+          "ganho_isento",
+          "resultado_etf_bdr",
+          "resultado_fii",
+          "compensado",
+          "base_comum",
+          "base_fii",
+          "imposto_devido",
+          "irrf",
+          "irrf_usado",
+          "acumulado_anterior",
+          "darf",
+          "vencimento",
+          "fica_para_depois",
+          "prejuizo_comum",
+          "prejuizo_fii"
+        ],
+        "title": "MesImposto"
       },
       "MetricasAtivo": {
         "properties": {
@@ -9786,6 +10095,25 @@
           "proventos"
         ],
         "title": "PosicaoCarteira"
+      },
+      "PossivelDayTrade": {
+        "properties": {
+          "ticker": {
+            "type": "string",
+            "title": "Ticker"
+          },
+          "data": {
+            "type": "string",
+            "format": "date",
+            "title": "Data"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ticker",
+          "data"
+        ],
+        "title": "PossivelDayTrade"
       },
       "PreviaImportacao": {
         "properties": {

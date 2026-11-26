@@ -69,10 +69,24 @@ class Posicao:
         return (self.custo / self.quantidade) if self.quantidade > 0 else None
 
 
+@dataclass(frozen=True, slots=True)
+class VendaRealizada:
+    """Uma venda com o custo baixado pelo preço médio (base da apuração do imposto)."""
+
+    ticker: str
+    data: date
+    quantidade: Decimal
+    valor: Decimal  # preço × quantidade, sem descontar custos
+    custos: Decimal
+    custo_medio: Decimal  # preço médio × quantidade vendida
+    resultado: Decimal  # valor − custos − custo_medio
+
+
 @dataclass(slots=True)
 class Consolidacao:
     posicoes: dict[str, Posicao] = field(default_factory=dict)
     proventos: list[ProventoRecebido] = field(default_factory=list)
+    vendas: list[VendaRealizada] = field(default_factory=list)
 
     @property
     def abertas(self) -> list[Posicao]:
@@ -111,7 +125,9 @@ def consolidar(
 
         for _, ordem, _, item in linha:
             if ordem == 0:
-                _aplicar_operacao(pos, item)
+                venda = _aplicar_operacao(pos, item)
+                if venda is not None:
+                    res.vendas.append(venda)
             elif ordem == 1 and pos.quantidade > 0:
                 total = (pos.quantidade * item.valor).quantize(CENTAVO)
                 pos.proventos += total
@@ -130,22 +146,26 @@ def consolidar(
                 pos.quantidade = (pos.quantidade * item.valor).quantize(CASAS_QTD)
         res.posicoes[ticker] = pos
     res.proventos.sort(key=lambda p: (p.data_com, p.ticker))
+    res.vendas.sort(key=lambda v: (v.data, v.ticker))
     return res
 
 
-def _aplicar_operacao(pos: Posicao, op: Operacao) -> None:
+def _aplicar_operacao(pos: Posicao, op: Operacao) -> VendaRealizada | None:
     if op.tipo == "compra":
         pos.quantidade += op.quantidade
         pos.custo += op.preco * op.quantidade + op.custos
         pos.primeira_compra = pos.primeira_compra or op.data
-        return
+        return None
     if op.quantidade > pos.quantidade:
         raise VendaAcimaDaPosicao(op.ticker, op.data, pos.quantidade, op.quantidade)
     pm = pos.custo / pos.quantidade
     baixa = pm * op.quantidade
-    pos.resultado_realizado += op.preco * op.quantidade - op.custos - baixa
+    valor = op.preco * op.quantidade
+    resultado = valor - op.custos - baixa
+    pos.resultado_realizado += resultado
     pos.quantidade -= op.quantidade
     pos.custo = ZERO if pos.quantidade == 0 else pos.custo - baixa
+    return VendaRealizada(op.ticker, op.data, op.quantidade, valor, op.custos, baixa, resultado)
 
 
 @dataclass(frozen=True, slots=True)

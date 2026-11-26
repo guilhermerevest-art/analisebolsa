@@ -108,6 +108,16 @@ def resumo(conn: Conn, usuario: Logado, carteira_id: CarteiraId, response: Respo
 
 
 @router.get(
+    "/{carteira_id}/imposto",
+    response_model=s.ImpostoCarteira,
+    summary="Apuração mensal do imposto sobre as vendas (operações comuns)",
+)
+def imposto(conn: Conn, usuario: Logado, carteira_id: CarteiraId, response: Response):
+    _privado(response)
+    return c.imposto(conn, usuario.id, carteira_id)
+
+
+@router.get(
     "/{carteira_id}/rentabilidade",
     response_model=s.RentabilidadeCarteira,
     summary="Rentabilidade acumulada (TWR) contra CDI e Ibovespa",

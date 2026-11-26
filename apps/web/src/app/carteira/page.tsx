@@ -103,7 +103,12 @@ export default async function PaginaCarteira({ searchParams }: Props) {
           <h1 className="text-3xl font-bold tracking-tight">{atual.nome}</h1>
           <p className="mt-1 text-muted-foreground">Posições pelo último fechamento. Preço médio pelo método da Receita.</p>
         </div>
-        {lista.itens.length < lista.limite && <NovaCarteira primeira={false} />}
+        <div className="flex flex-wrap items-center gap-2">
+          <Button asChild variant="outline">
+            <Link href={`/carteira/imposto?c=${atual.id}`}>Imposto de renda</Link>
+          </Button>
+          {lista.itens.length < lista.limite && <NovaCarteira primeira={false} />}
+        </div>
       </div>
 
       {Number.isInteger(importadas) && importadas > 0 && (

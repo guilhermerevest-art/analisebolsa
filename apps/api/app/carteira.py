@@ -9,6 +9,7 @@ from sqlalchemy import Connection, RowMapping, text
 from app.erros import Problema
 from app.usuario import exigir_usuario_existente
 from dominio.carteira import Consolidacao, Operacao, VendaAcimaDaPosicao, alocacao, consolidar
+from dominio.imposto import CODIGO_DARF, apurar
 from dominio.modelos import Provento
 from dominio.rentabilidade import reduzir, serie_rentabilidade
 
@@ -365,4 +366,81 @@ def rentabilidade(conn: Connection, user_id: str, carteira_id: int) -> dict:
             "cdi": ultimo.cdi,
             "ibov": ultimo.ibov,
         },
+    }
+
+
+# Imposto de renda (Fase 5, etapa 3)
+
+AVISO_IMPOSTO = (
+    "Conta feita com as operações lançadas, para conferência. Não substitui a declaração nem "
+    "um contador. O IRRF é uma estimativa (confira nas notas de corretagem), day trade e "
+    "ETFs de renda fixa têm outras regras."
+)
+
+
+def imposto(conn: Connection, user_id: str, carteira_id: int) -> dict:
+    obter(conn, user_id, carteira_id)
+    ops = _operacoes_dominio(conn, carteira_id)
+    tickers = sorted({o.ticker for o in ops})
+    eventos = {
+        t: [p for p in lista if p.societario]
+        for t, lista in _proventos_e_eventos(conn, tickers).items()
+    }
+    consolidado = consolidar(ops, eventos)
+    tipos = {t: r["tipo"] for t, r in _cadastro_e_precos(conn, tickers).items()}
+    compras: dict[str, set[date]] = defaultdict(set)
+    for o in ops:
+        if o.tipo == "compra":
+            compras[o.ticker].add(o.data)
+    ap = apurar(consolidado.vendas, tipos, compras)
+
+    meses = [
+        {
+            "mes": m.mes,
+            "vendas_acoes": m.vendas_acoes,
+            "vendas_total": m.vendas_total,
+            "isento_acoes": m.isento_acoes,
+            "resultado_acoes": m.resultado_acoes,
+            "ganho_isento": m.ganho_isento,
+            "resultado_etf_bdr": m.resultado_etf_bdr,
+            "resultado_fii": m.resultado_fii,
+            "compensado": m.compensado_comum + m.compensado_fii,
+            "base_comum": m.base_comum,
+            "base_fii": m.base_fii,
+            "imposto_devido": m.imposto_devido,
+            "irrf": m.irrf,
+            "irrf_usado": m.irrf_usado,
+            "acumulado_anterior": m.acumulado_anterior,
+            "darf": m.darf,
+            "vencimento": m.vencimento,
+            "fica_para_depois": m.fica_para_depois,
+            "prejuizo_comum": m.prejuizo_comum,
+            "prejuizo_fii": m.prejuizo_fii,
+        }
+        for m in reversed(ap.meses)
+    ]
+    anos: dict[int, dict] = {}
+    for m in ap.meses:
+        a = anos.setdefault(
+            m.mes.year,
+            {
+                "ano": m.mes.year,
+                "ganho_isento": Decimal(0),
+                "darf": Decimal(0),
+                "vendas": Decimal(0),
+            },
+        )
+        a["ganho_isento"] += m.ganho_isento
+        a["darf"] += m.darf
+        a["vendas"] += m.vendas_total
+    return {
+        "meses": meses,
+        "anos": sorted(anos.values(), key=lambda a: -a["ano"]),
+        "prejuizo_comum": ap.prejuizo_comum,
+        "prejuizo_fii": ap.prejuizo_fii,
+        "pendente": ap.pendente,
+        "saldo_irrf": ap.saldo_irrf,
+        "codigo_darf": CODIGO_DARF,
+        "day_trade": [{"ticker": t, "data": d} for t, d in ap.day_trade],
+        "aviso": AVISO_IMPOSTO,
     }

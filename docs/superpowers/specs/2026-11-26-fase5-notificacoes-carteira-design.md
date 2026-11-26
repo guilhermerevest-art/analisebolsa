@@ -144,12 +144,30 @@ quantidade e preço) e o que tem ativo desconhecido; o usuário confirma. Custos
 
 ## 4. Etapa 3: imposto de renda
 
-Apuração mensal por carteira a partir das operações: ações (swing trade 15%, isenção quando
-as vendas de ações do mês somam até R$ 20 mil), FIIs (20%, sem isenção) e ETFs (15%, sem
-isenção); BDRs como ações sem isenção. Prejuízo compensado nos meses seguintes dentro da
-mesma categoria; IRRF de 0,005% descontado; DARF código 6015 com vencimento no último dia útil
-do mês seguinte e valor mínimo de R$ 10 (abaixo disso acumula). Day trade fica fora. É uma
-ferramenta de conta, com aviso de que não substitui a declaração nem um contador.
+**Entregue** em `/carteira/imposto` (rota `GET /v1/carteiras/{id}/imposto`, domínio puro em
+`dominio/imposto.py`).
+
+Apuração mensal por carteira, só nos meses com venda, a partir do resultado de cada venda
+pelo preço médio da Receita (custos incluídos; desdobramentos, grupamentos e bonificações
+aplicados):
+
+- **Ações:** 15%, isentas quando as vendas de ações do mês somam até R$ 20.000,00. O ganho
+  isento aparece separado (vai em Rendimentos Isentos na declaração); o prejuízo de um mês
+  isento continua compensável.
+- **ETFs e BDRs:** 15%, sem isenção, no mesmo grupo de compensação das ações.
+- **FIIs:** 20%, sem isenção, com prejuízo compensado só entre FIIs.
+- **IRRF:** 0,005% do valor vendido no mês, dispensado abaixo de R$ 1,00; descontado do
+  imposto do mês, com o saldo levado para os meses seguintes. É uma estimativa: a retenção
+  real está nas notas de corretagem.
+- **DARF:** código 6015; abaixo de R$ 10,00 passa para o mês seguinte; vencimento no último
+  dia útil bancário do mês seguinte (fins de semana, feriados nacionais fixos, 31/12 e, pela
+  Páscoa, Carnaval, Sexta-feira Santa e Corpus Christi).
+- **Day trade:** fica fora da conta (a carteira não sabe a corretora nem o horário). Vendas
+  no mesmo dia de uma compra do mesmo ativo aparecem num aviso para conferência.
+- Por ano: ganhos isentos, total vendido e DARFs, para a declaração.
+
+Decisões padrão (o usuário pode mudar): day trade fora; BDRs e ETFs a 15% sem isenção; FIIs a
+20%; todo ETF tratado como ETF de ações (os de renda fixa têm outra regra, citada no aviso).
 
 ## 5. Entrega em etapas (um PR cada)
 
