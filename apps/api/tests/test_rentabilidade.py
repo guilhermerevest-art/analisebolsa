@@ -83,3 +83,15 @@ def test_reduzir_mantem_ultimo_da_semana():
     )
     r = reduzir(s, maximo=10)
     assert r[-1] == s[-1] and len(r) == 5 and all(p.data.weekday() == 6 for p in r[:-1])
+
+
+def test_dolar_no_mesmo_periodo_parte_da_ptax_anterior_ao_inicio():
+    from dominio.rentabilidade import serie_rentabilidade as serie
+
+    ops = [Operacao(1, "AAAA3", "compra", date(2024, 1, 2), D(10), D("10"))]
+    precos = {"AAAA3": {date(2024, 1, 2): D("10"), date(2024, 1, 3): D("11")}}
+    # Sem PTAX no dia 2 (feriado de mentira): vale a de 29/12.
+    dolar = {date(2023, 12, 29): 5.0, date(2024, 1, 3): 5.5}
+    pontos = serie(ops, {}, precos, dolar=dolar)
+    assert pontos[0].dolar == 0 and round(pontos[1].dolar, 6) == 10.0
+    assert serie(ops, {}, precos)[1].dolar is None

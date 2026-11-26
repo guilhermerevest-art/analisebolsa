@@ -186,8 +186,15 @@ def main() -> int:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s")
     settings = get_settings()
     engine = get_engine()
-    res = processar_alertas(engine, canais_do_worker(engine, settings), settings.url_publica)
+    canais = canais_do_worker(engine, settings)
+    res = processar_alertas(engine, canais, settings.url_publica)
     log.info("alertas: %s", res)
+    from worker.avisos_carteira import processar_avisos
+    from worker.eod import hoje_b3
+
+    log.info(
+        "avisos da carteira: %s", processar_avisos(engine, canais, settings.url_publica, hoje_b3())
+    )
     return 1 if "erro" in res else 0
 
 

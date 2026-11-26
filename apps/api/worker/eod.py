@@ -18,6 +18,8 @@ from fontes.cadeia import CadeiaFontes, criar_cadeia
 from worker import repositorio as repo
 from worker.alertas import canais_do_worker, processar_alertas
 from worker.analise import atualizar_analise
+from worker.avisos_carteira import processar_avisos
+from worker.fundos import atualizar_fundos
 from worker.indices import atualizar_indices, buscadores
 from worker.processamento import (
     atualizar_fundamentos,
@@ -73,8 +75,15 @@ def executar_eod(
 
     if fontes_indices is not None:
         res.detalhes["indices"] = atualizar_indices(engine, hoje, fontes=fontes_indices)
+        try:
+            res.detalhes["fundos"] = atualizar_fundos(engine, hoje)
+        except Exception as e:  # as cotas da CVM não podem derrubar o EOD
+            res.detalhes["fundos"] = str(e)[:200]
 
     res.detalhes["alertas"] = processar_alertas(engine, canais or Canais(), settings.url_publica)
+    res.detalhes["avisos_carteira"] = processar_avisos(
+        engine, canais or Canais(), settings.url_publica, hoje
+    )
 
     res.detalhes["revalidacao"] = revalidar_web(
         settings.web_internal_url, settings.internal_jwt_secret, res.tickers_atualizados

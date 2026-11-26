@@ -5,15 +5,16 @@ import { redirect } from "next/navigation";
 
 import { auth } from "@/auth";
 import { BarrasAlocacao } from "@/components/carteira/alocacao";
+import { FormularioInvestimento } from "@/components/carteira/formulario-investimento";
 import { FormularioOperacao } from "@/components/carteira/formulario-operacao";
 import { GraficoRentabilidadeCliente } from "@/components/carteira/grafico-rentabilidade-cliente";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { criarCarteira, excluirCarteira, removerOperacao, renomearCarteira } from "@/lib/acoes-carteira";
+import { criarCarteira, excluirCarteira, removerInvestimento, removerOperacao, renomearCarteira } from "@/lib/acoes-carteira";
 import { chamarApi } from "@/lib/api";
 import { classeVariacao, formatarData, formatarNumero, formatarPct, formatarPreco, NOMES_PROVENTO } from "@/lib/formato";
-import type { Carteiras, Operacoes, RentabilidadeCarteira, ResumoCarteira } from "@/lib/tipos-api";
+import type { Carteiras, InvestimentoCarteira, Investimentos, Operacoes, RentabilidadeCarteira, ResumoCarteira } from "@/lib/tipos-api";
 import { cn } from "@/lib/utils";
 import { Termo } from "@/components/dica";
 import type { ChaveGlossario } from "@/lib/glossario";
@@ -21,7 +22,7 @@ import type { ChaveGlossario } from "@/lib/glossario";
 export const metadata: Metadata = { title: "Minha carteira", robots: { index: false } };
 export const dynamic = "force-dynamic";
 
-type Props = { searchParams: Promise<{ c?: string; importadas?: string; editar?: string; editada?: string }> };
+type Props = { searchParams: Promise<{ c?: string; importadas?: string; editar?: string; editada?: string; investimento?: string }> };
 
 async function ler<T>(caminho: string): Promise<T | null> {
   const resp = await chamarApi(caminho, { cache: "no-store" });
@@ -73,7 +74,7 @@ export default async function PaginaCarteira({ searchParams }: Props) {
         <CardHeader>
           <CardTitle className="text-2xl">Minha carteira</CardTitle>
           <CardDescription>
-            Lance suas compras e vendas para acompanhar posições, preço médio, proventos recebidos e alocação.
+            Lance suas compras e vendas, CDBs, Tesouro e fundos para acompanhar posições, preço médio, proventos, rendimento e alocação.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -88,11 +89,13 @@ export default async function PaginaCarteira({ searchParams }: Props) {
   const importadas = Number(params.importadas);
   const editarId = Number(params.editar);
   const atual = lista.itens.find((c) => c.id === pedida) ?? lista.itens[0];
-  const [resumo, ops, rent] = await Promise.all([
+  const [resumo, ops, rent, invs] = await Promise.all([
     ler<ResumoCarteira>(`/v1/carteiras/${atual.id}/resumo`),
     ler<Operacoes>(`/v1/carteiras/${atual.id}/operacoes`),
     ler<RentabilidadeCarteira>(`/v1/carteiras/${atual.id}/rentabilidade`),
+    ler<Investimentos>(`/v1/carteiras/${atual.id}/investimentos`),
   ]);
+  const invEmEdicao = invs?.itens.find((i) => i.id === Number(params.investimento));
   // Tabela da rentabilidade: o último ponto de cada mês.
   const mensal = (rent?.pontos ?? []).filter((p, i, todos) => todos[i + 1]?.data.slice(0, 7) !== p.data.slice(0, 7)).reverse();
   const hoje = new Date().toLocaleDateString("sv-SE", { timeZone: "America/Sao_Paulo" });
@@ -172,7 +175,7 @@ export default async function PaginaCarteira({ searchParams }: Props) {
                   <Termo termo="rentabilidade_twr">Rentabilidade</Termo>
                 </h2>
                 <p className="text-sm text-muted-foreground">
-                  Retorno acumulado desde {formatarData(rent.inicio)}, ponderado pelo tempo (aportes e retiradas não distorcem), com proventos. CDI e Ibovespa no mesmo período.
+                  Retorno acumulado desde {formatarData(rent.inicio)}, ponderado pelo tempo (aportes e retiradas não distorcem), com proventos. CDI, Ibovespa e dólar no mesmo período.
                 </p>
               </div>
               <div className="rounded-xl border bg-card p-4">
@@ -189,6 +192,7 @@ export default async function PaginaCarteira({ searchParams }: Props) {
                         <th scope="col" className="py-2 pl-3 text-right font-normal">Carteira</th>
                         <th scope="col" className="py-2 pl-3 text-right font-normal">CDI</th>
                         <th scope="col" className="py-2 pl-3 text-right font-normal">Ibovespa</th>
+                        <th scope="col" className="py-2 pl-3 text-right font-normal">Dólar</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -199,6 +203,7 @@ export default async function PaginaCarteira({ searchParams }: Props) {
                           <td className="py-1.5 pl-3 text-right tabular-nums">{formatarPct(p.carteira)}</td>
                           <td className="py-1.5 pl-3 text-right tabular-nums">{formatarPct(p.cdi)}</td>
                           <td className="py-1.5 pl-3 text-right tabular-nums">{formatarPct(p.ibov)}</td>
+                          <td className="py-1.5 pl-3 text-right tabular-nums">{formatarPct(p.dolar ?? null)}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -269,6 +274,8 @@ export default async function PaginaCarteira({ searchParams }: Props) {
               </div>
             </section>
           )}
+
+          {invs && <RendaFixa dados={invs} carteira={atual.id} hoje={hoje} emEdicao={invEmEdicao} patrimonioAcoes={t ? Number(t.patrimonio) : 0} />}
 
           <section id="lancar" aria-labelledby="titulo-lancar" className="grid scroll-mt-24 gap-3">
             <div className="flex flex-wrap items-center justify-between gap-2">
@@ -401,5 +408,132 @@ export default async function PaginaCarteira({ searchParams }: Props) {
         </>
       )}
     </div>
+  );
+}
+
+function RendaFixa({
+  dados,
+  carteira,
+  hoje,
+  emEdicao,
+  patrimonioAcoes,
+}: {
+  dados: Investimentos;
+  carteira: number;
+  hoje: string;
+  emEdicao?: InvestimentoCarteira;
+  patrimonioAcoes: number;
+}) {
+  const { itens, totais } = dados;
+  const abertos = itens.filter((i) => !i.resgate_data);
+  const ganho = totais.liquido - totais.aplicado;
+  return (
+    <section id="renda-fixa" aria-labelledby="titulo-renda-fixa" className="grid scroll-mt-24 gap-3">
+      <div>
+        <h2 id="titulo-renda-fixa" className="text-xl font-semibold">
+          <Termo termo="renda_fixa">Renda fixa</Termo> e <Termo termo="fundo_investimento">fundos</Termo>
+        </h2>
+        <p className="text-sm text-muted-foreground">CDBs, LCIs, Tesouro, debêntures e fundos, com o valor estimado de hoje e o imposto se resgatasse agora.</p>
+      </div>
+
+      {abertos.length > 0 && (
+        <dl className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+          <Valor rotulo="Aplicado" valor={formatarPreco(totais.aplicado)} />
+          <Valor rotulo="Valor bruto hoje" valor={formatarPreco(totais.bruto)} />
+          <Valor
+            rotulo="Líquido de IR"
+            termo="ir_regressivo"
+            valor={formatarPreco(totais.liquido)}
+            classe={classeVariacao(ganho)}
+            detalhe={totais.aplicado > 0 ? `${formatarPct((ganho / totais.aplicado) * 100)} sobre o aplicado` : undefined}
+          />
+          <Valor rotulo="Patrimônio total" valor={formatarPreco(patrimonioAcoes + totais.bruto)} detalhe="Bolsa + renda fixa e fundos" />
+        </dl>
+      )}
+
+      {itens.length > 0 && (
+        <div className="relative overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead className="text-muted-foreground">
+              <tr>
+                <th scope="col" className="py-2 text-left font-normal">Investimento</th>
+                <th scope="col" className="hidden py-2 pl-3 text-left font-normal md:table-cell">Aplicação</th>
+                <th scope="col" className="py-2 pl-3 text-right font-normal">Aplicado</th>
+                <th scope="col" className="hidden py-2 pl-3 text-right font-normal sm:table-cell">Bruto</th>
+                <th scope="col" className="hidden py-2 pl-3 text-right font-normal sm:table-cell">IR</th>
+                <th scope="col" className="py-2 pl-3 text-right font-normal">Líquido</th>
+                <th scope="col" className="w-20">
+                  <span className="sr-only">Editar ou excluir</span>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {itens.map((i) => (
+                <tr key={i.id} className={cn("border-t", i.id === emEdicao?.id && "bg-accent", i.resgate_data && "text-muted-foreground")}>
+                  <td className="py-2 pr-3">
+                    <span className="font-medium text-foreground">{i.nome}</span>
+                    <span className="block text-xs text-muted-foreground">
+                      {i.tipo_nome}
+                      {i.descricao_taxa && ` · ${i.descricao_taxa}`}
+                      {i.isento_ir && " · isento"}
+                      {i.vencimento && ` · vence ${formatarData(i.vencimento)}`}
+                      {i.resgate_data && ` · resgatado em ${formatarData(i.resgate_data)}`}
+                    </span>
+                  </td>
+                  <td className="hidden whitespace-nowrap py-2 pl-3 tabular-nums md:table-cell">{formatarData(i.data_aplicacao)}</td>
+                  <td className="whitespace-nowrap py-2 pl-3 text-right tabular-nums">{formatarPreco(i.valor_aplicado)}</td>
+                  <td className="hidden whitespace-nowrap py-2 pl-3 text-right tabular-nums sm:table-cell" title={`Estimativa em ${formatarData(i.avaliado_em)}`}>
+                    {formatarPreco(i.bruto)}
+                  </td>
+                  <td className="hidden whitespace-nowrap py-2 pl-3 text-right tabular-nums sm:table-cell">
+                    {i.tipo === "fundo" ? (
+                      <span className="text-xs text-muted-foreground">
+                        <Termo termo="come_cotas">no fundo</Termo>
+                      </span>
+                    ) : (
+                      <>
+                        {formatarPreco(i.ir)}
+                        {i.aliquota_ir ? <span className="block text-xs text-muted-foreground">{formatarNumero(i.aliquota_ir, 1)}%</span> : null}
+                      </>
+                    )}
+                  </td>
+                  <td className={cn("whitespace-nowrap py-2 pl-3 text-right tabular-nums", !i.resgate_data && classeVariacao(i.rendimento))}>
+                    {i.bruto === null ? <span className="text-xs text-muted-foreground">{i.observacao}</span> : formatarPreco(i.liquido ?? i.bruto)}
+                    {i.rendimento !== null && <span className="block text-xs">{formatarPct(i.rendimento)}</span>}
+                  </td>
+                  <td className="flex justify-end gap-0.5 py-1 pl-2">
+                    <Button asChild variant="ghost" size="icon" className="size-8" title="Editar investimento">
+                      <Link href={`/carteira?c=${carteira}&investimento=${i.id}#incluir-investimento`}>
+                        <Pencil aria-hidden />
+                        <span className="sr-only">Editar {i.nome}</span>
+                      </Link>
+                    </Button>
+                    <form action={removerInvestimento}>
+                      <input type="hidden" name="carteira" value={carteira} />
+                      <input type="hidden" name="investimento" value={i.id} />
+                      <Button type="submit" variant="ghost" size="icon" className="size-8" title="Excluir investimento">
+                        <Trash2 aria-hidden />
+                        <span className="sr-only">Excluir {i.nome}</span>
+                      </Button>
+                    </form>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      <div id="incluir-investimento" className="grid scroll-mt-24 gap-3 rounded-xl border bg-card p-4">
+        <h3 className="font-medium">{emEdicao ? `Editar ${emEdicao.nome}` : "Incluir investimento"}</h3>
+        <FormularioInvestimento key={emEdicao?.id ?? "novo"} carteira={carteira} hoje={hoje} investimento={emEdicao} />
+      </div>
+      {itens.length > 0 && (
+        <p className="text-xs text-muted-foreground">
+          Valores estimados pela regra de cada aplicação, sem taxas de custódia nem IOF (que só existe nos primeiros 30 dias). Fundos mostram o valor bruto, antes do
+          come-cotas e do imposto no resgate.
+        </p>
+      )}
+    </section>
   );
 }

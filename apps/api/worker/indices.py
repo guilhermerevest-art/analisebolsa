@@ -97,6 +97,12 @@ def main() -> int:
     get_settings()
     res = atualizar_indices(get_engine(), hoje_b3())
     log.info("índices: %s", res)
+    from worker.fundos import atualizar_fundos
+
+    try:
+        log.info("fundos: %s", atualizar_fundos(get_engine(), hoje_b3()))
+    except Exception:
+        log.exception("fundos")
     return 1 if all(isinstance(v, str) for v in res.values()) else 0
 
 

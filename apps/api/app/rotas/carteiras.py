@@ -7,6 +7,7 @@ from fastapi import APIRouter, Depends, Path, Query, Response
 
 from app import carteira as c
 from app import importacao as imp
+from app import investimentos as inv
 from app import schemas as s
 from app.deps import Conn, Usuario, usuario_obrigatorio
 from app.erros import Problema
@@ -174,3 +175,55 @@ def importar(
     resultado = imp.importar(conn, usuario.id, carteira_id, _arquivo(corpo), date.today())
     conn.commit()
     return resultado
+
+
+# Renda fixa e fundos (Fase 7)
+
+InvestimentoId = Annotated[int, Path(ge=1)]
+
+
+@router.get(
+    "/{carteira_id}/investimentos",
+    response_model=s.Investimentos,
+    summary="Renda fixa e fundos, com valor atualizado e IR estimado",
+)
+def investimentos(conn: Conn, usuario: Logado, carteira_id: CarteiraId, r: Response):
+    _privado(r)
+    return inv.listar(conn, usuario.id, carteira_id, date.today())
+
+
+@router.post("/{carteira_id}/investimentos", status_code=201, summary="Cadastra uma aplicação")
+def criar_investimento(
+    conn: Conn, usuario: Logado, carteira_id: CarteiraId, corpo: s.NovoInvestimento
+):
+    novo = inv.criar(conn, usuario.id, carteira_id, corpo.model_dump(), date.today())
+    conn.commit()
+    return {"id": novo}
+
+
+@router.put(
+    "/{carteira_id}/investimentos/{investimento_id}", status_code=204, summary="Edita uma aplicação"
+)
+def editar_investimento(
+    conn: Conn,
+    usuario: Logado,
+    carteira_id: CarteiraId,
+    investimento_id: InvestimentoId,
+    corpo: s.NovoInvestimento,
+):
+    inv.editar(conn, usuario.id, carteira_id, investimento_id, corpo.model_dump(), date.today())
+    conn.commit()
+    return Response(status_code=204)
+
+
+@router.delete(
+    "/{carteira_id}/investimentos/{investimento_id}",
+    status_code=204,
+    summary="Exclui uma aplicação",
+)
+def excluir_investimento(
+    conn: Conn, usuario: Logado, carteira_id: CarteiraId, investimento_id: InvestimentoId
+):
+    inv.excluir(conn, usuario.id, carteira_id, investimento_id)
+    conn.commit()
+    return Response(status_code=204)

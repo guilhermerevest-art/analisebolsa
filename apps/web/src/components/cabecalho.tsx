@@ -12,6 +12,7 @@ export async function Cabecalho() {
   const links = [
     { href: "/mercado", rotulo: "Mercado" },
     { href: "/screener", rotulo: "Screener" },
+    { href: "/comparar", rotulo: "Comparar ativos", curto: "Comparar" },
     { href: "/simulador", rotulo: "Simulador" },
     { href: "/backtest", rotulo: "Backtest" },
     { href: "/posicao", rotulo: "Calculadora de posição", curto: "Posição" },

@@ -23,7 +23,7 @@ export const viewport: Viewport = {
 };
 
 const RODAPE = [
-  { titulo: "Analisar", links: [["Mercado", "/mercado"], ["Screener", "/screener"], ["Backtest", "/backtest"], ["Simulador", "/simulador"], ["Calculadora de posição", "/posicao"], ["Glossário", "/glossario"]] },
+  { titulo: "Analisar", links: [["Mercado", "/mercado"], ["Screener", "/screener"], ["Comparar ativos", "/comparar"], ["Backtest", "/backtest"], ["Simulador", "/simulador"], ["Calculadora de posição", "/posicao"], ["Glossário", "/glossario"]] },
   { titulo: "Sua conta", links: [["Carteira", "/carteira"], ["Watchlist", "/watchlist"], ["Alertas", "/alertas"], ["Criar conta", "/cadastro"]] },
 ] as const;
 

@@ -52,6 +52,7 @@ class PontoSimulacao:
     proventos: float | None  # acumulado no período
     cdi: float | None
     ipca: float | None
+    dolar: float | None = None  # mesmos aportes convertidos em dólar no dia de cada um
 
 
 @dataclass(frozen=True, slots=True)
@@ -94,13 +95,14 @@ def simular(
     proventos: Iterable[Provento] = (),
     cdi: dict[date, float] | None = None,
     ipca: dict[date, float] | None = None,
+    dolar: dict[date, float] | None = None,
     reinvestir: bool = True,
 ) -> list[PontoSimulacao]:
     """Pontos mensais do período, do primeiro dia com dado a partir de `inicio` até o último.
 
     Com `precos`, o calendário são os pregões do ativo; sem ativo, os dias do CDI.
     """
-    cdi, ipca = cdi or {}, ipca or {}
+    cdi, ipca, dolar = cdi or {}, ipca or {}, dolar or {}
     base = precos if precos is not None else cdi
     calendario = sorted(d for d in base if d >= inicio)
     if not calendario:
@@ -125,6 +127,11 @@ def simular(
     i_cdi = 0
     saldo_cdi = saldo_ipca = aportado = 0.0
     mes_corrente = _mes(calendario[0])
+    # Dólar: cada aporte compra dólares pela última PTAX até o dia; o saldo vale a PTAX do dia.
+    dias_dolar = sorted(dolar)
+    i_dolar = 0
+    cotacao_dolar: float | None = None
+    dolares = 0.0
 
     pontos: list[PontoSimulacao] = []
     for n, d in enumerate(calendario):
@@ -143,6 +150,11 @@ def simular(
         aportado += valor_aporte
         saldo_cdi += valor_aporte
         saldo_ipca += valor_aporte
+        while i_dolar < len(dias_dolar) and dias_dolar[i_dolar] <= d:
+            cotacao_dolar = dolar[dias_dolar[i_dolar]]
+            i_dolar += 1
+        if valor_aporte and cotacao_dolar:
+            dolares += valor_aporte / cotacao_dolar
 
         patrimonio = None
         if precos is not None:
@@ -177,6 +189,7 @@ def simular(
                     round(total_proventos, 2) if precos is not None else None,
                     round(saldo_cdi, 2) if cdi else None,
                     round(saldo_ipca, 2) if ipca else None,
+                    round(dolares * cotacao_dolar, 2) if cotacao_dolar else None,
                 )
             )
     return pontos

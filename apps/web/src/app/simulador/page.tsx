@@ -27,6 +27,7 @@ const SERIES_HISTORICO: SerieLinha[] = [
   { chave: "patrimonio", rotulo: "No ativo", claro: "#1f51ff", escuro: "#5b87ff" },
   { chave: "cdi", rotulo: "No CDI", claro: "#d97706", escuro: "#d97706" },
   { chave: "ipca", rotulo: "Corrigido pelo IPCA", claro: "#9333ea", escuro: "#a855f7" },
+  { chave: "dolar", rotulo: "No dólar", claro: "#0e9f8e", escuro: "#2dd4bf" },
   { chave: "aportado", rotulo: "Total aportado", claro: "#6b7180", escuro: "#9aa0ac", tracejada: true },
 ];
 const SERIES_FAIXA: SerieLinha[] = [
@@ -116,12 +117,13 @@ function Resultado({ sim }: { sim: Simulacao }) {
         <h2 id="titulo-resultado" className="text-xl font-semibold">
           {comAtivo ? sim.ticker : "CDI e IPCA"} de {mesAno(sim.inicio)} a {mesAno(sim.fim)}
         </h2>
-        <dl className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <dl className="grid grid-cols-2 gap-3 lg:grid-cols-5">
           <Valor rotulo="Total aportado" valor={formatarPreco(final.aportado)} />
           {comAtivo && (
             <Valor rotulo={`No ativo (${sim.ticker})`} termo="proventos" valor={formatarPreco(final.patrimonio)} detalhe={`${formatarPreco(final.proventos)} em proventos`} />
           )}
           <Valor rotulo="No CDI" termo="cdi" valor={formatarPreco(final.cdi)} />
+          {final.dolar !== null && final.dolar !== undefined && <Valor rotulo="No dólar" termo="dolar" valor={formatarPreco(final.dolar)} detalhe="Aportes convertidos na PTAX do dia" />}
           <Valor rotulo="Corrigido pelo IPCA" termo="ipca" valor={formatarPreco(final.ipca)} detalhe={sim.ipca_ate ? `IPCA até ${mesAno(sim.ipca_ate)}` : undefined} />
         </dl>
         <aside aria-labelledby="titulo-leitura" className="grid gap-2 rounded-xl border-l-4 border-l-azul bg-accent/60 p-4 text-sm leading-relaxed">
@@ -135,6 +137,7 @@ function Resultado({ sim }: { sim: Simulacao }) {
             ticker: sim.ticker,
             cdi: Number(final.cdi),
             ipca: Number(final.ipca),
+            dolar: final.dolar === null || final.dolar === undefined ? null : Number(final.dolar),
           }).map((f) => (
             <p key={f}>{f}</p>
           ))}
@@ -143,7 +146,7 @@ function Resultado({ sim }: { sim: Simulacao }) {
           pontos={sim.pontos}
           series={SERIES_HISTORICO}
           formato="brl"
-          rotuloAcessivel="Evolução do patrimônio no ativo, no CDI, corrigido pelo IPCA e do total aportado, mês a mês"
+          rotuloAcessivel="Evolução do patrimônio no ativo, no CDI, corrigido pelo IPCA, em dólar e do total aportado, mês a mês"
         />
         <div className="relative overflow-x-auto">
           <table className="w-full text-sm">
@@ -156,6 +159,7 @@ function Resultado({ sim }: { sim: Simulacao }) {
                 {comAtivo && <th scope="col" className="py-2 pl-3 text-right font-normal">Proventos</th>}
                 <th scope="col" className="py-2 pl-3 text-right font-normal">No CDI</th>
                 <th scope="col" className="py-2 pl-3 text-right font-normal">IPCA</th>
+                <th scope="col" className="py-2 pl-3 text-right font-normal">Dólar</th>
               </tr>
             </thead>
             <tbody>
@@ -167,6 +171,7 @@ function Resultado({ sim }: { sim: Simulacao }) {
                   {comAtivo && <td className="py-1.5 pl-3 text-right tabular-nums">{formatarPreco(p.proventos)}</td>}
                   <td className="py-1.5 pl-3 text-right tabular-nums">{formatarPreco(p.cdi)}</td>
                   <td className="py-1.5 pl-3 text-right tabular-nums">{formatarPreco(p.ipca)}</td>
+                  <td className="py-1.5 pl-3 text-right tabular-nums">{formatarPreco(p.dolar)}</td>
                 </tr>
               ))}
             </tbody>

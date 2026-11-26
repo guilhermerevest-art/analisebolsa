@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
 import { enviarApi } from "@/lib/api";
 import { esquemaAlerta, errosPorCampo, type ErrosCampos } from "@/lib/validacao";
@@ -32,4 +33,11 @@ export async function excluirAlerta(form: FormData): Promise<void> {
   const a = id(form.get("alerta"));
   if (a) await enviarApi(`/v1/alertas/${a}`, "DELETE");
   revalidatePath("/alertas");
+}
+
+export async function salvarAvisosCarteira(form: FormData): Promise<void> {
+  const tipos = ["proventos", "data_com", "darf", "vencimentos"] as const;
+  await enviarApi("/v1/alertas/carteira", "PUT", Object.fromEntries(tipos.map((t) => [t, form.get(t) === "on"])));
+  revalidatePath("/alertas");
+  redirect("/alertas?avisos=1#avisos-carteira");
 }

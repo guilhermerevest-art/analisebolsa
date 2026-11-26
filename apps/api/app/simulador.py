@@ -1,6 +1,6 @@
 """Simulador de aportes: carrega preços, proventos e índices e chama o domínio."""
 
-from datetime import date
+from datetime import date, timedelta
 
 from sqlalchemy import Connection
 
@@ -26,6 +26,7 @@ def simular(
         proventos = _proventos_e_eventos(conn, [ticker]).get(ticker, [])
     cdi = _indice(conn, "cdi", inicio)
     ipca = _indice(conn, "ipca", date(inicio.year, inicio.month, 1))
+    dolar = _indice(conn, "dolar", inicio - timedelta(days=10))
     pontos = sim.simular(
         inicio,
         aporte_inicial,
@@ -34,6 +35,7 @@ def simular(
         proventos=proventos or [],
         cdi=cdi,
         ipca=ipca,
+        dolar=dolar,
         reinvestir=reinvestir,
     )
     faixa = None

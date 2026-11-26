@@ -1,4 +1,4 @@
-import { BarChart3, Bell, Briefcase, Calculator, CandlestickChart, Coins, Filter, FlaskConical, Lightbulb, Scale, Star } from "lucide-react";
+import { BarChart3, Bell, Briefcase, Calculator, CandlestickChart, Coins, Filter, FlaskConical, GitCompareArrows, Lightbulb, Scale, Star } from "lucide-react";
 import Link from "next/link";
 
 import { BuscaGlobal } from "@/components/busca-global";
@@ -34,6 +34,7 @@ const GRUPOS: { titulo: string; descricao: string; itens: Item[] }[] = [
     descricao: "Para comparar ativos e regras.",
     itens: [
       { titulo: "Screener", descricao: "Filtre por indicadores e fundamentos, ou use filtros prontos.", icone: <Filter />, href: "/screener" },
+      { titulo: "Comparar ativos", descricao: "Dois a quatro ativos lado a lado: desempenho com proventos, risco e fundamentos.", icone: <GitCompareArrows />, href: "/comparar" },
       { titulo: "Backtest", descricao: "Golden cross, IFR2, Setup 9.1, MACD e outras regras no histórico, com custos.", icone: <FlaskConical />, href: "/backtest" },
       { titulo: "Simulador", descricao: "Aportes mensais com reinvestimento, comparados ao CDI e ao IPCA.", icone: <Calculator />, href: "/simulador" },
     ],
@@ -42,9 +43,9 @@ const GRUPOS: { titulo: string; descricao: string; itens: Item[] }[] = [
     titulo: "Acompanhar",
     descricao: "Com uma conta grátis.",
     itens: [
-      { titulo: "Carteira", descricao: "Posições, preço médio, proventos recebidos e alocação.", icone: <Briefcase />, href: "/carteira" },
+      { titulo: "Carteira", descricao: "Ações, FIIs, renda fixa e fundos: posições, preço médio, proventos, imposto e alocação.", icone: <Briefcase />, href: "/carteira" },
       { titulo: "Watchlist", descricao: "Os ativos que você acompanha, num lugar só.", icone: <Star />, href: "/watchlist" },
-      { titulo: "Alertas", descricao: "Notificação no celular ou WhatsApp quando um ativo cruza um preço, varia muito ou gera um sinal.", icone: <Bell />, href: "/alertas" },
+      { titulo: "Alertas", descricao: "No celular ou WhatsApp: preço, variação e sinais, mais avisos de proventos, data com, DARF e vencimentos da carteira.", icone: <Bell />, href: "/alertas" },
       { titulo: "Calculadora de posição", descricao: "Quantidade pelo risco até o stop, manual ou por ATR.", icone: <Scale />, href: "/posicao" },
     ],
   },

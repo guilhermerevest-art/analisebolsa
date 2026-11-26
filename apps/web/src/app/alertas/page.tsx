@@ -7,29 +7,38 @@ import { auth } from "@/auth";
 import { CanaisNotificacao } from "@/components/alertas/canais";
 import { FormularioAlerta } from "@/components/alertas/formulario-alerta";
 import { Button } from "@/components/ui/button";
-import { alternarAlerta, excluirAlerta } from "@/lib/acoes-alertas";
+import { alternarAlerta, excluirAlerta, salvarAvisosCarteira } from "@/lib/acoes-alertas";
 import { chamarApi } from "@/lib/api";
 import { formatarData } from "@/lib/formato";
-import type { Alertas, Notificacoes } from "@/lib/tipos-api";
+import type { Alertas, AvisosCarteira, Notificacoes } from "@/lib/tipos-api";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Alertas", robots: { index: false } };
 export const dynamic = "force-dynamic";
 
-type Props = { searchParams: Promise<{ ticker?: string }> };
+type Props = { searchParams: Promise<{ ticker?: string; avisos?: string }> };
+
+const TIPOS_AVISO = [
+  ["proventos", "Proventos pagos", "Quando um ativo da carteira paga dividendos, JCP ou rendimentos, com o valor que você recebe."],
+  ["data_com", "Data com chegando", "Até 5 dias antes da data com de um ativo que você tem: quem tiver o ativo no fim desse dia recebe o provento."],
+  ["darf", "DARF a vencer", "Na semana do vencimento do DARF de um mês com imposto sobre ganhos na bolsa."],
+  ["vencimentos", "Renda fixa vencendo", "Na semana em que um CDB, LCI, título do Tesouro ou debênture da carteira vence."],
+] as const;
 
 export default async function PaginaAlertas({ searchParams }: Props) {
   if (!(await auth())?.user) redirect("/entrar?voltar=/alertas");
-  const [resp, respCanais] = await Promise.all([
+  const [resp, respCanais, respAvisos] = await Promise.all([
     chamarApi("/v1/alertas", { cache: "no-store" }),
     chamarApi("/v1/notificacoes", { cache: "no-store" }),
+    chamarApi("/v1/alertas/carteira", { cache: "no-store" }),
   ]);
   if (resp.status === 401) redirect("/entrar?voltar=/alertas");
   if (!resp.ok) throw new Error(`API ${resp.status} em /v1/alertas`);
   const dados = (await resp.json()) as Alertas;
   const canais = respCanais.ok ? ((await respCanais.json()) as Notificacoes) : null;
+  const avisos = respAvisos.ok ? ((await respAvisos.json()) as AvisosCarteira) : null;
   const semCanal = canais !== null && canais.push.aparelhos.length === 0 && !(canais.whatsapp.confirmado && canais.whatsapp.ativo);
-  const { ticker = "" } = await searchParams;
+  const { ticker = "", avisos: avisosSalvos } = await searchParams;
   const cheio = dados.ligados >= dados.limite;
 
   return (
@@ -53,6 +62,55 @@ export default async function PaginaAlertas({ searchParams }: Props) {
             )}
           </div>
           <CanaisNotificacao estado={canais} />
+        </section>
+      )}
+
+      {avisos && (
+        <section id="avisos-carteira" aria-labelledby="titulo-avisos" className="grid scroll-mt-24 gap-3 rounded-xl border bg-card p-4">
+          <div>
+            <h2 id="titulo-avisos" className="font-semibold">
+              Avisos da carteira
+            </h2>
+            <p className="mt-1 text-sm text-muted-foreground">Automáticos, a partir do que está nas suas carteiras. Saem pelos mesmos canais acima, uma vez cada.</p>
+          </div>
+          {avisosSalvos === "1" && (
+            <p role="status" className="rounded-md bg-positivo/10 px-3 py-2 text-sm text-positivo">
+              Preferências salvas.
+            </p>
+          )}
+          <form action={salvarAvisosCarteira} className="grid gap-3">
+            <fieldset className="grid gap-3 sm:grid-cols-2">
+              <legend className="sr-only">Quais avisos receber</legend>
+              {TIPOS_AVISO.map(([chave, rotulo, descricao]) => (
+                <label key={chave} className="flex cursor-pointer gap-3 rounded-lg border p-3 has-[:checked]:border-azul">
+                  <input type="checkbox" name={chave} defaultChecked={avisos.preferencias[chave]} className="mt-0.5 size-4 shrink-0 accent-[var(--azul)]" />
+                  <span className="grid gap-0.5">
+                    <span className="text-sm font-medium">{rotulo}</span>
+                    <span className="text-xs text-muted-foreground">{descricao}</span>
+                  </span>
+                </label>
+              ))}
+            </fieldset>
+            <div>
+              <Button type="submit" variant="outline" size="sm">
+                Salvar avisos
+              </Button>
+            </div>
+          </form>
+          {avisos.recentes.length > 0 && (
+            <div className="grid gap-2 border-t pt-3">
+              <h3 className="text-sm font-medium">Últimos avisos</h3>
+              <ul className="grid gap-1.5 text-sm">
+                {avisos.recentes.map((v) => (
+                  <li key={`${v.criado_em}-${v.texto}`}>
+                    <Link href={v.url} className="hover:text-azul hover:underline">
+                      {v.texto}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </section>
       )}
 

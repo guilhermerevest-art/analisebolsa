@@ -29,6 +29,21 @@ def listar(conn: Conn, usuario: Logado, response: Response):
     }
 
 
+@router.get(
+    "/carteira", response_model=s.AvisosCarteira, summary="Avisos sobre a carteira e preferências"
+)
+def avisos_carteira(conn: Conn, usuario: Logado, response: Response):
+    _privado(response)
+    return al.avisos_carteira(conn, usuario.id)
+
+
+@router.put("/carteira", status_code=204, summary="Liga ou desliga cada tipo de aviso da carteira")
+def salvar_avisos(conn: Conn, usuario: Logado, corpo: s.PreferenciasAvisos):
+    al.salvar_preferencias(conn, usuario.id, corpo.model_dump())
+    conn.commit()
+    return Response(status_code=204)
+
+
 @router.post("", response_model=s.Alerta, status_code=201, summary="Cria um alerta")
 def criar(conn: Conn, usuario: Logado, corpo: s.NovoAlerta, response: Response):
     _privado(response)

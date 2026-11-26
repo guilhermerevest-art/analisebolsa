@@ -133,3 +133,17 @@ def test_faixa_exige_historico_minimo():
 def test_textos_sem_linguagem_de_recomendacao():
     for t in (AVISO, EXPLICACAO_FAIXA):
         assert not PROIBIDAS.search(t), t
+
+
+def test_aportes_no_dolar_pela_ptax_de_cada_dia():
+    from dominio.simulador import simular as sim
+
+    cdi = {date(2024, 1, 2): 0.0, date(2024, 2, 1): 0.0, date(2024, 2, 29): 0.0}
+    dolar = {date(2023, 12, 29): 5.0, date(2024, 2, 1): 4.0, date(2024, 2, 29): 6.0}
+    pontos = sim(date(2024, 1, 1), 1000, 1000, cdi=cdi, dolar=dolar)
+    jan, fev = pontos
+    # Janeiro: 2.000 (inicial + mensal) a 5,00 = 400 dólares, valendo 2.000.
+    assert jan.dolar == 2000.0
+    # Fevereiro: +1.000 a 4,00 = 250 dólares; 650 a 6,00 = 3.900.
+    assert fev.dolar == 3900.0 and fev.aportado == 3000.0
+    assert sim(date(2024, 1, 1), 1000, 0, cdi=cdi)[0].dolar is None

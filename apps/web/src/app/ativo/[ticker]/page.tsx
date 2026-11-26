@@ -1,4 +1,4 @@
-import { Calculator, FlaskConical, Scale } from "lucide-react";
+import { Calculator, FlaskConical, GitCompareArrows, Scale } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
@@ -82,6 +82,10 @@ export default async function PaginaAtivo({ params }: Props) {
         <Link href={`/posicao?ticker=${ativo.ticker}&modo=atr`} className="inline-flex items-center gap-1.5 rounded-md border px-3 py-1.5 hover:bg-muted">
           <Scale className="size-4" aria-hidden />
           Calcular posição
+        </Link>
+        <Link href={`/comparar?t=${ativo.tipo === "acao" ? `${ativo.ticker},BOVA11` : ativo.ticker}`} className="inline-flex items-center gap-1.5 rounded-md border px-3 py-1.5 hover:bg-muted">
+          <GitCompareArrows className="size-4" aria-hidden />
+          Comparar com outros
         </Link>
       </nav>
       <Abas
