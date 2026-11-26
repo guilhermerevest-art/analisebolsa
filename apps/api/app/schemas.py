@@ -503,6 +503,74 @@ class Simulacao(BaseModel):
     aviso: str
 
 
+class MetricasBacktest(BaseModel):
+    retorno_total: float = Field(description="Fração (0,1 = 10%)")
+    retorno_anual: float | None = Field(description="Composto; nulo com menos de meio ano")
+    volatilidade: float | None = Field(description="Anualizada")
+    drawdown_maximo: float = Field(description="Maior queda desde um topo, fração negativa")
+    sharpe: float | None = Field(description="Retorno acima do CDI dividido pela oscilação")
+    exposicao: float | None = Field(default=None, description="Fração dos pregões posicionado")
+    operacoes: int | None = None
+    acertos: float | None = Field(
+        default=None, description="Fração das operações encerradas com resultado positivo"
+    )
+    resultado_medio: float | None = Field(default=None, description="Por operação encerrada")
+
+
+class ComparacaoBacktest(BaseModel):
+    estrategia: MetricasBacktest
+    buy_and_hold: MetricasBacktest
+    cdi: MetricasBacktest
+
+
+class PontoBacktest(BaseModel):
+    data: date
+    estrategia: float = Field(description="Patrimônio, base 100")
+    buy_and_hold: float
+    cdi: float
+    drawdown: float = Field(description="% abaixo do topo da estratégia")
+    drawdown_bh: float
+    preco: float = Field(description="Fechamento ajustado por proventos usado no teste")
+
+
+class OperacaoBacktest(BaseModel):
+    entrada: date
+    preco_entrada: float = Field(description="Preço ajustado, com deslizamento")
+    saida: date | None = Field(description="Nula se a posição segue aberta no fim")
+    preco_saida: float | None
+    resultado: float = Field(description="Fração, líquida de custos")
+    pregoes: int
+    motivo: Literal["sinal", "stop", "aberta"]
+
+
+class CustosBacktest(BaseModel):
+    corretagem: float = Field(description="R$ por execução")
+    taxas: float = Field(description="Fração do volume")
+    deslizamento: float = Field(description="Fração do preço")
+    total: float = Field(description="R$ gastos no período")
+
+
+class Backtest(BaseModel):
+    ticker: str
+    estrategia: str
+    nome: str
+    regra: str
+    parametros: dict[str, int]
+    stop_atr: float | None
+    capital: float
+    custos: CustosBacktest
+    cdi_no_caixa: bool
+    inicio: date
+    fim: date
+    divisao: date = Field(description="Primeiro pregão fora da amostra (últimos 30%)")
+    pontos: list[PontoBacktest]
+    total: ComparacaoBacktest
+    dentro_amostra: ComparacaoBacktest
+    fora_amostra: ComparacaoBacktest
+    operacoes: list[OperacaoBacktest]
+    aviso: str
+
+
 TipoAlerta = Literal["preco_acima", "preco_abaixo", "variacao_dia", "insight"]
 
 

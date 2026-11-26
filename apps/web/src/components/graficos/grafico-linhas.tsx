@@ -15,7 +15,12 @@ const brlCompacto = new Intl.NumberFormat("pt-BR", { style: "currency", currency
 const FORMATOS = {
   pct: { eixo: (p: number) => `${p.toLocaleString("pt-BR", { maximumFractionDigits: 1 })}%`, legenda: formatarPct, colorir: true },
   brl: { eixo: (p: number) => brlCompacto.format(p), legenda: formatarPreco, colorir: false },
+  num: { eixo: (p: number) => p.toLocaleString("pt-BR", { maximumFractionDigits: 0 }), legenda: formatarNumero, colorir: false },
 } as const;
+
+function formatarNumero(v: number | null | undefined) {
+  return v === null || v === undefined ? "—" : v.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
 
 const valorDe = (p: PontoLinhas, chave: string) => (typeof p[chave] === "number" ? (p[chave] as number) : null);
 

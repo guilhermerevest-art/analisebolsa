@@ -242,6 +242,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/backtest": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Estratégia por regras no histórico de um ativo */
+        get: operations["backtest_v1_backtest_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/watchlist": {
         parameters: {
             query?: never;
@@ -611,6 +628,53 @@ export interface components {
             /** Logo Url */
             logo_url: string | null;
         };
+        /** Backtest */
+        Backtest: {
+            /** Ticker */
+            ticker: string;
+            /** Estrategia */
+            estrategia: string;
+            /** Nome */
+            nome: string;
+            /** Regra */
+            regra: string;
+            /** Parametros */
+            parametros: {
+                [key: string]: number;
+            };
+            /** Stop Atr */
+            stop_atr: number | null;
+            /** Capital */
+            capital: number;
+            custos: components["schemas"]["CustosBacktest"];
+            /** Cdi No Caixa */
+            cdi_no_caixa: boolean;
+            /**
+             * Inicio
+             * Format: date
+             */
+            inicio: string;
+            /**
+             * Fim
+             * Format: date
+             */
+            fim: string;
+            /**
+             * Divisao
+             * Format: date
+             * @description Primeiro pregão fora da amostra (últimos 30%)
+             */
+            divisao: string;
+            /** Pontos */
+            pontos: components["schemas"]["PontoBacktest"][];
+            total: components["schemas"]["ComparacaoBacktest"];
+            dentro_amostra: components["schemas"]["ComparacaoBacktest"];
+            fora_amostra: components["schemas"]["ComparacaoBacktest"];
+            /** Operacoes */
+            operacoes: components["schemas"]["OperacaoBacktest"][];
+            /** Aviso */
+            aviso: string;
+        };
         /** CampoScreener */
         CampoScreener: {
             /** Campo */
@@ -734,6 +798,12 @@ export interface components {
             /** Cenarios */
             cenarios: components["schemas"]["CenarioPreco"][];
         };
+        /** ComparacaoBacktest */
+        ComparacaoBacktest: {
+            estrategia: components["schemas"]["MetricasBacktest"];
+            buy_and_hold: components["schemas"]["MetricasBacktest"];
+            cdi: components["schemas"]["MetricasBacktest"];
+        };
         /** Cotacoes */
         Cotacoes: {
             /** Ticker */
@@ -745,6 +815,29 @@ export interface components {
             periodo: "1d" | "1w" | "1M";
             /** Candles */
             candles: components["schemas"]["Candle"][];
+        };
+        /** CustosBacktest */
+        CustosBacktest: {
+            /**
+             * Corretagem
+             * @description R$ por execução
+             */
+            corretagem: number;
+            /**
+             * Taxas
+             * @description Fração do volume
+             */
+            taxas: number;
+            /**
+             * Deslizamento
+             * @description Fração do preço
+             */
+            deslizamento: number;
+            /**
+             * Total
+             * @description R$ gastos no período
+             */
+            total: number;
         };
         /** Destaque */
         Destaque: {
@@ -1144,6 +1237,51 @@ export interface components {
             /** Valor Mercado */
             valor_mercado: number | null;
         };
+        /** MetricasBacktest */
+        MetricasBacktest: {
+            /**
+             * Retorno Total
+             * @description Fração (0,1 = 10%)
+             */
+            retorno_total: number;
+            /**
+             * Retorno Anual
+             * @description Composto; nulo com menos de meio ano
+             */
+            retorno_anual: number | null;
+            /**
+             * Volatilidade
+             * @description Anualizada
+             */
+            volatilidade: number | null;
+            /**
+             * Drawdown Maximo
+             * @description Maior queda desde um topo, fração negativa
+             */
+            drawdown_maximo: number;
+            /**
+             * Sharpe
+             * @description Retorno acima do CDI dividido pela oscilação
+             */
+            sharpe: number | null;
+            /**
+             * Exposicao
+             * @description Fração dos pregões posicionado
+             */
+            exposicao?: number | null;
+            /** Operacoes */
+            operacoes?: number | null;
+            /**
+             * Acertos
+             * @description Fração das operações encerradas com resultado positivo
+             */
+            acertos?: number | null;
+            /**
+             * Resultado Medio
+             * @description Por operação encerrada
+             */
+            resultado_medio?: number | null;
+        };
         /** NivelPreco */
         NivelPreco: {
             /** Preco */
@@ -1208,6 +1346,38 @@ export interface components {
              */
             codigo?: string | null;
         };
+        /** OperacaoBacktest */
+        OperacaoBacktest: {
+            /**
+             * Entrada
+             * Format: date
+             */
+            entrada: string;
+            /**
+             * Preco Entrada
+             * @description Preço ajustado, com deslizamento
+             */
+            preco_entrada: number;
+            /**
+             * Saida
+             * @description Nula se a posição segue aberta no fim
+             */
+            saida: string | null;
+            /** Preco Saida */
+            preco_saida: number | null;
+            /**
+             * Resultado
+             * @description Fração, líquida de custos
+             */
+            resultado: number;
+            /** Pregoes */
+            pregoes: number;
+            /**
+             * Motivo
+             * @enum {string}
+             */
+            motivo: "sinal" | "stop" | "aberta";
+        };
         /** OperacaoCarteira */
         OperacaoCarteira: {
             /** Id */
@@ -1259,6 +1429,35 @@ export interface components {
             limite: number;
             /** Total */
             total: number;
+        };
+        /** PontoBacktest */
+        PontoBacktest: {
+            /**
+             * Data
+             * Format: date
+             */
+            data: string;
+            /**
+             * Estrategia
+             * @description Patrimônio, base 100
+             */
+            estrategia: number;
+            /** Buy And Hold */
+            buy_and_hold: number;
+            /** Cdi */
+            cdi: number;
+            /**
+             * Drawdown
+             * @description % abaixo do topo da estratégia
+             */
+            drawdown: number;
+            /** Drawdown Bh */
+            drawdown_bh: number;
+            /**
+             * Preco
+             * @description Fechamento ajustado por proventos usado no teste
+             */
+            preco: number;
         };
         /** PontoFaixa */
         PontoFaixa: {
@@ -2580,6 +2779,104 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Simulacao"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+        };
+    };
+    backtest_v1_backtest_get: {
+        parameters: {
+            query: {
+                ticker: string;
+                estrategia: "cruzamento_mm" | "rsi" | "macd" | "bollinger" | "setup_91" | "rompimento" | "buy_and_hold";
+                inicio: string;
+                fim?: string | null;
+                curta?: number | null;
+                longa?: number | null;
+                rsi_periodo?: number | null;
+                rsi_entrada?: number | null;
+                rsi_saida?: number | null;
+                n_entrada?: number | null;
+                n_saida?: number | null;
+                macd_rapida?: number | null;
+                macd_lenta?: number | null;
+                macd_sinal?: number | null;
+                bb_periodo?: number | null;
+                bb_desvios?: number | null;
+                mme_periodo?: number | null;
+                /** @description Múltiplo do ATR14 */
+                stop_atr?: number | null;
+                capital?: number;
+                /** @description R$ por execução */
+                corretagem?: number;
+                /** @description % do volume */
+                taxas?: number;
+                /** @description % do preço */
+                deslizamento?: number;
+                cdi_no_caixa?: boolean;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Backtest"];
                 };
             };
             /** @description Unauthorized */

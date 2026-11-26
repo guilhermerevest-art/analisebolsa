@@ -12,6 +12,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${base}/`, changeFrequency: "daily", priority: 1 },
     { url: `${base}/screener`, changeFrequency: "daily", priority: 0.9 },
     { url: `${base}/simulador`, changeFrequency: "monthly", priority: 0.7 },
+    { url: `${base}/backtest`, changeFrequency: "monthly", priority: 0.7 },
     ...PRESETS.map((p) => ({ url: `${base}${urlPreset(p).replaceAll("&", "&amp;")}`, changeFrequency: "daily" as const, priority: 0.7 })),
   ];
   try {

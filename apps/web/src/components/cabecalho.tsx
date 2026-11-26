@@ -20,6 +20,9 @@ export async function Cabecalho() {
           <Button asChild variant="ghost" size="sm" className="hidden md:inline-flex">
             <Link href="/simulador">Simulador</Link>
           </Button>
+          <Button asChild variant="ghost" size="sm" className="hidden md:inline-flex">
+            <Link href="/backtest">Backtest</Link>
+          </Button>
           {sessao?.user && (
             <Button asChild variant="ghost" size="sm" className="hidden sm:inline-flex">
               <Link href="/watchlist">Watchlist</Link>
