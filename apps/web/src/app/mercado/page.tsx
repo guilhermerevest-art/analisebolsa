@@ -77,7 +77,7 @@ export default async function Mercado({ searchParams }: Props) {
   const pontos = semanal(serie?.pontos ?? []);
   const primeiro = pontos[0];
   const ultimo = pontos.at(-1);
-  const linha: SerieLinha[] = escolhido ? [{ chave: "valor", rotulo: escolhido.nome, claro: "#1f51ff", escuro: "#5b87ff" }] : [];
+  const linha: SerieLinha[] = escolhido ? [{ chave: "valor", rotulo: escolhido.nome, claro: "#2f6bff", escuro: "#5a88ff" }] : [];
 
   return (
     <div className="grid grid-cols-[minmax(0,1fr)] gap-10">

@@ -68,7 +68,14 @@ const brl0 = (v: number) => v.toLocaleString("pt-BR", { style: "currency", curre
  * Leitura em linguagem simples do fim da simulação: quanto foi aportado, em quanto virou no
  * ativo e no CDI, e se ficou acima da inflação. Descreve o passado; não diz o que fazer.
  */
-export function leituraSimulador(f: { aportado: number; ativo: number | null; ticker: string | null; cdi: number; ipca: number }): string[] {
+export function leituraSimulador(f: {
+  aportado: number;
+  ativo: number | null;
+  ticker: string | null;
+  cdi: number;
+  ipca: number;
+  dolar?: number | null;
+}): string[] {
   const frases: string[] = [];
   const principal = f.ativo ?? f.cdi;
   const onde = f.ativo !== null && f.ticker ? `em ${f.ticker}, com os proventos reinvestidos,` : "no CDI,";
@@ -87,6 +94,13 @@ export function leituraSimulador(f: { aportado: number; ativo: number | null; ti
         ? `O resultado ficou ${brl0(principal - f.ipca)} acima disso: esse é o ganho real, descontada a inflação.`
         : `O resultado ficou ${brl0(f.ipca - principal)} abaixo: o dinheiro perdeu poder de compra no período.`),
   );
+  if (f.dolar !== null && f.dolar !== undefined) {
+    const dif = principal - f.dolar;
+    frases.push(
+      `Se cada aporte tivesse virado dólar no dia, o total valeria ${brl0(f.dolar)} hoje` +
+        (Math.abs(dif) < 1 ? ", praticamente o mesmo." : `, ${brl0(Math.abs(dif))} ${dif > 0 ? "a menos" : "a mais"} que ${f.ativo !== null ? "no ativo" : "no CDI"}.`),
+    );
+  }
   frases.push("São números do passado, sem impostos nem custos de corretagem: não mostram o que vai acontecer.");
   return frases;
 }

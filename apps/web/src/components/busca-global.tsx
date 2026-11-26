@@ -97,8 +97,8 @@ export function BuscaGlobal({ variante = "cabecalho" }: { variante?: "cabecalho"
         )}
       >
         <Search aria-hidden className={cn("size-4", variante === "hero" && "size-5 text-azul")} />
-        <span className={cn("flex-1 truncate text-left", variante === "cabecalho" && "sr-only sm:not-sr-only")}>{variante === "hero" ? "Busque por ticker ou empresa: PETR4, Vale, HGLG11…" : "Buscar ativo"}</span>
-        {variante === "cabecalho" && <kbd className="hidden rounded border px-1.5 text-[10px] sm:inline">Ctrl K</kbd>}
+        <span className={cn("flex-1 truncate text-left", variante === "cabecalho" && "sr-only sm:not-sr-only xl:sr-only")}>{variante === "hero" ? "Busque por ticker ou empresa: PETR4, Vale, HGLG11…" : "Buscar ativo"}</span>
+        {variante === "cabecalho" && <kbd className="hidden rounded border px-1.5 text-[10px] sm:inline xl:hidden">Ctrl K</kbd>}
       </button>
       <dialog
         ref={dialogo}

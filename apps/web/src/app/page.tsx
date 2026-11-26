@@ -1,4 +1,4 @@
-import { BarChart3, Bell, Briefcase, Calculator, CandlestickChart, Coins, Filter, FlaskConical, Lightbulb, Scale, Star } from "lucide-react";
+import { BarChart3, Bell, Briefcase, Calculator, CandlestickChart, Coins, Filter, FlaskConical, GitCompareArrows, Lightbulb, Scale, Star } from "lucide-react";
 import Link from "next/link";
 
 import { BuscaGlobal } from "@/components/busca-global";
@@ -34,6 +34,7 @@ const GRUPOS: { titulo: string; descricao: string; itens: Item[] }[] = [
     descricao: "Para comparar ativos e regras.",
     itens: [
       { titulo: "Screener", descricao: "Filtre por indicadores e fundamentos, ou use filtros prontos.", icone: <Filter />, href: "/screener" },
+      { titulo: "Comparar ativos", descricao: "Dois a quatro ativos lado a lado: desempenho com proventos, risco e fundamentos.", icone: <GitCompareArrows />, href: "/comparar" },
       { titulo: "Backtest", descricao: "Golden cross, IFR2, Setup 9.1, MACD e outras regras no histórico, com custos.", icone: <FlaskConical />, href: "/backtest" },
       { titulo: "Simulador", descricao: "Aportes mensais com reinvestimento, comparados ao CDI e ao IPCA.", icone: <Calculator />, href: "/simulador" },
     ],
@@ -42,9 +43,9 @@ const GRUPOS: { titulo: string; descricao: string; itens: Item[] }[] = [
     titulo: "Acompanhar",
     descricao: "Com uma conta grátis.",
     itens: [
-      { titulo: "Carteira", descricao: "Posições, preço médio, proventos recebidos e alocação.", icone: <Briefcase />, href: "/carteira" },
+      { titulo: "Carteira", descricao: "Ações, FIIs, renda fixa e fundos: posições, preço médio, proventos, imposto e alocação.", icone: <Briefcase />, href: "/carteira" },
       { titulo: "Watchlist", descricao: "Os ativos que você acompanha, num lugar só.", icone: <Star />, href: "/watchlist" },
-      { titulo: "Alertas", descricao: "Notificação no celular ou WhatsApp quando um ativo cruza um preço, varia muito ou gera um sinal.", icone: <Bell />, href: "/alertas" },
+      { titulo: "Alertas", descricao: "No celular ou WhatsApp: preço, variação e sinais, mais avisos de proventos, data com, DARF e vencimentos da carteira.", icone: <Bell />, href: "/alertas" },
       { titulo: "Calculadora de posição", descricao: "Quantidade pelo risco até o stop, manual ou por ATR.", icone: <Scale />, href: "/posicao" },
     ],
   },
@@ -169,16 +170,16 @@ export default async function Inicio() {
         </div>
       </section>
 
-      <section className="grid items-center gap-6 rounded-2xl border border-transparent bg-tinta px-6 py-12 text-[#f3f4f6] sm:px-12 dark:border-border md:grid-cols-[1fr_auto]">
+      <section className="grid items-center gap-6 rounded-2xl bg-safira px-6 py-12 text-white sm:px-12 md:grid-cols-[1fr_auto]">
         <div className="grid gap-2">
           <h2 className="text-3xl font-semibold tracking-tight">Crie sua conta grátis</h2>
-          <p className="max-w-lg text-[#f3f4f6]/75">Guarde sua carteira, sua watchlist e seus alertas, e acesse de qualquer aparelho.</p>
+          <p className="max-w-lg text-white">Guarde sua carteira, sua watchlist e seus alertas, e acesse de qualquer aparelho.</p>
         </div>
         <div className="flex flex-wrap gap-3">
-          <Button asChild size="lg">
+          <Button asChild size="lg" className="bg-giz text-tinta hover:bg-white">
             <Link href="/cadastro">Criar conta</Link>
           </Button>
-          <Button asChild size="lg" variant="ghost" className="text-[#f3f4f6] hover:bg-white/10 hover:text-white">
+          <Button asChild size="lg" variant="ghost" className="border border-white/70 text-white hover:bg-white/10 hover:text-white">
             <Link href="/entrar">Já tenho conta</Link>
           </Button>
         </div>

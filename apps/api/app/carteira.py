@@ -1,7 +1,7 @@
 """Carteiras e operações do usuário (Fase 3, etapa 2). Toda consulta filtra pelo dono."""
 
 from collections import defaultdict
-from datetime import date
+from datetime import date, timedelta
 from decimal import Decimal
 
 from sqlalchemy import Connection, RowMapping, text
@@ -356,6 +356,8 @@ def rentabilidade(conn: Connection, user_id: str, carteira_id: int) -> dict:
         _precos(conn, tickers, inicio),
         cdi=_indice(conn, "cdi", inicio),
         ibov=_indice(conn, "ibov", inicio),
+        # Alguns dias antes, para ter a PTAX do primeiro dia mesmo que ele seja feriado.
+        dolar=_indice(conn, "dolar", inicio - timedelta(days=10)),
     )
     ultimo = pontos[-1]
     return {
@@ -366,6 +368,7 @@ def rentabilidade(conn: Connection, user_id: str, carteira_id: int) -> dict:
             "carteira": ultimo.carteira,
             "cdi": ultimo.cdi,
             "ibov": ultimo.ibov,
+            "dolar": ultimo.dolar,
         },
     }
 

@@ -1,7 +1,7 @@
 import "server-only";
 
 import { cabecalhosApi, env } from "@/lib/env";
-import type { AnaliseAtivo, Indice, IndicadoresMercado, Backtest, Posicao, Simulacao, SinaisDoDia, AtivoDetalhe, CamposScreener, Destaques, Fundamentos, PaginaAtivos, PaginaScreener, Proventos } from "@/lib/tipos-api";
+import type { AnaliseAtivo, Comparacao, Indice, IndicadoresMercado, Backtest, Posicao, Simulacao, SinaisDoDia, AtivoDetalhe, CamposScreener, Destaques, Fundamentos, PaginaAtivos, PaginaScreener, Proventos } from "@/lib/tipos-api";
 
 const UMA_HORA = 3600;
 
@@ -103,6 +103,9 @@ async function lerComErro<T>(caminho: string): Promise<{ dados: T } | { erro: st
   }
   throw new Error(`API ${resp.status} em ${caminho.split("?")[0]}`);
 }
+
+export const lerComparacao = (tickers: string[], inicio: string) =>
+  lerComErro<Comparacao>(`/v1/comparar?tickers=${tickers.map(encodeURIComponent).join(",")}&inicio=${inicio}`);
 
 export const lerBacktest = (qs: URLSearchParams) => lerComErro<Backtest>(`/v1/backtest?${qs.toString()}`);
 export const lerPosicao = (qs: URLSearchParams) => lerComErro<Posicao>(`/v1/posicao?${qs.toString()}`);

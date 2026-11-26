@@ -1,50 +1,38 @@
 @import "tailwindcss";
 
-@custom-variant dark (@media (prefers-color-scheme: dark));
+/* O site é sempre escuro: as utilidades `dark:` valem em todo lugar. */
+@custom-variant dark (&:where(.dark, .dark *));
 
+/*
+ * Paleta 60/30/10:
+ * - Grafite Profundo (60%): fundo, cartões e superfícies.
+ * - Branco Giz (30%): texto e detalhes claros.
+ * - Azul Safira #2F6BFF (10%): ações e destaques. Em texto e linhas finas usa o tom #5A88FF,
+ *   que passa de 4,5:1 sobre o grafite.
+ * Verde e vermelho só para alta e baixa.
+ */
 :root {
-  color-scheme: light dark;
-  /* Paleta: preto, cinzas e azul elétrico. Verde e vermelho só para alta e baixa. */
-  --background: #f3f4f6;
-  --foreground: #0a0b0f;
-  --card: #ffffff;
-  --card-foreground: #0a0b0f;
-  --primary: #1f51ff;
+  color-scheme: dark;
+  --background: #111317;
+  --foreground: #ecebe6;
+  --card: #181b20;
+  --card-foreground: #ecebe6;
+  --primary: #2f6bff;
   --primary-foreground: #ffffff;
-  --tinta: #0a0b0f;
-  --muted: #e9ebef;
-  --muted-foreground: #585e6b;
-  --accent: #e8edff;
-  --accent-foreground: #0a0b0f;
-  --azul: #1f51ff;
-  --destructive: #c62828;
-  --positivo: #0f7a45;
-  --border: #e1e3e8;
-  --input: #cfd3da;
-  --ring: #1f51ff;
+  --tinta: #0b0c0f;
+  --muted: #20242a;
+  --muted-foreground: #a4a7ae;
+  --accent: #1a2340;
+  --accent-foreground: #ecebe6;
+  --azul: #5a88ff;
+  --safira: #2f6bff;
+  --giz: #ecebe6;
+  --destructive: #ff6b6b;
+  --positivo: #35c27a;
+  --border: #2a2f36;
+  --input: #3a3f48;
+  --ring: #5a88ff;
   --radius: 0.5rem;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #08090c;
-    --foreground: #f3f4f6;
-    --card: #121419;
-    --card-foreground: #f3f4f6;
-    --primary: #1f51ff;
-    --primary-foreground: #ffffff;
-    --tinta: #121419;
-    --muted: #1a1d24;
-    --muted-foreground: #9aa0ac;
-    --accent: #16204a;
-    --accent-foreground: #f3f4f6;
-    --azul: #5b87ff;
-    --destructive: #ff6b6b;
-    --positivo: #35c27a;
-    --border: #252830;
-    --input: #333845;
-    --ring: #5b87ff;
-  }
 }
 
 @theme inline {
@@ -59,6 +47,8 @@
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
   --color-azul: var(--azul);
+  --color-safira: var(--safira);
+  --color-giz: var(--giz);
   --color-tinta: var(--tinta);
   --color-destructive: var(--destructive);
   --color-positivo: var(--positivo);

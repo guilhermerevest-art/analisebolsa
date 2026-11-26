@@ -29,6 +29,7 @@ class PontoRentabilidade:
     carteira: float  # acumulado em %
     cdi: float | None
     ibov: float | None
+    dolar: float | None = None
 
 
 def fator_ate_eventos(eventos: list[Provento]) -> Callable[[date], Decimal]:
@@ -50,12 +51,13 @@ def serie_rentabilidade(
     precos: dict[str, dict[date, Decimal]],
     cdi: dict[date, float] | None = None,
     ibov: dict[date, float] | None = None,
+    dolar: dict[date, float] | None = None,
 ) -> list[PontoRentabilidade]:
     ops = sorted(operacoes, key=lambda o: (o.data, o.id))
     if not ops:
         return []
     inicio = ops[0].data
-    cdi, ibov = cdi or {}, ibov or {}
+    cdi, ibov, dolar = cdi or {}, ibov or {}, dolar or {}
 
     ops_dia: dict[date, list[Operacao]] = defaultdict(list)
     for o in ops:
@@ -84,6 +86,10 @@ def serie_rentabilidade(
     i_cdi = 0
     ibov_base = None
     ibov_ultimo = None
+    # O dólar começa pela última cotação até o início (a PTAX não sai em feriados nem fins de
+    # semana).
+    dolar_base = next((dolar[x] for x in sorted(dolar, reverse=True) if x <= inicio), None)
+    dolar_ultimo = dolar_base
     saida: list[PontoRentabilidade] = []
 
     for d in datas:
@@ -126,6 +132,9 @@ def serie_rentabilidade(
         if d in ibov:
             ibov_ultimo = ibov[d]
             ibov_base = ibov_base or ibov_ultimo
+        if d in dolar:
+            dolar_ultimo = dolar[d]
+            dolar_base = dolar_base or dolar_ultimo
         saida.append(
             PontoRentabilidade(
                 d,
@@ -133,6 +142,7 @@ def serie_rentabilidade(
                 (acumulado - 1) * 100,
                 (cdi_acumulado - 1) * 100 if cdi else None,
                 (ibov_ultimo / ibov_base - 1) * 100 if ibov_base else None,
+                (dolar_ultimo / dolar_base - 1) * 100 if dolar_base else None,
             )
         )
     return saida

@@ -484,6 +484,7 @@ class PontoRentabilidade(BaseModel):
     carteira: float = Field(description="Retorno acumulado (TWR) em %")
     cdi: float | None = Field(description="CDI acumulado no mesmo período, em %")
     ibov: float | None = Field(description="Ibovespa no mesmo período, em %")
+    dolar: float | None = Field(default=None, description="Variação do dólar no período, em %")
 
 
 class AcumuladoCarteira(BaseModel):
@@ -491,6 +492,7 @@ class AcumuladoCarteira(BaseModel):
     carteira: float
     cdi: float | None
     ibov: float | None
+    dolar: float | None = None
 
 
 class RentabilidadeCarteira(BaseModel):
@@ -506,6 +508,9 @@ class PontoSimulacao(BaseModel):
     proventos: float | None = Field(description="Proventos recebidos acumulados")
     cdi: float | None = Field(description="Mesmos aportes rendendo o CDI")
     ipca: float | None = Field(description="Mesmos aportes corrigidos pelo IPCA")
+    dolar: float | None = Field(
+        default=None, description="Mesmos aportes convertidos em dólar no dia de cada um"
+    )
 
 
 class PontoFaixa(BaseModel):
@@ -875,3 +880,104 @@ class IndicadorMercado(BaseModel):
 
 class IndicadoresMercado(BaseModel):
     itens: list[IndicadorMercado]
+
+
+class AtivoComparado(MetricasAtivo):
+    data: date | None = None  # sem métricas calculadas (ativo novo ou sem liquidez)
+    preco: Preco | None = None
+    ticker: str
+    nome: str
+    tipo: TipoAtivo
+    setor: str | None
+    logo_url: str | None
+
+
+class SerieComparada(BaseModel):
+    ticker: str
+    pontos: list[PontoIndice] = Field(description="Preço ajustado (com proventos), base 100")
+
+
+class Comparacao(BaseModel):
+    inicio: date | None = Field(description="Primeiro dia em que todos têm cotação (base 100)")
+    ativos: list[AtivoComparado]
+    series: list[SerieComparada]
+
+
+TipoInvestimento = Literal["cdb", "lci_lca", "tesouro", "debenture", "outro_rf", "fundo"]
+Indexador = Literal["cdi", "prefixado", "ipca"]
+
+
+class NovoInvestimento(BaseModel):
+    tipo: TipoInvestimento
+    nome: Annotated[str, Field(min_length=1, max_length=80)]
+    indexador: Indexador | None = None
+    taxa: Annotated[float | None, Field(ge=0, le=300)] = Field(
+        default=None, description="cdi: % do CDI; prefixado: % ao ano; ipca: % ao ano além do IPCA"
+    )
+    data_aplicacao: date
+    valor_aplicado: Annotated[Decimal, Field(gt=0, max_digits=14, decimal_places=2)]
+    vencimento: date | None = None
+    isento_ir: bool = False
+    cnpj: Annotated[str | None, Field(max_length=20)] = None
+    cotas: Annotated[Decimal | None, Field(gt=0, max_digits=24, decimal_places=8)] = None
+    resgate_data: date | None = None
+    resgate_valor: Annotated[Decimal | None, Field(ge=0, max_digits=14, decimal_places=2)] = None
+
+
+class InvestimentoCarteira(BaseModel):
+    id: int
+    tipo: TipoInvestimento
+    tipo_nome: str
+    nome: str
+    indexador: Indexador | None
+    taxa: float | None
+    descricao_taxa: str
+    data_aplicacao: date
+    valor_aplicado: float
+    vencimento: date | None
+    isento_ir: bool
+    cnpj: str | None
+    cotas: float | None
+    cotas_informadas: bool = Field(
+        description="Se o número de cotas foi digitado (senão, vem da CVM)"
+    )
+    resgate_data: date | None
+    resgate_valor: float | None
+    avaliado_em: date
+    bruto: float | None
+    ir: float | None = Field(description="IR regressivo estimado sobre o ganho (renda fixa)")
+    liquido: float | None
+    rendimento: float | None = Field(description="Em %, líquido (bruto nos fundos)")
+    aliquota_ir: float | None
+    observacao: str | None
+
+
+class TotaisInvestimentos(BaseModel):
+    aplicado: float
+    bruto: float
+    liquido: float
+
+
+class Investimentos(BaseModel):
+    itens: list[InvestimentoCarteira]
+    totais: TotaisInvestimentos
+
+
+class PreferenciasAvisos(BaseModel):
+    proventos: bool = Field(description="Proventos pagos nos ativos da carteira")
+    data_com: bool = Field(description="Data com nos próximos dias, dos ativos em carteira")
+    darf: bool = Field(description="DARF da carteira vencendo na semana")
+    vencimentos: bool = Field(description="Renda fixa vencendo na semana")
+
+
+class AvisoCarteira(BaseModel):
+    tipo: Literal["proventos", "data_com", "darf", "vencimentos"]
+    data: date
+    texto: str
+    url: str
+    criado_em: datetime
+
+
+class AvisosCarteira(BaseModel):
+    preferencias: PreferenciasAvisos
+    recentes: list[AvisoCarteira]

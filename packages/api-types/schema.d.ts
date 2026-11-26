@@ -503,6 +503,59 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/carteiras/{carteira_id}/investimentos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Renda fixa e fundos, com valor atualizado e IR estimado */
+        get: operations["investimentos_v1_carteiras__carteira_id__investimentos_get"];
+        put?: never;
+        /** Cadastra uma aplicação */
+        post: operations["criar_investimento_v1_carteiras__carteira_id__investimentos_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/carteiras/{carteira_id}/investimentos/{investimento_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Edita uma aplicação */
+        put: operations["editar_investimento_v1_carteiras__carteira_id__investimentos__investimento_id__put"];
+        post?: never;
+        /** Exclui uma aplicação */
+        delete: operations["excluir_investimento_v1_carteiras__carteira_id__investimentos__investimento_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/comparar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Compara de 2 a 4 ativos */
+        get: operations["comparar_v1_comparar_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/alertas": {
         parameters: {
             query?: never;
@@ -515,6 +568,24 @@ export interface paths {
         put?: never;
         /** Cria um alerta */
         post: operations["criar_v1_alertas_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/alertas/carteira": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Avisos sobre a carteira e preferências */
+        get: operations["avisos_carteira_v1_alertas_carteira_get"];
+        /** Liga ou desliga cada tipo de aviso da carteira */
+        put: operations["salvar_avisos_v1_alertas_carteira_put"];
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -781,6 +852,8 @@ export interface components {
             cdi: number | null;
             /** Ibov */
             ibov: number | null;
+            /** Dolar */
+            dolar?: number | null;
         };
         /** Alerta */
         Alerta: {
@@ -918,6 +991,72 @@ export interface components {
              */
             arquivo: string;
         };
+        /** AtivoComparado */
+        AtivoComparado: {
+            /** Data */
+            data?: string | null;
+            /** Preco */
+            preco?: string | null;
+            /** Var 1D */
+            var_1d: number | null;
+            /** Var 1M */
+            var_1m: number | null;
+            /** Var 3M */
+            var_3m: number | null;
+            /** Var 6M */
+            var_6m: number | null;
+            /** Var 12M */
+            var_12m: number | null;
+            /** Var Ano */
+            var_ano: number | null;
+            /** Volatilidade 12M */
+            volatilidade_12m: number | null;
+            /** Drawdown 12M */
+            drawdown_12m: number | null;
+            /** Max 52S */
+            max_52s: string | null;
+            /** Min 52S */
+            min_52s: string | null;
+            /** Pos 52S */
+            pos_52s: number | null;
+            /** Dist Mm50 */
+            dist_mm50: number | null;
+            /** Dist Mm200 */
+            dist_mm200: number | null;
+            /** Rsi14 */
+            rsi14: number | null;
+            /** Tendencia */
+            tendencia: ("alta" | "baixa" | "lateral") | null;
+            /** Volume Financeiro 20D */
+            volume_financeiro_20d: number | null;
+            /** Pl */
+            pl: number | null;
+            /** Pvp */
+            pvp: number | null;
+            /** Dy 12M */
+            dy_12m: number | null;
+            /** Roe */
+            roe: number | null;
+            /** Margem Liquida */
+            margem_liquida: number | null;
+            /** Div Liq Ebitda */
+            div_liq_ebitda: number | null;
+            /** Valor Mercado */
+            valor_mercado: number | null;
+            /** Ticker */
+            ticker: string;
+            /** Nome */
+            nome: string;
+            /**
+             * Tipo
+             * @enum {string}
+             */
+            tipo: "acao" | "fii" | "etf" | "bdr";
+            /** Setor */
+            setor: string | null;
+            /** Logo Url */
+            logo_url: string | null;
+        };
         /** AtivoDetalhe */
         AtivoDetalhe: {
             /** Ticker */
@@ -970,6 +1109,34 @@ export interface components {
             segmento: string | null;
             /** Logo Url */
             logo_url: string | null;
+        };
+        /** AvisoCarteira */
+        AvisoCarteira: {
+            /**
+             * Tipo
+             * @enum {string}
+             */
+            tipo: "proventos" | "data_com" | "darf" | "vencimentos";
+            /**
+             * Data
+             * Format: date
+             */
+            data: string;
+            /** Texto */
+            texto: string;
+            /** Url */
+            url: string;
+            /**
+             * Criado Em
+             * Format: date-time
+             */
+            criado_em: string;
+        };
+        /** AvisosCarteira */
+        AvisosCarteira: {
+            preferencias: components["schemas"]["PreferenciasAvisos"];
+            /** Recentes */
+            recentes: components["schemas"]["AvisoCarteira"][];
         };
         /** Backtest */
         Backtest: {
@@ -1197,6 +1364,18 @@ export interface components {
         CodigoWhatsApp: {
             /** Codigo */
             codigo: string;
+        };
+        /** Comparacao */
+        Comparacao: {
+            /**
+             * Inicio
+             * @description Primeiro dia em que todos têm cotação (base 100)
+             */
+            inicio: string | null;
+            /** Ativos */
+            ativos: components["schemas"]["AtivoComparado"][];
+            /** Series */
+            series: components["schemas"]["SerieComparada"][];
         };
         /** ComparacaoBacktest */
         ComparacaoBacktest: {
@@ -1684,6 +1863,79 @@ export interface components {
              */
             data: string;
         };
+        /** InvestimentoCarteira */
+        InvestimentoCarteira: {
+            /** Id */
+            id: number;
+            /**
+             * Tipo
+             * @enum {string}
+             */
+            tipo: "cdb" | "lci_lca" | "tesouro" | "debenture" | "outro_rf" | "fundo";
+            /** Tipo Nome */
+            tipo_nome: string;
+            /** Nome */
+            nome: string;
+            /** Indexador */
+            indexador: ("cdi" | "prefixado" | "ipca") | null;
+            /** Taxa */
+            taxa: number | null;
+            /** Descricao Taxa */
+            descricao_taxa: string;
+            /**
+             * Data Aplicacao
+             * Format: date
+             */
+            data_aplicacao: string;
+            /** Valor Aplicado */
+            valor_aplicado: number;
+            /** Vencimento */
+            vencimento: string | null;
+            /** Isento Ir */
+            isento_ir: boolean;
+            /** Cnpj */
+            cnpj: string | null;
+            /** Cotas */
+            cotas: number | null;
+            /**
+             * Cotas Informadas
+             * @description Se o número de cotas foi digitado (senão, vem da CVM)
+             */
+            cotas_informadas: boolean;
+            /** Resgate Data */
+            resgate_data: string | null;
+            /** Resgate Valor */
+            resgate_valor: number | null;
+            /**
+             * Avaliado Em
+             * Format: date
+             */
+            avaliado_em: string;
+            /** Bruto */
+            bruto: number | null;
+            /**
+             * Ir
+             * @description IR regressivo estimado sobre o ganho (renda fixa)
+             */
+            ir: number | null;
+            /** Liquido */
+            liquido: number | null;
+            /**
+             * Rendimento
+             * @description Em %, líquido (bruto nos fundos)
+             */
+            rendimento: number | null;
+            /** Aliquota Ir */
+            aliquota_ir: number | null;
+            /** Observacao */
+            observacao: string | null;
+        };
+        /** Investimentos */
+        Investimentos: {
+            /** Itens */
+            itens: components["schemas"]["InvestimentoCarteira"][];
+            totais: components["schemas"]["TotaisInvestimentos"];
+        };
         /** ItemScreener */
         ItemScreener: {
             /**
@@ -2073,6 +2325,45 @@ export interface components {
              */
             codigo?: string | null;
         };
+        /** NovoInvestimento */
+        NovoInvestimento: {
+            /**
+             * Tipo
+             * @enum {string}
+             */
+            tipo: "cdb" | "lci_lca" | "tesouro" | "debenture" | "outro_rf" | "fundo";
+            /** Nome */
+            nome: string;
+            /** Indexador */
+            indexador?: ("cdi" | "prefixado" | "ipca") | null;
+            /**
+             * Taxa
+             * @description cdi: % do CDI; prefixado: % ao ano; ipca: % ao ano além do IPCA
+             */
+            taxa?: number | null;
+            /**
+             * Data Aplicacao
+             * Format: date
+             */
+            data_aplicacao: string;
+            /** Valor Aplicado */
+            valor_aplicado: number | string;
+            /** Vencimento */
+            vencimento?: string | null;
+            /**
+             * Isento Ir
+             * @default false
+             */
+            isento_ir: boolean;
+            /** Cnpj */
+            cnpj?: string | null;
+            /** Cotas */
+            cotas?: number | string | null;
+            /** Resgate Data */
+            resgate_data?: string | null;
+            /** Resgate Valor */
+            resgate_valor?: number | string | null;
+        };
         /** NumeroWhatsApp */
         NumeroWhatsApp: {
             /** Numero */
@@ -2239,6 +2530,11 @@ export interface components {
              * @description Ibovespa no mesmo período, em %
              */
             ibov: number | null;
+            /**
+             * Dolar
+             * @description Variação do dólar no período, em %
+             */
+            dolar?: number | null;
         };
         /** PontoSimulacao */
         PontoSimulacao: {
@@ -2270,6 +2566,11 @@ export interface components {
              * @description Mesmos aportes corrigidos pelo IPCA
              */
             ipca: number | null;
+            /**
+             * Dolar
+             * @description Mesmos aportes convertidos em dólar no dia de cada um
+             */
+            dolar?: number | null;
         };
         /** Posicao */
         Posicao: {
@@ -2372,6 +2673,29 @@ export interface components {
              * Format: date
              */
             data: string;
+        };
+        /** PreferenciasAvisos */
+        PreferenciasAvisos: {
+            /**
+             * Proventos
+             * @description Proventos pagos nos ativos da carteira
+             */
+            proventos: boolean;
+            /**
+             * Data Com
+             * @description Data com nos próximos dias, dos ativos em carteira
+             */
+            data_com: boolean;
+            /**
+             * Darf
+             * @description DARF da carteira vencendo na semana
+             */
+            darf: boolean;
+            /**
+             * Vencimentos
+             * @description Renda fixa vencendo na semana
+             */
+            vencimentos: boolean;
         };
         /** PreviaImportacao */
         PreviaImportacao: {
@@ -2489,6 +2813,16 @@ export interface components {
             /** Proventos */
             proventos: components["schemas"]["ProventoRecebido"][];
         };
+        /** SerieComparada */
+        SerieComparada: {
+            /** Ticker */
+            ticker: string;
+            /**
+             * Pontos
+             * @description Preço ajustado (com proventos), base 100
+             */
+            pontos: components["schemas"]["PontoIndice"][];
+        };
         /** Simulacao */
         Simulacao: {
             /** Ticker */
@@ -2569,6 +2903,15 @@ export interface components {
             proventos: string;
             /** Resultado Total */
             resultado_total: string;
+        };
+        /** TotaisInvestimentos */
+        TotaisInvestimentos: {
+            /** Aplicado */
+            aplicado: number;
+            /** Bruto */
+            bruto: number;
+            /** Liquido */
+            liquido: number;
         };
         /** UltimaCotacao */
         UltimaCotacao: {
@@ -5249,6 +5592,374 @@ export interface operations {
             };
         };
     };
+    investimentos_v1_carteiras__carteira_id__investimentos_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                carteira_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Investimentos"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+        };
+    };
+    criar_investimento_v1_carteiras__carteira_id__investimentos_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                carteira_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NovoInvestimento"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+        };
+    };
+    editar_investimento_v1_carteiras__carteira_id__investimentos__investimento_id__put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                carteira_id: number;
+                investimento_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NovoInvestimento"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+        };
+    };
+    excluir_investimento_v1_carteiras__carteira_id__investimentos__investimento_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                carteira_id: number;
+                investimento_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+        };
+    };
+    comparar_v1_comparar_get: {
+        parameters: {
+            query: {
+                /** @description Separados por vírgula, ex.: PETR4,VALE3 */
+                tickers: string;
+                inicio?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Comparacao"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+        };
+    };
     listar_v1_alertas_get: {
         parameters: {
             query?: never;
@@ -5340,6 +6051,148 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["Alerta"];
                 };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+        };
+    };
+    avisos_carteira_v1_alertas_carteira_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AvisosCarteira"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+        };
+    };
+    salvar_avisos_v1_alertas_carteira_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PreferenciasAvisos"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Unauthorized */
             401: {

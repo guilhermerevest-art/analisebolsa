@@ -161,6 +161,18 @@ def exportar(conn: Connection, user_id: str) -> dict:
                         {"c": c["id"]},
                     ).mappings()
                 ],
+                "investimentos": [
+                    dict(i)
+                    for i in conn.execute(
+                        text(
+                            "SELECT tipo, nome, indexador, taxa, data_aplicacao, valor_aplicado, "
+                            "vencimento, isento_ir, cnpj, cotas, resgate_data, resgate_valor, "
+                            "criado_em FROM investimentos WHERE carteira_id = :c "
+                            "ORDER BY data_aplicacao, investimento_id"
+                        ),
+                        {"c": c["id"]},
+                    ).mappings()
+                ],
             }
             for c in todos(
                 "SELECT carteira_id AS id, nome, criado_em FROM carteiras "
@@ -168,6 +180,7 @@ def exportar(conn: Connection, user_id: str) -> dict:
             )
         ],
         "alertas": listar(conn, user_id),
+        "avisos_carteira": avisos_carteira(conn, user_id),
         "alertas_disparos": [dict(r) for r in disparos(conn, user_id, limite=10_000)],
         **notificacoes.exportar(conn, user_id),
     }
@@ -177,3 +190,44 @@ def excluir_conta(conn: Connection, user_id: str) -> None:
     """Apaga o usuário; tudo o que é dele sai junto (ON DELETE CASCADE)."""
     exigir_usuario_existente(conn, user_id)
     conn.execute(text("DELETE FROM users WHERE id = :u"), {"u": user_id})
+
+
+# Avisos sobre a carteira (Fase 7)
+
+TIPOS_AVISO = ("proventos", "data_com", "darf", "vencimentos")
+
+
+def avisos_carteira(conn: Connection, user_id: str) -> dict:
+    pref = (
+        conn.execute(text("SELECT * FROM avisos_carteira_pref WHERE user_id = :u"), {"u": user_id})
+        .mappings()
+        .first()
+    )
+    recentes = (
+        conn.execute(
+            text(
+                "SELECT tipo, data, texto, url, criado_em FROM avisos_carteira WHERE user_id = :u "
+                "ORDER BY criado_em DESC, aviso_id DESC LIMIT 20"
+            ),
+            {"u": user_id},
+        )
+        .mappings()
+        .all()
+    )
+    return {
+        "preferencias": {t: pref[t] if pref else True for t in TIPOS_AVISO},
+        "recentes": [dict(r) for r in recentes],
+    }
+
+
+def salvar_preferencias(conn: Connection, user_id: str, prefs: dict) -> None:
+    exigir_usuario_existente(conn, user_id)
+    conn.execute(
+        text(
+            "INSERT INTO avisos_carteira_pref (user_id, proventos, data_com, darf, vencimentos) "
+            "VALUES (:u, :proventos, :data_com, :darf, :vencimentos) ON CONFLICT (user_id) DO "
+            "UPDATE SET proventos = EXCLUDED.proventos, data_com = EXCLUDED.data_com, "
+            "darf = EXCLUDED.darf, vencimentos = EXCLUDED.vencimentos"
+        ),
+        {"u": user_id, **{t: bool(prefs[t]) for t in TIPOS_AVISO}},
+    )

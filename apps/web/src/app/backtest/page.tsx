@@ -23,12 +23,12 @@ type Props = { searchParams: Promise<Record<string, string | string[] | undefine
 
 // Mesma paleta validada do simulador: estratégia em azul, manter o ativo em roxo, CDI em âmbar.
 const SERIES_PATRIMONIO: SerieLinha[] = [
-  { chave: "estrategia", rotulo: "Estratégia", claro: "#1f51ff", escuro: "#5b87ff" },
+  { chave: "estrategia", rotulo: "Estratégia", claro: "#2f6bff", escuro: "#5a88ff" },
   { chave: "buy_and_hold", rotulo: "Manter o ativo", claro: "#9333ea", escuro: "#a855f7" },
   { chave: "cdi", rotulo: "CDI", claro: "#d97706", escuro: "#d97706" },
 ];
 const SERIES_DRAWDOWN: SerieLinha[] = [
-  { chave: "drawdown", rotulo: "Estratégia", claro: "#1f51ff", escuro: "#5b87ff" },
+  { chave: "drawdown", rotulo: "Estratégia", claro: "#2f6bff", escuro: "#5a88ff" },
   { chave: "drawdown_bh", rotulo: "Manter o ativo", claro: "#9333ea", escuro: "#a855f7" },
 ];
 

@@ -53,5 +53,7 @@ describe("leitura do simulador", () => {
     const [, abaixo] = leituraSimulador({ aportado: 10000, ativo: 9000, ticker: "MGLU3", cdi: 12000, ipca: 11000 });
     expect(abaixo).toContain("perdeu poder de compra");
     expect(leituraSimulador({ aportado: 10000, ativo: null, ticker: null, cdi: 12000, ipca: 11000 })[0]).toContain("e, no CDI, chegaram a");
+    const comDolar = leituraSimulador({ aportado: 30000, ativo: 62810.74, ticker: "PETR4", cdi: 41698.4, ipca: 33511.88, dolar: 35000 });
+    expect(comDolar[2]).toMatch(/valeria R\$\s35\.000 hoje, R\$\s27\.811 a menos que no ativo/);
   });
 });

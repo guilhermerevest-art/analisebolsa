@@ -335,6 +335,26 @@ export const GLOSSARIO = {
     categoria: "Carteira e imposto",
     curto: "Ficha da declaração com o que você tinha em 31 de dezembro, pelo custo de compra, não pelo valor de mercado.",
   },
+  renda_fixa: {
+    titulo: "Renda fixa",
+    categoria: "Carteira e imposto",
+    curto: "Empréstimo a um banco, empresa ou ao governo, com a regra de rendimento combinada na aplicação: um percentual do CDI, uma taxa fixa ou o IPCA mais uma taxa.",
+  },
+  ir_regressivo: {
+    titulo: "IR regressivo",
+    categoria: "Carteira e imposto",
+    curto: "O imposto sobre o rendimento da renda fixa cai com o tempo: 22,5% até 180 dias, 20% até 360, 17,5% até 720 e 15% depois. LCI, LCA e algumas debêntures são isentas.",
+  },
+  fundo_investimento: {
+    titulo: "Fundo de investimento",
+    categoria: "Carteira e imposto",
+    curto: "Um condomínio de investidores: o dinheiro vira cotas, e o valor da cota é divulgado todo dia útil à CVM. O rendimento é a variação da cota.",
+  },
+  come_cotas: {
+    titulo: "Come-cotas",
+    categoria: "Carteira e imposto",
+    curto: "Imposto que a maioria dos fundos recolhe em maio e novembro, reduzindo o número de cotas. Por isso o valor aqui é bruto, antes do imposto.",
+  },
 } as const satisfies Record<string, Termo>;
 
 export type ChaveGlossario = keyof typeof GLOSSARIO;
