@@ -259,6 +259,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/posicao": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Tamanho de posição pelo risco até o stop */
+        get: operations["posicao_v1_posicao_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/watchlist": {
         parameters: {
             query?: never;
@@ -571,6 +588,16 @@ export interface components {
              */
             ativo: boolean;
         };
+        /** AlvoPosicao */
+        AlvoPosicao: {
+            /**
+             * Multiplo
+             * @description Distância até o stop multiplicada (1R, 2R, 3R)
+             */
+            multiplo: number;
+            /** Preco */
+            preco: number;
+        };
         /** AnaliseAtivo */
         AnaliseAtivo: {
             /** Ticker */
@@ -609,6 +636,21 @@ export interface components {
             logo_url: string | null;
             ultima_cotacao: components["schemas"]["UltimaCotacao"] | null;
             variacoes: components["schemas"]["Variacoes"];
+        };
+        /** AtivoPosicao */
+        AtivoPosicao: {
+            /** Ticker */
+            ticker: string;
+            /**
+             * Data
+             * Format: date
+             * @description Último pregão
+             */
+            data: string;
+            /** Fechamento */
+            fechamento: number;
+            /** Atr14 */
+            atr14: number | null;
         };
         /** AtivoResumo */
         AtivoResumo: {
@@ -1538,6 +1580,63 @@ export interface components {
              * @description Mesmos aportes corrigidos pelo IPCA
              */
             ipca: number | null;
+        };
+        /** Posicao */
+        Posicao: {
+            /** Capital */
+            capital: number;
+            /**
+             * Risco
+             * @description % do capital até o stop
+             */
+            risco: number;
+            /** Entrada */
+            entrada: number;
+            /** Stop */
+            stop: number;
+            /** Lote */
+            lote: number;
+            /**
+             * Concentracao
+             * @description % máximo do capital na posição
+             */
+            concentracao: number;
+            ativo: components["schemas"]["AtivoPosicao"] | null;
+            /** Quantidade */
+            quantidade: number;
+            /** Valor */
+            valor: number;
+            /**
+             * Pct Capital
+             * @description Fração
+             */
+            pct_capital: number;
+            /**
+             * Distancia Stop
+             * @description Fração do preço de entrada
+             */
+            distancia_stop: number;
+            /**
+             * Perda Stop
+             * @description R$ perdidos se o stop for executado no preço
+             */
+            perda_stop: number;
+            /**
+             * Perda Pct Capital
+             * @description Fração
+             */
+            perda_pct_capital: number;
+            /**
+             * Risco Maximo
+             * @description R$ permitidos pelo risco escolhido
+             */
+            risco_maximo: number;
+            /** Limitada Por */
+            limitada_por: ("concentracao" | "capital") | null;
+            /** Alvos */
+            alvos: components["schemas"]["AlvoPosicao"][];
+            /** Aviso */
+            aviso: string;
         };
         /** PosicaoCarteira */
         PosicaoCarteira: {
@@ -2877,6 +2976,89 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Backtest"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+        };
+    };
+    posicao_v1_posicao_get: {
+        parameters: {
+            query: {
+                capital: number;
+                /** @description % do capital até o stop */
+                risco?: number;
+                entrada?: number | null;
+                stop?: number | null;
+                ticker?: string | null;
+                /** @description Stop em ATR14 */
+                atr_mult?: number | null;
+                /** @description 1 (fracionário) ou 100 (lote padrão) */
+                lote?: number;
+                /** @description % máximo */
+                concentracao?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Posicao"];
                 };
             };
             /** @description Unauthorized */

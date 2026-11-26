@@ -571,6 +571,38 @@ class Backtest(BaseModel):
     aviso: str
 
 
+class AtivoPosicao(BaseModel):
+    ticker: str
+    data: date = Field(description="Último pregão")
+    fechamento: float
+    atr14: float | None
+
+
+class AlvoPosicao(BaseModel):
+    multiplo: int = Field(description="Distância até o stop multiplicada (1R, 2R, 3R)")
+    preco: float
+
+
+class Posicao(BaseModel):
+    capital: float
+    risco: float = Field(description="% do capital até o stop")
+    entrada: float
+    stop: float
+    lote: int
+    concentracao: float = Field(description="% máximo do capital na posição")
+    ativo: AtivoPosicao | None
+    quantidade: int
+    valor: float
+    pct_capital: float = Field(description="Fração")
+    distancia_stop: float = Field(description="Fração do preço de entrada")
+    perda_stop: float = Field(description="R$ perdidos se o stop for executado no preço")
+    perda_pct_capital: float = Field(description="Fração")
+    risco_maximo: float = Field(description="R$ permitidos pelo risco escolhido")
+    limitada_por: Literal["concentracao", "capital"] | None
+    alvos: list[AlvoPosicao]
+    aviso: str
+
+
 TipoAlerta = Literal["preco_acima", "preco_abaixo", "variacao_dia", "insight"]
 
 

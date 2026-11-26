@@ -1,7 +1,7 @@
 import "server-only";
 
 import { cabecalhosApi, env } from "@/lib/env";
-import type { AnaliseAtivo, Backtest, Simulacao, SinaisDoDia, AtivoDetalhe, CamposScreener, Destaques, Fundamentos, PaginaAtivos, PaginaScreener, Proventos } from "@/lib/tipos-api";
+import type { AnaliseAtivo, Backtest, Posicao, Simulacao, SinaisDoDia, AtivoDetalhe, CamposScreener, Destaques, Fundamentos, PaginaAtivos, PaginaScreener, Proventos } from "@/lib/tipos-api";
 
 const UMA_HORA = 3600;
 
@@ -62,16 +62,20 @@ export const lerCamposScreener = () => lerApi<CamposScreener>("/v1/screener/camp
 /** Simulador: público e cacheado por URL; a query string já vem validada por `lerParamsSimulador`. */
 export const lerSimulacao = (qs: URLSearchParams) => lerApi<Simulacao>(`/v1/simulador?${qs.toString()}`, ["mercado"], UMA_HORA);
 
-/** Backtest: 422 traz a mensagem da API (ex.: histórico curto); 404 é ativo inexistente. */
-export async function lerBacktest(qs: URLSearchParams): Promise<{ dados: Backtest } | { erro: string; status: number }> {
-  const resp = await fetch(`${env("API_INTERNAL_URL").replace(/\/$/, "")}/v1/backtest?${qs.toString()}`, {
+/** Leitura que devolve a mensagem da API em 404 e 422 (ex.: histórico curto, stop inválido). */
+async function lerComErro<T>(caminho: string): Promise<{ dados: T } | { erro: string; status: number }> {
+  const resp = await fetch(`${env("API_INTERNAL_URL").replace(/\/$/, "")}${caminho}`, {
     headers: cabecalhosApi(),
     next: { revalidate: UMA_HORA, tags: ["mercado"] },
   });
-  if (resp.ok) return { dados: (await resp.json()) as Backtest };
+  if (resp.ok) return { dados: (await resp.json()) as T };
   if (resp.status === 404 || resp.status === 422) {
     const corpo = (await resp.json().catch(() => ({}))) as { detail?: unknown };
-    return { erro: typeof corpo.detail === "string" ? corpo.detail : "Não foi possível rodar o teste", status: resp.status };
+    const detalhe = typeof corpo.detail === "string" && corpo.detail !== "Parâmetros inválidos" ? corpo.detail : "Confira os valores informados";
+    return { erro: detalhe, status: resp.status };
   }
-  throw new Error(`API ${resp.status} em /v1/backtest`);
+  throw new Error(`API ${resp.status} em ${caminho.split("?")[0]}`);
 }
+
+export const lerBacktest = (qs: URLSearchParams) => lerComErro<Backtest>(`/v1/backtest?${qs.toString()}`);
+export const lerPosicao = (qs: URLSearchParams) => lerComErro<Posicao>(`/v1/posicao?${qs.toString()}`);

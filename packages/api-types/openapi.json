@@ -2486,6 +2486,208 @@
         }
       }
     },
+    "/v1/posicao": {
+      "get": {
+        "tags": [
+          "posicao"
+        ],
+        "summary": "Tamanho de posição pelo risco até o stop",
+        "operationId": "posicao_v1_posicao_get",
+        "parameters": [
+          {
+            "name": "capital",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "number",
+              "maximum": 10000000000.0,
+              "exclusiveMinimum": 0,
+              "title": "Capital"
+            }
+          },
+          {
+            "name": "risco",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "maximum": 5,
+              "minimum": 0.1,
+              "description": "% do capital até o stop",
+              "default": 1,
+              "title": "Risco"
+            },
+            "description": "% do capital até o stop"
+          },
+          {
+            "name": "entrada",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "maximum": 1000000.0,
+                  "exclusiveMinimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Entrada"
+            }
+          },
+          {
+            "name": "stop",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "maximum": 1000000.0,
+                  "exclusiveMinimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Stop"
+            }
+          },
+          {
+            "name": "ticker",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "maxLength": 6
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Ticker"
+            }
+          },
+          {
+            "name": "atr_mult",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "maximum": 5,
+                  "minimum": 0.5
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Stop em ATR14",
+              "title": "Atr Mult"
+            },
+            "description": "Stop em ATR14"
+          },
+          {
+            "name": "lote",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "description": "1 (fracionário) ou 100 (lote padrão)",
+              "default": 100,
+              "title": "Lote"
+            },
+            "description": "1 (fracionário) ou 100 (lote padrão)"
+          },
+          {
+            "name": "concentracao",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "maximum": 100,
+              "minimum": 1,
+              "description": "% máximo",
+              "default": 25,
+              "title": "Concentracao"
+            },
+            "description": "% máximo"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Posicao"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        }
+      }
+    },
     "/v1/watchlist": {
       "get": {
         "tags": [
@@ -4514,6 +4716,25 @@
         ],
         "title": "AlteracaoAlerta"
       },
+      "AlvoPosicao": {
+        "properties": {
+          "multiplo": {
+            "type": "integer",
+            "title": "Multiplo",
+            "description": "Distância até o stop multiplicada (1R, 2R, 3R)"
+          },
+          "preco": {
+            "type": "number",
+            "title": "Preco"
+          }
+        },
+        "type": "object",
+        "required": [
+          "multiplo",
+          "preco"
+        ],
+        "title": "AlvoPosicao"
+      },
       "AnaliseAtivo": {
         "properties": {
           "ticker": {
@@ -4655,6 +4876,43 @@
           "variacoes"
         ],
         "title": "AtivoDetalhe"
+      },
+      "AtivoPosicao": {
+        "properties": {
+          "ticker": {
+            "type": "string",
+            "title": "Ticker"
+          },
+          "data": {
+            "type": "string",
+            "format": "date",
+            "title": "Data",
+            "description": "Último pregão"
+          },
+          "fechamento": {
+            "type": "number",
+            "title": "Fechamento"
+          },
+          "atr14": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Atr14"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ticker",
+          "data",
+          "fechamento",
+          "atr14"
+        ],
+        "title": "AtivoPosicao"
       },
       "AtivoResumo": {
         "properties": {
@@ -7463,6 +7721,126 @@
           "ipca"
         ],
         "title": "PontoSimulacao"
+      },
+      "Posicao": {
+        "properties": {
+          "capital": {
+            "type": "number",
+            "title": "Capital"
+          },
+          "risco": {
+            "type": "number",
+            "title": "Risco",
+            "description": "% do capital até o stop"
+          },
+          "entrada": {
+            "type": "number",
+            "title": "Entrada"
+          },
+          "stop": {
+            "type": "number",
+            "title": "Stop"
+          },
+          "lote": {
+            "type": "integer",
+            "title": "Lote"
+          },
+          "concentracao": {
+            "type": "number",
+            "title": "Concentracao",
+            "description": "% máximo do capital na posição"
+          },
+          "ativo": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AtivoPosicao"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "quantidade": {
+            "type": "integer",
+            "title": "Quantidade"
+          },
+          "valor": {
+            "type": "number",
+            "title": "Valor"
+          },
+          "pct_capital": {
+            "type": "number",
+            "title": "Pct Capital",
+            "description": "Fração"
+          },
+          "distancia_stop": {
+            "type": "number",
+            "title": "Distancia Stop",
+            "description": "Fração do preço de entrada"
+          },
+          "perda_stop": {
+            "type": "number",
+            "title": "Perda Stop",
+            "description": "R$ perdidos se o stop for executado no preço"
+          },
+          "perda_pct_capital": {
+            "type": "number",
+            "title": "Perda Pct Capital",
+            "description": "Fração"
+          },
+          "risco_maximo": {
+            "type": "number",
+            "title": "Risco Maximo",
+            "description": "R$ permitidos pelo risco escolhido"
+          },
+          "limitada_por": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "concentracao",
+                  "capital"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Limitada Por"
+          },
+          "alvos": {
+            "items": {
+              "$ref": "#/components/schemas/AlvoPosicao"
+            },
+            "type": "array",
+            "title": "Alvos"
+          },
+          "aviso": {
+            "type": "string",
+            "title": "Aviso"
+          }
+        },
+        "type": "object",
+        "required": [
+          "capital",
+          "risco",
+          "entrada",
+          "stop",
+          "lote",
+          "concentracao",
+          "ativo",
+          "quantidade",
+          "valor",
+          "pct_capital",
+          "distancia_stop",
+          "perda_stop",
+          "perda_pct_capital",
+          "risco_maximo",
+          "limitada_por",
+          "alvos",
+          "aviso"
+        ],
+        "title": "Posicao"
       },
       "PosicaoCarteira": {
         "properties": {
