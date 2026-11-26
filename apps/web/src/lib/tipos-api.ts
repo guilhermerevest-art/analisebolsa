@@ -53,3 +53,5 @@ export type ConfigWhatsApp = S["ConfigWhatsApp"];
 export type EstadoInstancia = S["EstadoInstancia"];
 export type ImpostoCarteira = S["ImpostoCarteira"];
 export type DeclaracaoCarteira = S["DeclaracaoCarteira"];
+export type IndicadoresMercado = S["IndicadoresMercado"];
+export type IndicadorMercado = S["IndicadorMercado"];

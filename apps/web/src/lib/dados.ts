@@ -1,7 +1,7 @@
 import "server-only";
 
 import { cabecalhosApi, env } from "@/lib/env";
-import type { AnaliseAtivo, Indice, Backtest, Posicao, Simulacao, SinaisDoDia, AtivoDetalhe, CamposScreener, Destaques, Fundamentos, PaginaAtivos, PaginaScreener, Proventos } from "@/lib/tipos-api";
+import type { AnaliseAtivo, Indice, IndicadoresMercado, Backtest, Posicao, Simulacao, SinaisDoDia, AtivoDetalhe, CamposScreener, Destaques, Fundamentos, PaginaAtivos, PaginaScreener, Proventos } from "@/lib/tipos-api";
 
 const UMA_HORA = 3600;
 
@@ -45,6 +45,24 @@ export async function lerSinais(): Promise<SinaisDoDia | null> {
 export async function lerIbovespa(): Promise<Indice | null> {
   try {
     return await lerApi<Indice>("/v1/indices/ibov", ["mercado"], 300);
+  } catch {
+    return null;
+  }
+}
+
+/** Ibovespa, IFIX, Small Caps, Dividendos, dólar, euro, S&P 500 e bitcoin, com variações. */
+export async function lerIndicadores(): Promise<IndicadoresMercado | null> {
+  try {
+    return await lerApi<IndicadoresMercado>("/v1/mercado/indicadores", ["mercado"], 300);
+  } catch {
+    return null;
+  }
+}
+
+/** Série histórica de um indicador desde `inicio` (AAAA-MM-DD). */
+export async function lerSerieIndice(serie: string, inicio: string): Promise<Indice | null> {
+  try {
+    return await lerApi<Indice>(`/v1/indices/${serie}?inicio=${inicio}`, ["mercado"], 3600);
   } catch {
     return null;
   }

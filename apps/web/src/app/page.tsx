@@ -6,7 +6,8 @@ import { PainelIbovespa } from "@/components/landing/painel-ibovespa";
 import { SinaisDeHoje } from "@/components/landing/sinais";
 import { Marquee } from "@/components/magic/marquee";
 import { Button } from "@/components/ui/button";
-import { lerDestaques, lerIbovespa, lerSinais } from "@/lib/dados";
+import { FaixaMercado } from "@/components/mercado/faixa-mercado";
+import { lerDestaques, lerIbovespa, lerIndicadores, lerSinais } from "@/lib/dados";
 import { classeVariacao, formatarPct, formatarPreco } from "@/lib/formato";
 import type { Destaque } from "@/lib/tipos-api";
 import { cn } from "@/lib/utils";
@@ -101,7 +102,7 @@ function LinhaFuncionalidade({ item }: { item: Item }) {
 }
 
 export default async function Inicio() {
-  const [destaques, sinais, ibov] = await Promise.all([lerDestaques(), lerSinais(), lerIbovespa()]);
+  const [destaques, sinais, ibov, indicadores] = await Promise.all([lerDestaques(), lerSinais(), lerIbovespa(), lerIndicadores()]);
   const faixa = destaques ? [...destaques.altas, ...destaques.baixas] : [];
   const temPainel = Boolean((ibov && ibov.pontos.length > 1) || faixa.length > 0);
 
@@ -139,6 +140,8 @@ export default async function Inicio() {
           </Marquee>
         </section>
       )}
+
+      {indicadores && <FaixaMercado itens={indicadores.itens} />}
 
       {sinais && <SinaisDeHoje dados={sinais} />}
 

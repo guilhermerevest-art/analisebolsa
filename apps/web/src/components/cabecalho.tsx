@@ -10,6 +10,7 @@ export async function Cabecalho() {
   const sessao = await auth().catch(() => null);
   const logado = Boolean(sessao?.user);
   const links = [
+    { href: "/mercado", rotulo: "Mercado" },
     { href: "/screener", rotulo: "Screener" },
     { href: "/simulador", rotulo: "Simulador" },
     { href: "/backtest", rotulo: "Backtest" },
@@ -33,7 +34,7 @@ export async function Cabecalho() {
         </Link>
         <div className="flex items-center gap-1">
           <BuscaGlobal />
-          <nav aria-label="Principal" className="hidden items-center gap-0.5 lg:flex">
+          <nav aria-label="Principal" className="hidden items-center gap-0.5 xl:flex">
             {links.map((l) => (
               <Button key={l.href} asChild variant="ghost" size="sm">
                 <Link href={l.href}>{"curto" in l ? l.curto : l.rotulo}</Link>

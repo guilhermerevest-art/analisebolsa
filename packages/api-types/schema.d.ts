@@ -174,6 +174,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/mercado/indicadores": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Ibovespa, IFIX, Small Caps, Dividendos, dólar, euro, S&P 500 e bitcoin */
+        get: operations["indicadores_v1_mercado_indicadores_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/indices/{serie}": {
         parameters: {
             query?: never;
@@ -181,7 +198,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Série de CDI, IPCA ou Ibovespa */
+        /** Série de um índice, moeda ou taxa */
         get: operations["serie_v1_indices__serie__get"];
         put?: never;
         post?: never;
@@ -1534,6 +1551,48 @@ export interface components {
             /** Aviso */
             aviso: string;
         };
+        /** IndicadorMercado */
+        IndicadorMercado: {
+            /**
+             * Serie
+             * @enum {string}
+             */
+            serie: "cdi" | "ipca" | "ibov" | "dolar" | "euro" | "ifix" | "smll" | "idiv" | "sp500" | "bitcoin";
+            /** Nome */
+            nome: string;
+            /**
+             * Unidade
+             * @enum {string}
+             */
+            unidade: "pct_dia" | "pct_mes" | "pontos" | "reais" | "dolares";
+            /**
+             * Data
+             * Format: date
+             */
+            data: string;
+            /** Valor */
+            valor: number;
+            /**
+             * Var Dia
+             * @description Variação em % sobre o ponto anterior
+             */
+            var_dia: number | null;
+            /**
+             * Var Ano
+             * @description Variação em % no ano
+             */
+            var_ano: number | null;
+            /**
+             * Var 12M
+             * @description Variação em % em 12 meses
+             */
+            var_12m: number | null;
+            /**
+             * Pontos
+             * @description Um ponto por semana nos últimos 12 meses
+             */
+            pontos: components["schemas"]["PontoIndice"][];
+        };
         /** Indicadores */
         Indicadores: {
             /** Ticker */
@@ -1573,18 +1632,23 @@ export interface components {
             /** Vol Media20 */
             vol_media20: number | null;
         };
+        /** IndicadoresMercado */
+        IndicadoresMercado: {
+            /** Itens */
+            itens: components["schemas"]["IndicadorMercado"][];
+        };
         /** Indice */
         Indice: {
             /**
              * Serie
              * @enum {string}
              */
-            serie: "cdi" | "ipca" | "ibov";
+            serie: "cdi" | "ipca" | "ibov" | "dolar" | "euro" | "ifix" | "smll" | "idiv" | "sp500" | "bitcoin";
             /**
              * Unidade
              * @enum {string}
              */
-            unidade: "pct_dia" | "pct_mes" | "pontos";
+            unidade: "pct_dia" | "pct_mes" | "pontos" | "reais" | "dolares";
             /** Pontos */
             pontos: components["schemas"]["PontoIndice"][];
         };
@@ -3289,6 +3353,76 @@ export interface operations {
             };
         };
     };
+    indicadores_v1_mercado_indicadores_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IndicadoresMercado"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+        };
+    };
     serie_v1_indices__serie__get: {
         parameters: {
             query?: {
@@ -3297,7 +3431,7 @@ export interface operations {
             };
             header?: never;
             path: {
-                serie: "cdi" | "ipca" | "ibov";
+                serie: "cdi" | "ipca" | "ibov" | "dolar" | "euro" | "ifix" | "smll" | "idiv" | "sp500" | "bitcoin";
             };
             cookie?: never;
         };

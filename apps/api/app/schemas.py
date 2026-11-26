@@ -331,7 +331,10 @@ class EstadoWatchlist(BaseModel):
     na_lista: bool
 
 
-SerieIndice = Literal["cdi", "ipca", "ibov"]
+SerieIndice = Literal[
+    "cdi", "ipca", "ibov", "dolar", "euro", "ifix", "smll", "idiv", "sp500", "bitcoin"
+]
+UnidadeIndice = Literal["pct_dia", "pct_mes", "pontos", "reais", "dolares"]
 
 
 class PontoIndice(BaseModel):
@@ -341,7 +344,7 @@ class PontoIndice(BaseModel):
 
 class Indice(BaseModel):
     serie: SerieIndice
-    unidade: Literal["pct_dia", "pct_mes", "pontos"]
+    unidade: UnidadeIndice
     pontos: list[PontoIndice]
 
 
@@ -856,3 +859,19 @@ class DeclaracaoCarteira(BaseModel):
     darfs: Preco = Field(description="DARFs de renda variável apurados no ano")
     meses_com_venda: int
     aviso: str
+
+
+class IndicadorMercado(BaseModel):
+    serie: SerieIndice
+    nome: str
+    unidade: UnidadeIndice
+    data: date
+    valor: float
+    var_dia: float | None = Field(description="Variação em % sobre o ponto anterior")
+    var_ano: float | None = Field(description="Variação em % no ano")
+    var_12m: float | None = Field(description="Variação em % em 12 meses")
+    pontos: list[PontoIndice] = Field(description="Um ponto por semana nos últimos 12 meses")
+
+
+class IndicadoresMercado(BaseModel):
+    itens: list[IndicadorMercado]
