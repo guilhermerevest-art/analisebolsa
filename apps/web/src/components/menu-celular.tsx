@@ -48,7 +48,7 @@ export function MenuCelular({ links }: { links: { href: string; rotulo: string }
                   aria-current={caminho === l.href ? "page" : undefined}
                   className={cn(
                     "block rounded-lg px-3 py-3 text-base font-medium transition-colors hover:bg-muted",
-                    caminho === l.href && "bg-accent text-cobalto",
+                    caminho === l.href && "bg-accent text-azul",
                   )}
                 >
                   {l.rotulo}

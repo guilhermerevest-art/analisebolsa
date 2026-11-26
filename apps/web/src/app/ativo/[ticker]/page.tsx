@@ -10,6 +10,7 @@ import { PainelFundamentos } from "@/components/ativo/fundamentos";
 import { GraficoCliente } from "@/components/ativo/grafico-cliente";
 import { PainelProventos } from "@/components/ativo/proventos";
 import { AvisoEducacional } from "@/components/aviso-educacional";
+import { Termo } from "@/components/dica";
 import { lerAnalise, lerAtivo, lerFundamentos, lerProventos } from "@/lib/dados";
 import { formatarPct, formatarPreco, NOMES_TIPO } from "@/lib/formato";
 
@@ -56,6 +57,18 @@ export default async function PaginaAtivo({ params }: Props) {
       <CabecalhoAtivo ativo={ativo} />
       <section aria-label="Gráfico">
         <GraficoCliente ticker={ativo.ticker} niveis={analise?.cenario?.niveis} />
+        <p className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
+          <span className="font-medium text-foreground">Entenda o gráfico:</span>
+          <Termo termo="candle">Candles</Termo>
+          <Termo termo="volume">Volume</Termo>
+          <Termo termo="mm">Médias móveis</Termo>
+          <Termo termo="bollinger">Bollinger</Termo>
+          <Termo termo="rsi">RSI</Termo>
+          <Termo termo="macd">MACD</Termo>
+          <Link href="/glossario" className="text-azul underline-offset-2 hover:underline">
+            Glossário completo
+          </Link>
+        </p>
       </section>
       <nav aria-label="Ferramentas" className="-mt-4 flex flex-wrap gap-2 text-sm">
         <Link href={`/backtest?ticker=${ativo.ticker}`} className="inline-flex items-center gap-1.5 rounded-md border px-3 py-1.5 hover:bg-muted">

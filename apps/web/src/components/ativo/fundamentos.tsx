@@ -1,15 +1,16 @@
+import { Termo } from "@/components/dica";
 import { formatarCompacto, formatarData, formatarNumero } from "@/lib/formato";
 import type { Fundamentos } from "@/lib/tipos-api";
 
 const METRICAS = [
-  { chave: "pl", rotulo: "P/L" },
-  { chave: "pvp", rotulo: "P/VP" },
-  { chave: "dy_12m", rotulo: "DY 12m", sufixo: "%" },
-  { chave: "roe", rotulo: "ROE", sufixo: "%" },
-  { chave: "margem_liquida", rotulo: "Margem líquida", sufixo: "%" },
-  { chave: "div_liq_ebitda", rotulo: "Dív. líq./EBITDA" },
-  { chave: "vpa", rotulo: "VPA", prefixo: "R$ " },
-  { chave: "lpa", rotulo: "LPA", prefixo: "R$ " },
+  { chave: "pl", termo: "pl", rotulo: "P/L" },
+  { chave: "pvp", termo: "pvp", rotulo: "P/VP" },
+  { chave: "dy_12m", termo: "dy", rotulo: "DY 12m", sufixo: "%" },
+  { chave: "roe", termo: "roe", rotulo: "ROE", sufixo: "%" },
+  { chave: "margem_liquida", termo: "margem_liquida", rotulo: "Margem líquida", sufixo: "%" },
+  { chave: "div_liq_ebitda", termo: "div_liq_ebitda", rotulo: "Dív. líq./EBITDA" },
+  { chave: "vpa", termo: "vpa", rotulo: "VPA", prefixo: "R$ " },
+  { chave: "lpa", termo: "lpa", rotulo: "LPA", prefixo: "R$ " },
 ] as const;
 
 export function PainelFundamentos({ dados }: { dados: Fundamentos | null }) {
@@ -22,7 +23,9 @@ export function PainelFundamentos({ dados }: { dados: Fundamentos | null }) {
           const valor = u[m.chave];
           return (
             <div key={m.chave} className="rounded-xl border bg-card p-4">
-              <p className="text-xs text-muted-foreground">{m.rotulo}</p>
+              <p className="text-xs text-muted-foreground">
+                <Termo termo={m.termo}>{m.rotulo}</Termo>
+              </p>
               <p className="mt-1 text-lg font-semibold tabular-nums">
                 {valor === null || valor === undefined ? "—" : `${"prefixo" in m ? m.prefixo : ""}${formatarNumero(valor)}${"sufixo" in m ? m.sufixo : ""}`}
               </p>
@@ -30,7 +33,9 @@ export function PainelFundamentos({ dados }: { dados: Fundamentos | null }) {
           );
         })}
         <div className="rounded-xl border bg-card p-4">
-          <p className="text-xs text-muted-foreground">Valor de mercado</p>
+          <p className="text-xs text-muted-foreground">
+            <Termo termo="valor_mercado">Valor de mercado</Termo>
+          </p>
           <p className="mt-1 text-lg font-semibold tabular-nums">{u.valor_mercado ? `R$ ${formatarCompacto(u.valor_mercado)}` : "—"}</p>
         </div>
       </div>

@@ -1,14 +1,17 @@
+import { Lightbulb } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 
 import { Campo } from "@/components/campo";
+import { Termo } from "@/components/dica";
 import { GraficoLinhasCliente } from "@/components/graficos/grafico-linhas-cliente";
 import type { SerieLinha } from "@/components/graficos/grafico-linhas";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { lerSimulacao } from "@/lib/dados";
 import { formatarData, formatarPreco } from "@/lib/formato";
-import { fimDeCadaAno, INICIO_MINIMO, lerParamsSimulador, mesMaximo } from "@/lib/simulador";
+import type { ChaveGlossario } from "@/lib/glossario";
+import { fimDeCadaAno, INICIO_MINIMO, leituraSimulador, lerParamsSimulador, mesMaximo } from "@/lib/simulador";
 import type { Simulacao } from "@/lib/tipos-api";
 
 export const metadata: Metadata = {
@@ -21,22 +24,22 @@ type Props = { searchParams: Promise<Record<string, string | string[] | undefine
 // Paleta validada (scripts/validate_palette.js do dataviz) no claro e no escuro; o total
 // aportado é a referência, em cinza tracejado.
 const SERIES_HISTORICO: SerieLinha[] = [
-  { chave: "patrimonio", rotulo: "No ativo", claro: "#2563eb", escuro: "#3b82f6" },
+  { chave: "patrimonio", rotulo: "No ativo", claro: "#1f51ff", escuro: "#5b87ff" },
   { chave: "cdi", rotulo: "No CDI", claro: "#d97706", escuro: "#d97706" },
   { chave: "ipca", rotulo: "Corrigido pelo IPCA", claro: "#9333ea", escuro: "#a855f7" },
-  { chave: "aportado", rotulo: "Total aportado", claro: "#71717a", escuro: "#a1a1aa", tracejada: true },
+  { chave: "aportado", rotulo: "Total aportado", claro: "#6b7180", escuro: "#9aa0ac", tracejada: true },
 ];
 const SERIES_FAIXA: SerieLinha[] = [
-  { chave: "p90", rotulo: "Percentil 90", claro: "#2563eb", escuro: "#3b82f6", tracejada: true },
-  { chave: "p50", rotulo: "Mediana", claro: "#2563eb", escuro: "#3b82f6" },
-  { chave: "p10", rotulo: "Percentil 10", claro: "#2563eb", escuro: "#3b82f6", tracejada: true },
-  { chave: "real", rotulo: "Histórico real", claro: "#3f3f46", escuro: "#d4d4d8" },
+  { chave: "p90", rotulo: "Percentil 90", claro: "#1f51ff", escuro: "#5b87ff", tracejada: true },
+  { chave: "p50", rotulo: "Mediana", claro: "#1f51ff", escuro: "#5b87ff" },
+  { chave: "p10", rotulo: "Percentil 10", claro: "#1f51ff", escuro: "#5b87ff", tracejada: true },
+  { chave: "real", rotulo: "Histórico real", claro: "#3a3f4a", escuro: "#c9ccd3" },
 ];
 
-function Valor({ rotulo, valor, detalhe }: { rotulo: string; valor: string; detalhe?: string }) {
+function Valor({ rotulo, valor, detalhe, termo }: { rotulo: string; valor: string; detalhe?: string; termo?: ChaveGlossario }) {
   return (
     <div className="rounded-xl border bg-card p-4">
-      <dt className="text-sm text-muted-foreground">{rotulo}</dt>
+      <dt className="text-sm text-muted-foreground">{termo ? <Termo termo={termo}>{rotulo}</Termo> : rotulo}</dt>
       <dd className="mt-1 text-xl font-semibold tabular-nums">{valor}</dd>
       {detalhe && <dd className="text-xs text-muted-foreground">{detalhe}</dd>}
     </div>
@@ -78,7 +81,7 @@ export default async function PaginaSimulador({ searchParams }: Props) {
         <div className="grid content-start gap-3 sm:col-span-2 lg:col-span-1">
           <div className="flex h-[14px] items-center gap-2">
             <input type="hidden" name="reinvestir" value="0" />
-            <input id="reinvestir" type="checkbox" name="reinvestir" value="1" defaultChecked={valoresIniciais.reinvestir} className="size-4 accent-[var(--cobalto)]" />
+            <input id="reinvestir" type="checkbox" name="reinvestir" value="1" defaultChecked={valoresIniciais.reinvestir} className="size-4 accent-[var(--azul)]" />
             <Label htmlFor="reinvestir" className="font-normal">
               Reinvestir proventos
             </Label>
@@ -115,10 +118,27 @@ function Resultado({ sim }: { sim: Simulacao }) {
         </h2>
         <dl className="grid grid-cols-2 gap-3 lg:grid-cols-4">
           <Valor rotulo="Total aportado" valor={formatarPreco(final.aportado)} />
-          {comAtivo && <Valor rotulo={`No ativo (${sim.ticker})`} valor={formatarPreco(final.patrimonio)} detalhe={`${formatarPreco(final.proventos)} em proventos`} />}
-          <Valor rotulo="No CDI" valor={formatarPreco(final.cdi)} />
-          <Valor rotulo="Corrigido pelo IPCA" valor={formatarPreco(final.ipca)} detalhe={sim.ipca_ate ? `IPCA até ${mesAno(sim.ipca_ate)}` : undefined} />
+          {comAtivo && (
+            <Valor rotulo={`No ativo (${sim.ticker})`} termo="proventos" valor={formatarPreco(final.patrimonio)} detalhe={`${formatarPreco(final.proventos)} em proventos`} />
+          )}
+          <Valor rotulo="No CDI" termo="cdi" valor={formatarPreco(final.cdi)} />
+          <Valor rotulo="Corrigido pelo IPCA" termo="ipca" valor={formatarPreco(final.ipca)} detalhe={sim.ipca_ate ? `IPCA até ${mesAno(sim.ipca_ate)}` : undefined} />
         </dl>
+        <aside aria-labelledby="titulo-leitura" className="grid gap-2 rounded-xl border-l-4 border-l-azul bg-accent/60 p-4 text-sm leading-relaxed">
+          <h3 id="titulo-leitura" className="flex items-center gap-2 font-semibold">
+            <Lightbulb aria-hidden className="size-4 text-azul" />
+            Como ler este resultado
+          </h3>
+          {leituraSimulador({
+            aportado: Number(final.aportado),
+            ativo: comAtivo ? Number(final.patrimonio) : null,
+            ticker: sim.ticker,
+            cdi: Number(final.cdi),
+            ipca: Number(final.ipca),
+          }).map((f) => (
+            <p key={f}>{f}</p>
+          ))}
+        </aside>
         <GraficoLinhasCliente
           pontos={sim.pontos}
           series={SERIES_HISTORICO}
@@ -157,7 +177,7 @@ function Resultado({ sim }: { sim: Simulacao }) {
       {comAtivo && (
         <section aria-labelledby="titulo-faixa" className="grid gap-4">
           <h2 id="titulo-faixa" className="text-xl font-semibold">
-            Faixa de resultados simulados
+            <Termo termo="simulacao">Faixa de resultados simulados</Termo>
           </h2>
           {sim.faixa && faixaFinal ? (
             <>

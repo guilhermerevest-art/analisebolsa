@@ -35,7 +35,7 @@ function Cartao({ icone, titulo, status, children }: { icone: React.ReactNode; t
     <div className="grid content-start gap-4 rounded-xl border bg-card p-5">
       <div className="flex items-start justify-between gap-3">
         <h3 className="flex items-center gap-2 font-semibold">
-          <span className="flex size-8 items-center justify-center rounded-lg bg-accent text-cobalto [&_svg]:size-4">{icone}</span>
+          <span className="flex size-8 items-center justify-center rounded-lg bg-accent text-azul [&_svg]:size-4">{icone}</span>
           {titulo}
         </h3>
         {status}

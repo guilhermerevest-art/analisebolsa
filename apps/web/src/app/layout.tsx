@@ -17,13 +17,13 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f6f7f9" },
-    { media: "(prefers-color-scheme: dark)", color: "#0a1220" },
+    { media: "(prefers-color-scheme: light)", color: "#f3f4f6" },
+    { media: "(prefers-color-scheme: dark)", color: "#08090c" },
   ],
 };
 
 const RODAPE = [
-  { titulo: "Analisar", links: [["Screener", "/screener"], ["Backtest", "/backtest"], ["Simulador", "/simulador"], ["Calculadora de posição", "/posicao"]] },
+  { titulo: "Analisar", links: [["Screener", "/screener"], ["Backtest", "/backtest"], ["Simulador", "/simulador"], ["Calculadora de posição", "/posicao"], ["Glossário", "/glossario"]] },
   { titulo: "Sua conta", links: [["Carteira", "/carteira"], ["Watchlist", "/watchlist"], ["Alertas", "/alertas"], ["Criar conta", "/cadastro"]] },
 ] as const;
 

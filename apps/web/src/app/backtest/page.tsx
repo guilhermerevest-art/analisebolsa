@@ -1,14 +1,17 @@
+import { Lightbulb } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 
 import { FormularioBacktest } from "@/components/backtest/formulario-backtest";
+import { Termo } from "@/components/dica";
 import { GraficoOperacoesCliente } from "@/components/backtest/grafico-operacoes-cliente";
 import { GraficoLinhasCliente } from "@/components/graficos/grafico-linhas-cliente";
 import type { SerieLinha } from "@/components/graficos/grafico-linhas";
-import { lerParamsBacktest, mesAtual } from "@/lib/backtest";
+import { leituraBacktest, lerParamsBacktest, mesAtual } from "@/lib/backtest";
 import { lerBacktest } from "@/lib/dados";
 import { classeVariacao, formatarData, formatarPct, formatarPreco } from "@/lib/formato";
 import type { Backtest, MetricasBacktest } from "@/lib/tipos-api";
+import type { ChaveGlossario } from "@/lib/glossario";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
@@ -20,12 +23,12 @@ type Props = { searchParams: Promise<Record<string, string | string[] | undefine
 
 // Mesma paleta validada do simulador: estratégia em azul, manter o ativo em roxo, CDI em âmbar.
 const SERIES_PATRIMONIO: SerieLinha[] = [
-  { chave: "estrategia", rotulo: "Estratégia", claro: "#2563eb", escuro: "#3b82f6" },
+  { chave: "estrategia", rotulo: "Estratégia", claro: "#1f51ff", escuro: "#5b87ff" },
   { chave: "buy_and_hold", rotulo: "Manter o ativo", claro: "#9333ea", escuro: "#a855f7" },
   { chave: "cdi", rotulo: "CDI", claro: "#d97706", escuro: "#d97706" },
 ];
 const SERIES_DRAWDOWN: SerieLinha[] = [
-  { chave: "drawdown", rotulo: "Estratégia", claro: "#2563eb", escuro: "#3b82f6" },
+  { chave: "drawdown", rotulo: "Estratégia", claro: "#1f51ff", escuro: "#5b87ff" },
   { chave: "drawdown_bh", rotulo: "Manter o ativo", claro: "#9333ea", escuro: "#a855f7" },
 ];
 
@@ -81,10 +84,11 @@ function Resultado({ r }: { r: Backtest }) {
           </p>
         </div>
         <dl className="grid gap-3 sm:grid-cols-3">
-          <Valor rotulo="Estratégia" valor={pct(t.estrategia.retorno_total)} detalhe={`${pct(t.estrategia.retorno_anual)} ao ano`} cor={t.estrategia.retorno_total} />
-          <Valor rotulo="Manter o ativo" valor={pct(t.buy_and_hold.retorno_total)} detalhe={`${pct(t.buy_and_hold.retorno_anual)} ao ano`} cor={t.buy_and_hold.retorno_total} />
-          <Valor rotulo="CDI" valor={pct(t.cdi.retorno_total)} detalhe={`${pct(t.cdi.retorno_anual)} ao ano`} cor={t.cdi.retorno_total} />
+          <Valor rotulo="Estratégia" termo="backtest" valor={pct(t.estrategia.retorno_total)} detalhe={`${pct(t.estrategia.retorno_anual)} ao ano`} cor={t.estrategia.retorno_total} />
+          <Valor rotulo="Manter o ativo" termo="buy_and_hold" valor={pct(t.buy_and_hold.retorno_total)} detalhe={`${pct(t.buy_and_hold.retorno_anual)} ao ano`} cor={t.buy_and_hold.retorno_total} />
+          <Valor rotulo="CDI" termo="cdi" valor={pct(t.cdi.retorno_total)} detalhe={`${pct(t.cdi.retorno_anual)} ao ano`} cor={t.cdi.retorno_total} />
         </dl>
+        <LeituraResultado r={r} />
         <h3 className="text-sm font-medium">Entradas e saídas no preço</h3>
         <p className="-mt-2 text-sm text-muted-foreground">{estadoDaRegra(r)}</p>
         <GraficoOperacoesCliente pontos={r.pontos} operacoes={r.operacoes} />
@@ -119,7 +123,7 @@ function Resultado({ r }: { r: Backtest }) {
 
       <section aria-labelledby="titulo-amostra" className="grid gap-3">
         <h2 id="titulo-amostra" className="text-xl font-semibold">
-          Dentro e fora da amostra
+          <Termo termo="dentro_fora_amostra">Dentro e fora da amostra</Termo>
         </h2>
         <p className="max-w-3xl text-sm text-muted-foreground">
           O período foi dividido em dois: os primeiros 70% (até {formatarData(r.divisao)}) e os últimos 30%. Uma regra que só funciona num dos trechos
@@ -173,10 +177,34 @@ function estadoDaRegra(r: Backtest): string {
   return `No último pregão (${formatarData(r.fim)}), pela regra a posição estava fora desde ${formatarData(ultima.saida!)}${ultima.motivo === "stop" ? ", quando o stop foi atingido" : ""}.`;
 }
 
-function Valor({ rotulo, valor, detalhe, cor }: { rotulo: string; valor: string; detalhe: string; cor: number }) {
+function LeituraResultado({ r }: { r: Backtest }) {
+  const t = r.total;
+  const frases = leituraBacktest({
+    capital: Number(r.capital),
+    estrategia: { retorno: t.estrategia.retorno_total ?? null, queda: t.estrategia.drawdown_maximo ?? null },
+    manter: { retorno: t.buy_and_hold.retorno_total ?? null, queda: t.buy_and_hold.drawdown_maximo ?? null },
+    cdi: { retorno: t.cdi.retorno_total ?? null },
+  });
+  if (frases.length === 0) return null;
+  return (
+    <aside aria-labelledby="titulo-leitura" className="grid gap-2 rounded-xl border-l-4 border-l-azul bg-accent/60 p-4 text-sm leading-relaxed">
+      <h3 id="titulo-leitura" className="flex items-center gap-2 font-semibold">
+        <Lightbulb aria-hidden className="size-4 text-azul" />
+        Como ler este resultado
+      </h3>
+      {frases.map((f) => (
+        <p key={f}>{f}</p>
+      ))}
+    </aside>
+  );
+}
+
+function Valor({ rotulo, termo, valor, detalhe, cor }: { rotulo: string; termo: ChaveGlossario; valor: string; detalhe: string; cor: number }) {
   return (
     <div className="rounded-xl border bg-card p-4">
-      <dt className="text-sm text-muted-foreground">{rotulo}</dt>
+      <dt className="text-sm text-muted-foreground">
+        <Termo termo={termo}>{rotulo}</Termo>
+      </dt>
       <dd className={cn("mt-1 text-xl font-semibold tabular-nums", classeVariacao(cor))}>{valor}</dd>
       <dd className="text-xs text-muted-foreground">{detalhe}</dd>
     </div>
@@ -187,15 +215,15 @@ function Celula({ v, cor }: { v: number | null | undefined; cor?: boolean }) {
   return <td className={cn("py-1.5 pl-3 text-right tabular-nums", cor && classeVariacao(v ?? null))}>{pct(v)}</td>;
 }
 
-const LINHAS: { rotulo: string; ajuda: string; valor: (m: MetricasBacktest) => string }[] = [
-  { rotulo: "Retorno total", ajuda: "", valor: (m) => pct(m.retorno_total) },
-  { rotulo: "Retorno ao ano", ajuda: "composto", valor: (m) => pct(m.retorno_anual) },
-  { rotulo: "Volatilidade ao ano", ajuda: "oscilação diária anualizada", valor: (m) => pctSemSinal(m.volatilidade) },
-  { rotulo: "Queda máxima", ajuda: "maior queda desde um topo", valor: (m) => pct(m.drawdown_maximo) },
-  { rotulo: "Índice de Sharpe", ajuda: "retorno acima do CDI por unidade de oscilação", valor: (m) => numero(m.sharpe) },
-  { rotulo: "Tempo posicionado", ajuda: "", valor: (m) => pctSemSinal(m.exposicao) },
+const LINHAS: { rotulo: string; ajuda: string; termo?: ChaveGlossario; valor: (m: MetricasBacktest) => string }[] = [
+  { rotulo: "Retorno total", ajuda: "", termo: "retorno_total", valor: (m) => pct(m.retorno_total) },
+  { rotulo: "Retorno ao ano", ajuda: "composto", termo: "retorno_anual", valor: (m) => pct(m.retorno_anual) },
+  { rotulo: "Volatilidade ao ano", ajuda: "oscilação diária anualizada", termo: "volatilidade", valor: (m) => pctSemSinal(m.volatilidade) },
+  { rotulo: "Queda máxima", ajuda: "maior queda desde um topo", termo: "queda_maxima", valor: (m) => pct(m.drawdown_maximo) },
+  { rotulo: "Índice de Sharpe", ajuda: "retorno acima do CDI por unidade de oscilação", termo: "sharpe", valor: (m) => numero(m.sharpe) },
+  { rotulo: "Tempo posicionado", ajuda: "", termo: "tempo_posicionado", valor: (m) => pctSemSinal(m.exposicao) },
   { rotulo: "Operações", ajuda: "", valor: (m) => (m.operacoes === null || m.operacoes === undefined ? "—" : String(m.operacoes)) },
-  { rotulo: "Operações positivas", ajuda: "das encerradas", valor: (m) => pctSemSinal(m.acertos) },
+  { rotulo: "Operações positivas", ajuda: "das encerradas", termo: "operacoes_positivas", valor: (m) => pctSemSinal(m.acertos) },
   { rotulo: "Resultado médio", ajuda: "por operação encerrada, com custos", valor: (m) => pct(m.resultado_medio) },
 ];
 
@@ -216,7 +244,7 @@ function TabelaMetricas({ c }: { c: Backtest["total"] }) {
           {LINHAS.map((l) => (
             <tr key={l.rotulo} className="border-t">
               <th scope="row" className="py-1.5 text-left font-normal">
-                {l.rotulo}
+                {l.termo ? <Termo termo={l.termo}>{l.rotulo}</Termo> : l.rotulo}
                 {l.ajuda && <span className="block text-xs text-muted-foreground">{l.ajuda}</span>}
               </th>
               <td className="py-1.5 pl-3 text-right tabular-nums">{l.valor(c.estrategia)}</td>

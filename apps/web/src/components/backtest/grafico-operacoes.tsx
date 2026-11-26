@@ -10,8 +10,8 @@ type Operacao = { entrada: string; saida?: string | null; motivo: "sinal" | "sto
 
 // Preço em cinza para as marcas se destacarem: entrada em azul (abaixo), saída em âmbar (acima).
 const CORES = {
-  claro: { linha: "#71717a", entrada: "#2563eb", saida: "#d97706", texto: "#3f3f46", grade: "#f4f4f5" },
-  escuro: { linha: "#a1a1aa", entrada: "#3b82f6", saida: "#d97706", texto: "#d4d4d8", grade: "#27272a" },
+  claro: { linha: "#6b7180", entrada: "#1f51ff", saida: "#d97706", texto: "#3a3f4a", grade: "#e9ebef" },
+  escuro: { linha: "#9aa0ac", entrada: "#5b87ff", saida: "#d97706", texto: "#c9ccd3", grade: "#252830" },
 };
 const MARCAS_COM_TEXTO = 40;
 

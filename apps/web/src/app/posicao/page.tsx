@@ -9,6 +9,8 @@ import { formatarData, formatarPreco } from "@/lib/formato";
 import { lerParamsPosicao } from "@/lib/posicao";
 import type { Posicao } from "@/lib/tipos-api";
 import { classeSelect } from "@/components/ui/select-nativo";
+import { Termo } from "@/components/dica";
+import type { ChaveGlossario } from "@/lib/glossario";
 
 export const metadata: Metadata = {
   title: "Calculadora de posição",
@@ -40,7 +42,7 @@ export default async function PaginaPosicao({ searchParams }: Props) {
       <form method="get" action="/posicao" className="grid gap-5 rounded-xl border bg-card p-4">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <Campo nome="capital" rotulo="Capital (R$)" inputMode="decimal" placeholder="50.000" defaultValue={entrada.capital} required erro={erros.capital} />
-          <Campo nome="risco" rotulo="Risco por operação (% do capital)" inputMode="decimal" defaultValue={entrada.risco} erro={erros.risco} />
+          <Campo nome="risco" rotulo={<Termo termo="risco_operacao">Risco por operação (% do capital)</Termo>} inputMode="decimal" defaultValue={entrada.risco} erro={erros.risco} />
           <Campo
             nome="ticker"
             rotulo="Ativo (opcional)"
@@ -66,24 +68,26 @@ export default async function PaginaPosicao({ searchParams }: Props) {
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="grid content-start gap-2">
               <label className="flex items-center gap-2 text-sm">
-                <input type="radio" name="modo" value="preco" defaultChecked={entrada.modo === "preco"} className="size-4 accent-[var(--cobalto)]" />
+                <input type="radio" name="modo" value="preco" defaultChecked={entrada.modo === "preco"} className="size-4 accent-[var(--azul)]" />
                 Preço do stop
               </label>
-              <Campo nome="stop" rotulo="Stop (R$)" inputMode="decimal" placeholder="27,50" defaultValue={entrada.stop} erro={erros.stop} />
+              <Campo nome="stop" rotulo={<Termo termo="stop">Stop (R$)</Termo>} inputMode="decimal" placeholder="27,50" defaultValue={entrada.stop} erro={erros.stop} />
             </div>
             <div className="grid content-start gap-2">
               <label className="flex items-center gap-2 text-sm">
-                <input type="radio" name="modo" value="atr" defaultChecked={entrada.modo === "atr"} className="size-4 accent-[var(--cobalto)]" />
+                <input type="radio" name="modo" value="atr" defaultChecked={entrada.modo === "atr"} className="size-4 accent-[var(--azul)]" />
                 Distância em ATR do ativo
               </label>
-              <Campo nome="atr" rotulo="Múltiplo do ATR de 14 pregões" inputMode="decimal" defaultValue={entrada.atr} erro={erros.atr} />
+              <Campo nome="atr" rotulo={<Termo termo="atr">Múltiplo do ATR de 14 pregões</Termo>} inputMode="decimal" defaultValue={entrada.atr} erro={erros.atr} />
             </div>
           </div>
         </fieldset>
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <div className="grid content-start gap-2">
-            <Label htmlFor="lote">Lote</Label>
+            <Label htmlFor="lote">
+              <Termo termo="lote">Lote</Termo>
+            </Label>
             <select id="lote" name="lote" defaultValue={entrada.lote} className={classeSelect}>
               <option value="100">Lote padrão (100)</option>
               <option value="1">Fracionário (1)</option>
@@ -103,10 +107,10 @@ export default async function PaginaPosicao({ searchParams }: Props) {
   );
 }
 
-function Valor({ rotulo, valor, detalhe }: { rotulo: string; valor: string; detalhe?: string }) {
+function Valor({ rotulo, valor, detalhe, termo }: { rotulo: string; valor: string; detalhe?: string; termo?: ChaveGlossario }) {
   return (
     <div className="rounded-xl border bg-card p-4">
-      <dt className="text-sm text-muted-foreground">{rotulo}</dt>
+      <dt className="text-sm text-muted-foreground">{termo ? <Termo termo={termo}>{rotulo}</Termo> : rotulo}</dt>
       <dd className="mt-1 text-xl font-semibold tabular-nums">{valor}</dd>
       {detalhe && <dd className="text-xs text-muted-foreground">{detalhe}</dd>}
     </div>
@@ -127,10 +131,10 @@ function Resultado({ p }: { p: Posicao }) {
         </p>
       )}
       <dl className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <Valor rotulo="Quantidade" valor={inteiro(p.quantidade)} detalhe={lote} />
+        <Valor rotulo="Quantidade" termo="lote" valor={inteiro(p.quantidade)} detalhe={lote} />
         <Valor rotulo="Valor da posição" valor={formatarPreco(p.valor)} detalhe={`${pct(p.pct_capital, 1)} do capital`} />
-        <Valor rotulo="Perda até o stop" valor={formatarPreco(p.perda_stop)} detalhe={`${pct(p.perda_pct_capital)} do capital`} />
-        <Valor rotulo="Distância do stop" valor={pct(p.distancia_stop)} detalhe={`${formatarPreco(p.entrada - p.stop)} por ação`} />
+        <Valor rotulo="Perda até o stop" termo="risco_operacao" valor={formatarPreco(p.perda_stop)} detalhe={`${pct(p.perda_pct_capital)} do capital`} />
+        <Valor rotulo="Distância do stop" termo="stop" valor={pct(p.distancia_stop)} detalhe={`${formatarPreco(p.entrada - p.stop)} por ação`} />
       </dl>
       {p.quantidade === 0 && (
         <p className="text-sm text-muted-foreground">
@@ -147,7 +151,9 @@ function Resultado({ p }: { p: Posicao }) {
       )}
       <div className="relative overflow-x-auto">
         <table className="w-full max-w-lg text-sm">
-          <caption className="mb-2 text-left text-sm font-medium">Referências de preço em múltiplos da distância até o stop (R)</caption>
+          <caption className="mb-2 text-left text-sm font-medium">
+            <Termo termo="multiplo_r">Referências de preço em múltiplos da distância até o stop (R)</Termo>
+          </caption>
           <thead className="text-muted-foreground">
             <tr>
               <th scope="col" className="py-2 text-left font-normal">Múltiplo</th>

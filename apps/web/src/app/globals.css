@@ -4,44 +4,46 @@
 
 :root {
   color-scheme: light dark;
-  /* Paleta: tinta (navy), papel frio, cobalto como único acento. Verde e vermelho ficam para alta e baixa. */
-  --background: #f6f7f9;
-  --foreground: #0e1b2e;
+  /* Paleta: preto, cinzas e azul elétrico. Verde e vermelho só para alta e baixa. */
+  --background: #f3f4f6;
+  --foreground: #0a0b0f;
   --card: #ffffff;
-  --card-foreground: #0e1b2e;
-  --primary: #0e1b2e;
-  --primary-foreground: #f6f7f9;
-  --muted: #eceff3;
-  --muted-foreground: #556273;
-  --accent: #e8edfb;
-  --accent-foreground: #0e1b2e;
-  --cobalto: #2b50d8;
-  --destructive: #c8322b;
-  --positivo: #12804a;
-  --border: #dde2e9;
-  --input: #cfd6df;
-  --ring: #2b50d8;
+  --card-foreground: #0a0b0f;
+  --primary: #1f51ff;
+  --primary-foreground: #ffffff;
+  --tinta: #0a0b0f;
+  --muted: #e9ebef;
+  --muted-foreground: #585e6b;
+  --accent: #e8edff;
+  --accent-foreground: #0a0b0f;
+  --azul: #1f51ff;
+  --destructive: #c62828;
+  --positivo: #0f7a45;
+  --border: #e1e3e8;
+  --input: #cfd3da;
+  --ring: #1f51ff;
   --radius: 0.5rem;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a1220;
-    --foreground: #e7ecf4;
-    --card: #111c2e;
-    --card-foreground: #e7ecf4;
-    --primary: #e7ecf4;
-    --primary-foreground: #0a1220;
-    --muted: #17243a;
-    --muted-foreground: #95a3b8;
-    --accent: #1a2a48;
-    --accent-foreground: #e7ecf4;
-    --cobalto: #7d99ff;
-    --destructive: #f2716b;
-    --positivo: #3fbf7f;
-    --border: #22314a;
-    --input: #2c3d5a;
-    --ring: #7d99ff;
+    --background: #08090c;
+    --foreground: #f3f4f6;
+    --card: #121419;
+    --card-foreground: #f3f4f6;
+    --primary: #1f51ff;
+    --primary-foreground: #ffffff;
+    --tinta: #121419;
+    --muted: #1a1d24;
+    --muted-foreground: #9aa0ac;
+    --accent: #16204a;
+    --accent-foreground: #f3f4f6;
+    --azul: #5b87ff;
+    --destructive: #ff6b6b;
+    --positivo: #35c27a;
+    --border: #252830;
+    --input: #333845;
+    --ring: #5b87ff;
   }
 }
 
@@ -56,7 +58,8 @@
   --color-muted-foreground: var(--muted-foreground);
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
-  --color-cobalto: var(--cobalto);
+  --color-azul: var(--azul);
+  --color-tinta: var(--tinta);
   --color-destructive: var(--destructive);
   --color-positivo: var(--positivo);
   --color-border: var(--border);
@@ -95,7 +98,7 @@
     text-wrap: balance;
   }
   ::selection {
-    background: color-mix(in oklab, var(--cobalto) 25%, transparent);
+    background: color-mix(in oklab, var(--azul) 25%, transparent);
   }
   :focus-visible {
     outline: 2px solid var(--ring);

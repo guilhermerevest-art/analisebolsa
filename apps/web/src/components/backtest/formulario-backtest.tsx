@@ -103,7 +103,7 @@ export function FormularioBacktest({ inicial, erros, erroTicker, mesMaximo }: Pr
         </div>
         <div className="mt-3 flex items-center gap-2">
           <input type="hidden" name="cdi" value="0" />
-          <input id="cdi" type="checkbox" name="cdi" value="1" defaultChecked={inicial.cdi} className="size-4 accent-[var(--cobalto)]" />
+          <input id="cdi" type="checkbox" name="cdi" value="1" defaultChecked={inicial.cdi} className="size-4 accent-[var(--azul)]" />
           <Label htmlFor="cdi" className="font-normal">
             Caixa rende o CDI fora da posição
           </Label>

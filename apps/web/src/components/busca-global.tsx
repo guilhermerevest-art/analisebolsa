@@ -92,11 +92,11 @@ export function BuscaGlobal({ variante = "cabecalho" }: { variante?: "cabecalho"
         className={cn(
           "flex items-center gap-2 border text-muted-foreground transition-colors",
           variante === "hero"
-            ? "h-14 w-full max-w-lg rounded-xl bg-card px-4 text-base shadow-[0_8px_24px_-12px_rgb(14_27_46/0.25)] hover:border-cobalto"
+            ? "h-14 w-full max-w-lg rounded-xl bg-card px-4 text-base shadow-[0_8px_24px_-12px_rgb(10_11_15/0.25)] hover:border-azul"
             : "h-9 rounded-md bg-card px-2.5 text-sm hover:bg-accent sm:px-3",
         )}
       >
-        <Search aria-hidden className={cn("size-4", variante === "hero" && "size-5 text-cobalto")} />
+        <Search aria-hidden className={cn("size-4", variante === "hero" && "size-5 text-azul")} />
         <span className={cn("flex-1 truncate text-left", variante === "cabecalho" && "sr-only sm:not-sr-only")}>{variante === "hero" ? "Busque por ticker ou empresa: PETR4, Vale, HGLG11…" : "Buscar ativo"}</span>
         {variante === "cabecalho" && <kbd className="hidden rounded border px-1.5 text-[10px] sm:inline">Ctrl K</kbd>}
       </button>

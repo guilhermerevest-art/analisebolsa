@@ -52,8 +52,8 @@ export function GraficoLinhas({
     if (!container.current || pontos.length === 0) return;
     const chart: IChartApi = createChart(container.current, {
       autoSize: true,
-      layout: { background: { type: ColorType.Solid, color: "transparent" }, textColor: escuro ? "#d4d4d8" : "#3f3f46", fontFamily: "inherit" },
-      grid: { vertLines: { visible: false }, horzLines: { color: escuro ? "#27272a" : "#f4f4f5" } },
+      layout: { background: { type: ColorType.Solid, color: "transparent" }, textColor: escuro ? "#c9ccd3" : "#3a3f4a", fontFamily: "inherit" },
+      grid: { vertLines: { visible: false }, horzLines: { color: escuro ? "#252830" : "#e9ebef" } },
       rightPriceScale: { borderVisible: false },
       timeScale: { borderVisible: false },
       handleScroll: false,

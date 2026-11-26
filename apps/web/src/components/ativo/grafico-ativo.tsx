@@ -29,10 +29,10 @@ import { cn } from "@/lib/utils";
 const ALTA = "#16a34a";
 const BAIXA = "#dc2626";
 const OVERLAYS = [
-  { chave: "mm20", rotulo: "MM20", cor: "#2563eb" },
+  { chave: "mm20", rotulo: "MM20", cor: "#1f51ff" },
   { chave: "mm50", rotulo: "MM50", cor: "#f59e0b" },
   { chave: "mm200", rotulo: "MM200", cor: "#a855f7" },
-  { chave: "bb", rotulo: "Bollinger", cor: "#64748b" },
+  { chave: "bb", rotulo: "Bollinger", cor: "#6b7180" },
 ] as const;
 type ChaveOverlay = (typeof OVERLAYS)[number]["chave"];
 
@@ -73,8 +73,8 @@ function Alternador<T extends string>({
 const ESTILO_NIVEL: Record<NivelPreco["tipo"], { cor: string; titulo: (i: number) => string; estilo: number }> = {
   suporte: { cor: ALTA, titulo: (i) => `S${i}`, estilo: 2 },
   resistencia: { cor: BAIXA, titulo: (i) => `R${i}`, estilo: 2 },
-  max_52s: { cor: "#64748b", titulo: () => "Máx. 52s", estilo: 1 },
-  min_52s: { cor: "#64748b", titulo: () => "Mín. 52s", estilo: 1 },
+  max_52s: { cor: "#6b7180", titulo: () => "Máx. 52s", estilo: 1 },
+  min_52s: { cor: "#6b7180", titulo: () => "Mín. 52s", estilo: 1 },
 };
 
 export function GraficoAtivo({ ticker, niveis = [] }: { ticker: string; niveis?: NivelPreco[] }) {
@@ -128,8 +128,8 @@ export function GraficoAtivo({ ticker, niveis = [] }: { ticker: string; niveis?:
 
   useEffect(() => {
     if (!container.current || !series) return;
-    const texto = escuro ? "#d4d4d8" : "#3f3f46";
-    const grade = escuro ? "#27272a" : "#f4f4f5";
+    const texto = escuro ? "#c9ccd3" : "#3a3f4a";
+    const grade = escuro ? "#252830" : "#e9ebef";
     const chart: IChartApi = createChart(container.current, {
       autoSize: true,
       layout: {
@@ -196,7 +196,7 @@ export function GraficoAtivo({ ticker, niveis = [] }: { ticker: string; niveis?:
         chart.addSeries(HistogramSeries, { lastValueVisible: false, priceLineVisible: false }, pane).setData(
           histogramaMacd(series.ind, `${ALTA}99`, `${BAIXA}99`),
         );
-        chart.addSeries(LineSeries, { ...linha, color: "#2563eb" }, pane).setData(serieIndicador(series.ind, "macd"));
+        chart.addSeries(LineSeries, { ...linha, color: "#1f51ff" }, pane).setData(serieIndicador(series.ind, "macd"));
         chart.addSeries(LineSeries, { ...linha, color: "#f59e0b" }, pane).setData(serieIndicador(series.ind, "macd_sinal"));
       }
       const panes = chart.panes();

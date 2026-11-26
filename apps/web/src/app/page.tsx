@@ -83,9 +83,9 @@ function PainelDestaques({ altas, baixas }: { altas: Destaque[]; baixas: Destaqu
 function LinhaFuncionalidade({ item }: { item: Item }) {
   const conteudo = (
     <>
-      <span className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-lg bg-accent text-cobalto [&_svg]:size-[18px]">{item.icone}</span>
+      <span className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-lg bg-accent text-azul [&_svg]:size-[18px]">{item.icone}</span>
       <span className="grid gap-0.5">
-        <span className="font-medium group-hover:text-cobalto">{item.titulo}</span>
+        <span className="font-medium group-hover:text-azul">{item.titulo}</span>
         <span className="text-sm text-muted-foreground">{item.descricao}</span>
       </span>
     </>
@@ -117,7 +117,7 @@ export default async function Inicio() {
           <div className="flex flex-wrap items-center gap-2 text-sm">
             <span className="text-muted-foreground">Comece por</span>
             {EXEMPLOS.map((t) => (
-              <Link key={t} href={`/ativo/${t}`} className="rounded-md border bg-card px-2.5 py-1 font-medium transition-colors hover:border-cobalto hover:text-cobalto">
+              <Link key={t} href={`/ativo/${t}`} className="rounded-md border bg-card px-2.5 py-1 font-medium transition-colors hover:border-azul hover:text-azul">
                 {t}
               </Link>
             ))}
@@ -166,16 +166,16 @@ export default async function Inicio() {
         </div>
       </section>
 
-      <section className="grid items-center gap-6 rounded-2xl border border-transparent bg-[#0e1b2e] px-6 py-12 text-[#f6f7f9] sm:px-12 dark:border-border md:grid-cols-[1fr_auto]">
+      <section className="grid items-center gap-6 rounded-2xl border border-transparent bg-tinta px-6 py-12 text-[#f3f4f6] sm:px-12 dark:border-border md:grid-cols-[1fr_auto]">
         <div className="grid gap-2">
           <h2 className="text-3xl font-semibold tracking-tight">Crie sua conta grátis</h2>
-          <p className="max-w-lg text-[#f6f7f9]/75">Guarde sua carteira, sua watchlist e seus alertas, e acesse de qualquer aparelho.</p>
+          <p className="max-w-lg text-[#f3f4f6]/75">Guarde sua carteira, sua watchlist e seus alertas, e acesse de qualquer aparelho.</p>
         </div>
         <div className="flex flex-wrap gap-3">
-          <Button asChild size="lg" className="bg-[#f6f7f9] text-[#0e1b2e] hover:bg-white">
+          <Button asChild size="lg">
             <Link href="/cadastro">Criar conta</Link>
           </Button>
-          <Button asChild size="lg" variant="ghost" className="text-[#f6f7f9] hover:bg-white/10 hover:text-white">
+          <Button asChild size="lg" variant="ghost" className="text-[#f3f4f6] hover:bg-white/10 hover:text-white">
             <Link href="/entrar">Já tenho conta</Link>
           </Button>
         </div>

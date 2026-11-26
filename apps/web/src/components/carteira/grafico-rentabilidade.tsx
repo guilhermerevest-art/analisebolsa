@@ -5,7 +5,7 @@ import type { RentabilidadeCarteira } from "@/lib/tipos-api";
 
 // Paleta validada (scripts/validate_palette.js do dataviz) no claro e no escuro.
 const SERIES: SerieLinha[] = [
-  { chave: "carteira", rotulo: "Carteira", claro: "#2563eb", escuro: "#3b82f6" },
+  { chave: "carteira", rotulo: "Carteira", claro: "#1f51ff", escuro: "#5b87ff" },
   { chave: "cdi", rotulo: "CDI", claro: "#d97706", escuro: "#d97706" },
   { chave: "ibov", rotulo: "Ibovespa", claro: "#9333ea", escuro: "#a855f7" },
 ];

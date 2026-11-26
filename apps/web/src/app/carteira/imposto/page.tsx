@@ -8,6 +8,8 @@ import { chamarApi } from "@/lib/api";
 import { classeVariacao, formatarData, formatarPreco } from "@/lib/formato";
 import type { Carteiras, ImpostoCarteira } from "@/lib/tipos-api";
 import { cn } from "@/lib/utils";
+import { Termo } from "@/components/dica";
+import type { ChaveGlossario } from "@/lib/glossario";
 
 export const metadata: Metadata = { title: "Imposto de renda", robots: { index: false } };
 export const dynamic = "force-dynamic";
@@ -29,12 +31,14 @@ function nomeMes(iso: string): string {
 
 const n = (v: string) => Number(v);
 
-function Cartao({ rotulo, valor, detalhe, destaque }: { rotulo: string; valor: string; detalhe?: string; destaque?: boolean }) {
+function Cartao({ rotulo, valor, detalhe, destaque, termo }: { rotulo: string; valor: string; detalhe?: string; destaque?: boolean; termo?: ChaveGlossario }) {
   return (
-    <div className={cn("grid content-start gap-1 rounded-xl border p-4", destaque ? "border-transparent bg-[#0e1b2e] text-[#f6f7f9]" : "bg-card")}>
-      <dt className={cn("text-sm", destaque ? "text-[#f6f7f9]/75" : "text-muted-foreground")}>{rotulo}</dt>
+    <div className={cn("grid content-start gap-1 rounded-xl border p-4", destaque ? "border-transparent bg-tinta text-[#f3f4f6]" : "bg-card")}>
+      <dt className={cn("text-sm", destaque ? "text-[#f3f4f6]/75 [&_button]:text-[#f3f4f6]/75" : "text-muted-foreground")}>
+        {termo ? <Termo termo={termo}>{rotulo}</Termo> : rotulo}
+      </dt>
       <dd className="font-display text-2xl font-semibold tracking-tight tabular-nums">{valor}</dd>
-      {detalhe && <dd className={cn("text-xs", destaque ? "text-[#f6f7f9]/75" : "text-muted-foreground")}>{detalhe}</dd>}
+      {detalhe && <dd className={cn("text-xs", destaque ? "text-[#f3f4f6]/75" : "text-muted-foreground")}>{detalhe}</dd>}
     </div>
   );
 }
@@ -94,20 +98,23 @@ export default async function PaginaImposto({ searchParams }: Props) {
           <dl className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             <Cartao
               destaque
+              termo="darf"
               rotulo="Próximo DARF"
               valor={proximo ? formatarPreco(proximo.darf) : "Nada a pagar"}
               detalhe={proximo ? `Vence em ${formatarData(proximo.vencimento)}, código ${dados.codigo_darf}` : "Nenhum DARF com vencimento pela frente"}
             />
             <Cartao
               rotulo="Prejuízo a compensar"
+              termo="prejuizo_compensar"
               valor={formatarPreco(String(n(dados.prejuizo_comum) + n(dados.prejuizo_fii) + n(dados.prejuizo_day_trade)))}
               detalhe={`Ações, ETFs e BDRs: ${formatarPreco(dados.prejuizo_comum)}. FIIs: ${formatarPreco(dados.prejuizo_fii)}. Day trade: ${formatarPreco(dados.prejuizo_day_trade)}.`}
             />
             {anoAtual && (
-              <Cartao rotulo={`Ganhos isentos em ${anoAtual.ano}`} valor={formatarPreco(anoAtual.ganho_isento)} detalhe="Ações em meses com vendas até R$ 20 mil" />
+              <Cartao rotulo={`Ganhos isentos em ${anoAtual.ano}`} termo="isencao_20mil" valor={formatarPreco(anoAtual.ganho_isento)} detalhe="Ações em meses com vendas até R$ 20 mil" />
             )}
             <Cartao
               rotulo="Para os próximos meses"
+              termo="irrf"
               valor={formatarPreco(String(n(dados.pendente) + n(dados.saldo_irrf)))}
               detalhe={`Imposto abaixo de R$ 10 a somar: ${formatarPreco(dados.pendente)}. IRRF a descontar: ${formatarPreco(dados.saldo_irrf)}.`}
             />
@@ -115,7 +122,7 @@ export default async function PaginaImposto({ searchParams }: Props) {
 
           {dados.day_trade.length > 0 && (
             <div role="note" className="flex gap-3 rounded-xl border bg-card p-4 text-sm">
-              <Info aria-hidden className="mt-0.5 size-4 shrink-0 text-cobalto" />
+              <Info aria-hidden className="mt-0.5 size-4 shrink-0 text-azul" />
               <div className="grid gap-1">
                 <p className="font-medium">Day trade</p>
                 <p className="text-muted-foreground">
@@ -230,7 +237,7 @@ export default async function PaginaImposto({ searchParams }: Props) {
               </ul>
               <p className="text-xs text-muted-foreground">
                 Os ganhos isentos vão em Rendimentos Isentos e Não Tributáveis; o mês a mês vai em Renda Variável.{" "}
-                <Link href={`/carteira/declaracao?c=${carteira.id}`} className="text-cobalto underline-offset-2 hover:underline">
+                <Link href={`/carteira/declaracao?c=${carteira.id}`} className="text-azul underline-offset-2 hover:underline">
                   Ver tudo para a declaração
                 </Link>
               </p>

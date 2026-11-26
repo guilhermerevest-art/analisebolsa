@@ -9,6 +9,8 @@ import { chamarApi } from "@/lib/api";
 import { formatarNumero, formatarPreco } from "@/lib/formato";
 import type { Carteiras, DeclaracaoCarteira } from "@/lib/tipos-api";
 import { cn } from "@/lib/utils";
+import { Termo } from "@/components/dica";
+import type { ChaveGlossario } from "@/lib/glossario";
 
 export const metadata: Metadata = { title: "Declaração anual", robots: { index: false } };
 export const dynamic = "force-dynamic";
@@ -25,11 +27,11 @@ async function ler<T>(caminho: string): Promise<T | null> {
 const qtd = (v: string) => formatarNumero(v, Number.isInteger(Number(v)) ? 0 : 4);
 const soma = (itens: Rendimento[], campo: "bruto" | "ir" | "liquido") => String(itens.reduce((t, r) => t + Number(r[campo]), 0));
 
-function Ficha({ titulo, onde, children }: { titulo: string; onde: string; children: React.ReactNode }) {
+function Ficha({ titulo, onde, termo, children }: { titulo: string; onde: string; termo?: ChaveGlossario; children: React.ReactNode }) {
   return (
     <section className="grid gap-3">
       <div>
-        <h2 className="text-xl font-semibold">{titulo}</h2>
+        <h2 className="text-xl font-semibold">{termo ? <Termo termo={termo}>{titulo}</Termo> : titulo}</h2>
         <p className="text-sm text-muted-foreground">{onde}</p>
       </div>
       {children}
@@ -142,6 +144,7 @@ export default async function PaginaDeclaracao({ searchParams }: Props) {
         <>
           <Ficha
             titulo="Bens e Direitos"
+            termo="bens_direitos"
             onde={`Um item por ativo, com a situação em 31/12/${d.ano - 1} e em 31/12/${d.ano} pelo custo de aquisição (preço médio), não pelo valor de mercado.`}
           >
             {d.bens.length === 0 ? (
@@ -185,7 +188,9 @@ export default async function PaginaDeclaracao({ searchParams }: Props) {
           <Ficha titulo="Rendimentos Isentos e Não Tributáveis" onde="Dividendos, rendimentos de FII e ganhos com ações em meses de vendas até R$ 20 mil.">
             <div className="grid gap-6">
               <div className="grid gap-2">
-                <h3 className="font-medium">Dividendos</h3>
+                <h3 className="font-medium">
+                  <Termo termo="dividendos">Dividendos</Termo>
+                </h3>
                 <TabelaRendimentos itens={d.dividendos} vazio={`Nenhum dividendo pago em ${d.ano}.`} />
               </div>
               <div className="grid gap-2">
@@ -193,14 +198,16 @@ export default async function PaginaDeclaracao({ searchParams }: Props) {
                 <TabelaRendimentos itens={d.rendimentos_fii} vazio={`Nenhum rendimento de FII pago em ${d.ano}.`} />
               </div>
               <div className="grid gap-2 rounded-xl border bg-card p-4">
-                <h3 className="font-medium">Ganhos líquidos em operações com ações até R$ 20 mil no mês</h3>
+                <h3 className="font-medium">
+                  <Termo termo="isencao_20mil">Ganhos líquidos em operações com ações até R$ 20 mil no mês</Termo>
+                </h3>
                 <p className="font-display text-2xl font-semibold tabular-nums">{formatarPreco(d.ganho_isento_acoes)}</p>
                 <p className="text-sm text-muted-foreground">Soma dos ganhos com ações nos meses em que as vendas de ações não passaram de R$ 20 mil.</p>
               </div>
             </div>
           </Ficha>
 
-          <Ficha titulo="Rendimentos Sujeitos à Tributação Exclusiva/Definitiva" onde="Juros sobre capital próprio: o imposto de 15% já foi retido pela empresa; a ficha leva o valor líquido.">
+          <Ficha titulo="Rendimentos Sujeitos à Tributação Exclusiva/Definitiva" termo="jcp" onde="Juros sobre capital próprio: o imposto de 15% já foi retido pela empresa; a ficha leva o valor líquido.">
             <TabelaRendimentos itens={d.jcp} comIr vazio={`Nenhum JCP pago em ${d.ano}.`} />
           </Ficha>
 

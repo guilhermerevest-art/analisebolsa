@@ -24,7 +24,7 @@ export function PainelIbovespa({ indice, className }: { indice: Indice; classNam
   const iMin = valores.indexOf(min);
 
   return (
-    <figure className={cn("grid gap-5 rounded-2xl border bg-card p-6 shadow-[0_1px_0_var(--border),0_12px_32px_-16px_rgb(14_27_46/0.18)]", className)}>
+    <figure className={cn("grid gap-5 rounded-2xl border bg-card p-6 shadow-[0_1px_0_var(--border),0_12px_32px_-16px_rgb(10_11_15/0.18)]", className)}>
       <figcaption className="flex flex-wrap items-end justify-between gap-x-6 gap-y-2">
         <div>
           <p className="text-sm text-muted-foreground">Ibovespa em 12 meses</p>
@@ -40,8 +40,8 @@ export function PainelIbovespa({ indice, className }: { indice: Indice; classNam
         <svg viewBox={`0 0 ${L} ${A}`} preserveAspectRatio="none" className="h-56 w-full overflow-visible" role="img" aria-label={`Gráfico do Ibovespa: de ${formatarNumero(pontos[0].valor, 0)} para ${formatarNumero(ultimo.valor, 0)} pontos`}>
           <defs>
             <linearGradient id="ibov-area" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="var(--cobalto)" stopOpacity="0.22" />
-              <stop offset="100%" stopColor="var(--cobalto)" stopOpacity="0" />
+              <stop offset="0%" stopColor="var(--azul)" stopOpacity="0.22" />
+              <stop offset="100%" stopColor="var(--azul)" stopOpacity="0" />
             </linearGradient>
           </defs>
           {[0.25, 0.5, 0.75].map((f) => (
@@ -51,7 +51,7 @@ export function PainelIbovespa({ indice, className }: { indice: Indice; classNam
           <path
             d={linha}
             fill="none"
-            stroke="var(--cobalto)"
+            stroke="var(--azul)"
             strokeWidth="2"
             strokeLinejoin="round"
             vectorEffect="non-scaling-stroke"

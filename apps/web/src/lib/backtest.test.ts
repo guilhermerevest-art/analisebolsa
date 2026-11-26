@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { ESTRATEGIAS, lerParamsBacktest, PRONTAS, ultimoDiaDoMes } from "@/lib/backtest";
+import { ESTRATEGIAS, leituraBacktest, lerParamsBacktest, PRONTAS, ultimoDiaDoMes } from "@/lib/backtest";
 
 const HOJE = new Date("2026-11-26T12:00:00Z");
 
@@ -73,4 +73,28 @@ describe("estratégias prontas", () => {
 it("ultimoDiaDoMes não passa de hoje", () => {
   expect(ultimoDiaDoMes("2024-02", HOJE)).toBe("2024-02-29");
   expect(ultimoDiaDoMes("2026-11", HOJE)).toBe("2026-11-26");
+});
+
+describe("leitura do backtest", () => {
+  const base = { capital: 10000, estrategia: { retorno: 0.9713, queda: -0.42 }, manter: { retorno: 15.5134, queda: -0.6 }, cdi: { retorno: 2.0819 } };
+
+  it("conta quanto o capital teria virado em cada caminho e compara", () => {
+    const [valores, comparacao, queda, aviso] = leituraBacktest(base);
+    expect(valores).toMatch(/R\$\s10\.000/);
+    expect(valores).toContain("+97,1%");
+    expect(valores).toMatch(/R\$\s19\.713/);
+    expect(valores).toMatch(/R\$\s165\.134/);
+    expect(comparacao).toBe("Nesse histórico, a regra rendeu menos que manter o ativo e menos que o CDI.");
+    expect(queda).toContain("−42%");
+    expect(aviso).toContain("passado");
+  });
+
+  it("descreve sem linguagem de recomendação", () => {
+    const textos = [
+      ...leituraBacktest(base),
+      ...leituraBacktest({ ...base, estrategia: { retorno: 20, queda: -0.1 }, cdi: { retorno: null } }),
+    ].join(" ").toLowerCase();
+    for (const proibida of ["melhor", "compre", "recomend", "oportunidade", "garantid", "deve "]) expect(textos).not.toContain(proibida);
+    expect(leituraBacktest({ ...base, estrategia: { retorno: 2.08, queda: null }, cdi: { retorno: 2.0819 } })[1]).toContain("praticamente o mesmo que o CDI");
+  });
 });

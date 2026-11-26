@@ -1,7 +1,7 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-type Props = React.ComponentProps<"input"> & { nome: string; rotulo: string; erro?: string };
+type Props = React.ComponentProps<"input"> & { nome: string; rotulo: React.ReactNode; erro?: string };
 
 export function Campo({ nome, rotulo, erro, ...props }: Props) {
   const idErro = `${nome}-erro`;

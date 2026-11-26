@@ -46,7 +46,7 @@ export function FormularioOperacao({ carteira, hoje, operacao }: Props) {
         <legend className="sr-only">Tipo de operação</legend>
         {(["compra", "venda"] as const).map((t) => (
           <Label key={t} className="flex items-center gap-2 font-normal">
-            <input type="radio" name="tipo" value={t} defaultChecked={t === (operacao?.tipo ?? "compra")} className="accent-[var(--cobalto)]" />
+            <input type="radio" name="tipo" value={t} defaultChecked={t === (operacao?.tipo ?? "compra")} className="accent-[var(--azul)]" />
             {t === "compra" ? "Compra" : "Venda"}
           </Label>
         ))}
