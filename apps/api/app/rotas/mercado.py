@@ -1,9 +1,11 @@
+from datetime import date
 from decimal import Decimal
 from typing import Annotated
 
 from fastapi import APIRouter, Query
 
 from app import consultas as q
+from app import mercado
 from app import schemas as s
 from app.deps import Conn
 from dominio.insights import SINAIS_DO_DIA
@@ -38,3 +40,12 @@ def sinais(conn: Conn, exemplos: Annotated[int, Query(ge=1, le=10)] = 5):
             for g in grupos
         ],
     }
+
+
+@router.get(
+    "/indicadores",
+    response_model=s.IndicadoresMercado,
+    summary="Ibovespa, IFIX, Small Caps, Dividendos, dólar, euro, S&P 500 e bitcoin",
+)
+def indicadores(conn: Conn):
+    return {"itens": mercado.indicadores(conn, date.today())}

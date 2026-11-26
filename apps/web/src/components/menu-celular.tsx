@@ -22,7 +22,7 @@ export function MenuCelular({ links }: { links: { href: string; rotulo: string }
   }, [aberto]);
 
   return (
-    <div className="lg:hidden">
+    <div className="xl:hidden">
       <Button
         type="button"
         variant="ghost"

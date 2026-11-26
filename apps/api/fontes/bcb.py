@@ -1,11 +1,12 @@
-"""Séries do Banco Central (SGS): CDI diário (12) e IPCA mensal (433). API pública, sem chave."""
+"""Séries do Banco Central (SGS): CDI diário (12), IPCA mensal (433) e dólar (1) e euro (21619)
+pela PTAX de venda. API pública, sem chave."""
 
 from datetime import date, datetime, timedelta
 
 from fontes.base import ClienteHttp, ErroFonte
 
 URL = "https://api.bcb.gov.br/dados/serie/bcdata.sgs.{codigo}/dados"
-CODIGOS = {"cdi": 12, "ipca": 433}
+CODIGOS = {"cdi": 12, "ipca": 433, "dolar": 1, "euro": 21619}
 # O SGS aceita no máximo 10 anos por consulta em séries diárias.
 JANELA = timedelta(days=365 * 5)
 

@@ -1,4 +1,7 @@
-"""Atualiza CDI e IPCA (Banco Central) e Ibovespa (Yahoo): `python -m worker.indices`.
+"""Atualiza as séries de mercado: `python -m worker.indices`.
+
+CDI, IPCA, dólar e euro (Banco Central); Ibovespa, S&P 500 e bitcoin (Yahoo); IFIX, Small Caps
+e Dividendos (B3).
 
 Roda no fim do EOD e no backfill. Cada série continua de onde parou; a falha de uma série
 não impede as outras nem derruba o job que chamou.
@@ -13,13 +16,14 @@ from sqlalchemy import Engine, text
 
 from app.config import get_settings
 from app.db import get_engine
+from fontes.b3 import B3IndicesFonte
 from fontes.base import ClienteHttp
 from fontes.bcb import BcbFonte
 from fontes.yahoo import YahooFonte
 from worker.processamento import INICIO_HISTORICO
 
 log = logging.getLogger("worker.indices")
-SERIES = ("cdi", "ipca", "ibov")
+SERIES = ("cdi", "ipca", "ibov", "dolar", "euro", "ifix", "smll", "idiv", "sp500", "bitcoin")
 
 
 def ultima_data(conn, serie: str) -> date | None:
@@ -42,11 +46,18 @@ def gravar(conn, serie: str, pontos: list[tuple[date, float]]) -> int:
 
 
 def buscadores(http: ClienteHttp | None = None) -> dict[str, Callable]:
-    bcb, yahoo = BcbFonte(http), YahooFonte(http)
+    bcb, yahoo, b3 = BcbFonte(http), YahooFonte(http), B3IndicesFonte(http)
     return {
         "cdi": lambda i, f: bcb.serie("cdi", i, f),
         "ipca": lambda i, f: bcb.serie("ipca", i, f),
         "ibov": lambda i, f: yahoo.indice("^BVSP", i, f),
+        "dolar": lambda i, f: bcb.serie("dolar", i, f),
+        "euro": lambda i, f: bcb.serie("euro", i, f),
+        "ifix": lambda i, f: b3.serie("IFIX", i, f),
+        "smll": lambda i, f: b3.serie("SMLL", i, f),
+        "idiv": lambda i, f: b3.serie("IDIV", i, f),
+        "sp500": lambda i, f: yahoo.indice("^GSPC", i, f),
+        "bitcoin": lambda i, f: yahoo.indice("BTC-USD", i, f),
     }
 
 
@@ -68,6 +79,8 @@ def atualizar_indices(
             inicio = (
                 desde if ultima is None else ultima - timedelta(days=40 if serie == "ipca" else 5)
             )
+            if serie not in fontes:
+                continue
             pontos = fontes[serie](inicio, hoje)
             with engine.begin() as conn:
                 resultado[serie] = gravar(conn, serie, pontos)

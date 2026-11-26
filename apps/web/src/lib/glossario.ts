@@ -39,6 +39,41 @@ export const GLOSSARIO = {
     categoria: "Básico",
     curto: "O principal índice da bolsa brasileira: uma média das ações mais negociadas. Serve de régua para o mercado como um todo.",
   },
+  dolar: {
+    titulo: "Dólar (PTAX)",
+    categoria: "Básico",
+    curto: "Cotação oficial do dólar comercial, calculada pelo Banco Central com as negociações do dia. Dólar em alta encarece importados e ajuda exportadoras.",
+  },
+  euro: {
+    titulo: "Euro (PTAX)",
+    categoria: "Básico",
+    curto: "Cotação oficial do euro em reais, calculada pelo Banco Central.",
+  },
+  ifix: {
+    titulo: "IFIX",
+    categoria: "Básico",
+    curto: "Índice dos fundos imobiliários da B3: uma média dos FIIs mais negociados, incluindo os rendimentos que eles distribuem.",
+  },
+  smll: {
+    titulo: "Small Caps (SMLL)",
+    categoria: "Básico",
+    curto: "Índice das empresas menores da bolsa. Costuma oscilar mais que o Ibovespa, para cima e para baixo.",
+  },
+  idiv: {
+    titulo: "Índice Dividendos (IDIV)",
+    categoria: "Básico",
+    curto: "Índice das empresas que mais distribuíram proventos em relação ao preço nos últimos anos.",
+  },
+  sp500: {
+    titulo: "S&P 500",
+    categoria: "Básico",
+    curto: "Índice das 500 maiores empresas dos Estados Unidos, em dólares. É a principal régua da bolsa americana.",
+  },
+  bitcoin: {
+    titulo: "Bitcoin",
+    categoria: "Básico",
+    curto: "Criptomoeda negociada o dia todo, todos os dias, cotada aqui em dólares. Tem oscilações bem maiores que as de ações e moedas.",
+  },
   cdi: {
     titulo: "CDI",
     categoria: "Básico",

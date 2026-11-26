@@ -9,10 +9,21 @@ from app.deps import Conn
 from app.erros import Problema
 
 router = APIRouter(prefix="/indices", tags=["mercado"])
-UNIDADES = {"cdi": "pct_dia", "ipca": "pct_mes", "ibov": "pontos"}
+UNIDADES = {
+    "cdi": "pct_dia",
+    "ipca": "pct_mes",
+    "ibov": "pontos",
+    "dolar": "reais",
+    "euro": "reais",
+    "ifix": "pontos",
+    "smll": "pontos",
+    "idiv": "pontos",
+    "sp500": "pontos",
+    "bitcoin": "dolares",
+}
 
 
-@router.get("/{serie}", response_model=s.Indice, summary="Série de CDI, IPCA ou Ibovespa")
+@router.get("/{serie}", response_model=s.Indice, summary="Série de um índice, moeda ou taxa")
 def serie(
     conn: Conn,
     serie: s.SerieIndice,

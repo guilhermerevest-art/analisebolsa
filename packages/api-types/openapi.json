@@ -1039,12 +1039,88 @@
         }
       }
     },
+    "/v1/mercado/indicadores": {
+      "get": {
+        "tags": [
+          "mercado"
+        ],
+        "summary": "Ibovespa, IFIX, Small Caps, Dividendos, dólar, euro, S&P 500 e bitcoin",
+        "operationId": "indicadores_v1_mercado_indicadores_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IndicadoresMercado"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/indices/{serie}": {
       "get": {
         "tags": [
           "mercado"
         ],
-        "summary": "Série de CDI, IPCA ou Ibovespa",
+        "summary": "Série de um índice, moeda ou taxa",
         "operationId": "serie_v1_indices__serie__get",
         "parameters": [
           {
@@ -1055,7 +1131,14 @@
               "enum": [
                 "cdi",
                 "ipca",
-                "ibov"
+                "ibov",
+                "dolar",
+                "euro",
+                "ifix",
+                "smll",
+                "idiv",
+                "sp500",
+                "bitcoin"
               ],
               "type": "string",
               "title": "Serie"
@@ -8121,6 +8204,107 @@
         ],
         "title": "ImpostoCarteira"
       },
+      "IndicadorMercado": {
+        "properties": {
+          "serie": {
+            "type": "string",
+            "enum": [
+              "cdi",
+              "ipca",
+              "ibov",
+              "dolar",
+              "euro",
+              "ifix",
+              "smll",
+              "idiv",
+              "sp500",
+              "bitcoin"
+            ],
+            "title": "Serie"
+          },
+          "nome": {
+            "type": "string",
+            "title": "Nome"
+          },
+          "unidade": {
+            "type": "string",
+            "enum": [
+              "pct_dia",
+              "pct_mes",
+              "pontos",
+              "reais",
+              "dolares"
+            ],
+            "title": "Unidade"
+          },
+          "data": {
+            "type": "string",
+            "format": "date",
+            "title": "Data"
+          },
+          "valor": {
+            "type": "number",
+            "title": "Valor"
+          },
+          "var_dia": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Var Dia",
+            "description": "Variação em % sobre o ponto anterior"
+          },
+          "var_ano": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Var Ano",
+            "description": "Variação em % no ano"
+          },
+          "var_12m": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Var 12M",
+            "description": "Variação em % em 12 meses"
+          },
+          "pontos": {
+            "items": {
+              "$ref": "#/components/schemas/PontoIndice"
+            },
+            "type": "array",
+            "title": "Pontos",
+            "description": "Um ponto por semana nos últimos 12 meses"
+          }
+        },
+        "type": "object",
+        "required": [
+          "serie",
+          "nome",
+          "unidade",
+          "data",
+          "valor",
+          "var_dia",
+          "var_ano",
+          "var_12m",
+          "pontos"
+        ],
+        "title": "IndicadorMercado"
+      },
       "Indicadores": {
         "properties": {
           "ticker": {
@@ -8300,6 +8484,22 @@
         ],
         "title": "IndicadoresDia"
       },
+      "IndicadoresMercado": {
+        "properties": {
+          "itens": {
+            "items": {
+              "$ref": "#/components/schemas/IndicadorMercado"
+            },
+            "type": "array",
+            "title": "Itens"
+          }
+        },
+        "type": "object",
+        "required": [
+          "itens"
+        ],
+        "title": "IndicadoresMercado"
+      },
       "Indice": {
         "properties": {
           "serie": {
@@ -8307,7 +8507,14 @@
             "enum": [
               "cdi",
               "ipca",
-              "ibov"
+              "ibov",
+              "dolar",
+              "euro",
+              "ifix",
+              "smll",
+              "idiv",
+              "sp500",
+              "bitcoin"
             ],
             "title": "Serie"
           },
@@ -8316,7 +8523,9 @@
             "enum": [
               "pct_dia",
               "pct_mes",
-              "pontos"
+              "pontos",
+              "reais",
+              "dolares"
             ],
             "title": "Unidade"
           },
