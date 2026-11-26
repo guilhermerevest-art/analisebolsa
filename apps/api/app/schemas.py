@@ -690,6 +690,10 @@ class InscricaoPush(BaseModel):
     aparelho: Annotated[str | None, Field(max_length=80)] = None
 
 
+class CancelamentoPush(BaseModel):
+    endpoint: Annotated[str, Field(pattern=r"^https://", max_length=1000)]
+
+
 class TestePush(BaseModel):
     enviados: int = Field(description="Aparelhos que receberam")
 

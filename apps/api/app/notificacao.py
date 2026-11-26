@@ -64,7 +64,7 @@ class CanalWhatsApp:
     def __init__(self, settings: Settings, cliente: httpx.Client | None = None):
         self.s = settings
         self.url = (
-            f"https://graph.facebook.com/{settings.whatsapp_api_versao}/"
+            f"{settings.whatsapp_api_url.rstrip('/')}/{settings.whatsapp_api_versao}/"
             f"{settings.whatsapp_phone_number_id}/messages"
         )
         self.cliente = cliente or httpx.Client(timeout=20)

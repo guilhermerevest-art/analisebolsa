@@ -38,7 +38,8 @@ jobs:
         with:
           token: ${{ secrets.VERCEL_TOKEN }}
           database_url: ${{ secrets.DATABASE_URL }}
-          smtp_senha: ${{ secrets.SMTP_SENHA }}
+          whatsapp_token: ${{ secrets.WHATSAPP_TOKEN }}
+          vapid_private_key: ${{ secrets.VAPID_PRIVATE_KEY }}
       - uses: astral-sh/setup-uv@v5
         with:
           enable-cache: true

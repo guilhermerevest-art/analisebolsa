@@ -47,3 +47,4 @@ export type Alerta = S["Alerta"];
 export type PontoSimulacao = S["PontoSimulacao"];
 export type PontoFaixa = S["PontoFaixa"];
 export type Posicao = S["Posicao"];
+export type Notificacoes = S["Notificacoes"];

@@ -90,6 +90,19 @@ def test_push_registrar_testar_remover_e_isolamento(api, canais):  # noqa: F811
     assert push.enviados == [("https://push.exemplo/1", "Notificações ligadas")]
     (aparelho,) = api.get("/v1/notificacoes", headers=auth()).json()["push"]["aparelhos"]
 
+    cancelar = {"endpoint": "https://push.exemplo/1"}
+    assert (
+        api.post("/v1/notificacoes/push/cancelar", json=cancelar, headers=auth("u2")).status_code
+        == 204
+    )
+    assert len(api.get("/v1/notificacoes", headers=auth()).json()["push"]["aparelhos"]) == 1
+    assert (
+        api.post("/v1/notificacoes/push/cancelar", json=cancelar, headers=auth()).status_code == 204
+    )
+    assert api.get("/v1/notificacoes", headers=auth()).json()["push"]["aparelhos"] == []
+    api.post("/v1/notificacoes/push", json=inscricao(), headers=auth())
+    (aparelho,) = api.get("/v1/notificacoes", headers=auth()).json()["push"]["aparelhos"]
+
     caminho = f"/v1/notificacoes/push/{aparelho['id']}"
     assert api.delete(caminho, headers=auth("u2")).status_code == 404
     assert api.delete(caminho, headers=auth()).status_code == 204

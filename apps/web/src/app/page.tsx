@@ -43,7 +43,7 @@ const GRUPOS: { titulo: string; descricao: string; itens: Item[] }[] = [
     itens: [
       { titulo: "Carteira", descricao: "Posições, preço médio, proventos recebidos e alocação.", icone: <Briefcase />, href: "/carteira" },
       { titulo: "Watchlist", descricao: "Os ativos que você acompanha, num lugar só.", icone: <Star />, href: "/watchlist" },
-      { titulo: "Alertas", descricao: "E-mail quando um ativo cruza um preço, varia muito ou gera um sinal.", icone: <Bell />, href: "/alertas" },
+      { titulo: "Alertas", descricao: "Notificação no celular ou WhatsApp quando um ativo cruza um preço, varia muito ou gera um sinal.", icone: <Bell />, href: "/alertas" },
       { titulo: "Calculadora de posição", descricao: "Quantidade pelo risco até o stop, manual ou por ATR.", icone: <Scale />, href: "/posicao" },
     ],
   },

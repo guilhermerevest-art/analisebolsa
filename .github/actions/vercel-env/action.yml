@@ -13,8 +13,12 @@ inputs:
     description: DATABASE_URL vindo de um segredo do GitHub (opcional; tem prioridade)
     required: false
     default: ""
-  smtp_senha:
-    description: SMTP_SENHA vindo de um segredo do GitHub (opcional; tem prioridade)
+  whatsapp_token:
+    description: WHATSAPP_TOKEN vindo de um segredo do GitHub (opcional; tem prioridade)
+    required: false
+    default: ""
+  vapid_private_key:
+    description: VAPID_PRIVATE_KEY vindo de um segredo do GitHub (opcional; tem prioridade)
     required: false
     default: ""
 runs:
@@ -26,7 +30,8 @@ runs:
       env:
         VERCEL_TOKEN: ${{ inputs.token }}
         DATABASE_URL_GITHUB: ${{ inputs.database_url }}
-        SMTP_SENHA_GITHUB: ${{ inputs.smtp_senha }}
+        WHATSAPP_TOKEN_GITHUB: ${{ inputs.whatsapp_token }}
+        VAPID_PRIVATE_KEY_GITHUB: ${{ inputs.vapid_private_key }}
         VERCEL_ORG_ID: team_fWEuENXE3yFNvvhgguAgrDg8
         VERCEL_PROJECT_ID: prj_EzFOVDRakt67PFaYGSDQo36rsAfZ
       run: |
@@ -37,11 +42,15 @@ runs:
           printf 'DATABASE_URL="%s"\n' "$DATABASE_URL_GITHUB" >> .env.tmp
           mv .env.tmp .env
         fi
-        if [ -n "$SMTP_SENHA_GITHUB" ]; then
-          grep -v '^SMTP_SENHA=' .env > .env.tmp || true
-          printf 'SMTP_SENHA="%s"\n' "$SMTP_SENHA_GITHUB" >> .env.tmp
-          mv .env.tmp .env
-        fi
+        # Segredos que a Vercel guarda como sensitive (ilegíveis) podem vir do GitHub.
+        for nome in WHATSAPP_TOKEN VAPID_PRIVATE_KEY; do
+          var="${nome}_GITHUB"; valor="${!var}"
+          if [ -n "$valor" ]; then
+            grep -v "^${nome}=" .env > .env.tmp || true
+            printf '%s="%s"\n' "$nome" "$valor" >> .env.tmp
+            mv .env.tmp .env
+          fi
+        done
         # Variáveis do tipo "sensitive" vêm vazias: as que o worker usa precisam ser "encrypted".
         grep -qE '^DATABASE_URL="?postgres(ql)?://' .env || { echo "::error::DATABASE_URL ilegível ou ausente no projeto analisebolsa-api. Variáveis Sensitive não podem ser lidas pelo GitHub: recrie-a com Sensitive desligado ou crie o segredo DATABASE_URL no GitHub."; exit 1; }
         while IFS= read -r linha; do

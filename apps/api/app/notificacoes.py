@@ -90,6 +90,14 @@ def registrar_push(
     )
 
 
+def cancelar_push(conn: Connection, user_id: str, endpoint: str) -> None:
+    """Remove pelo endpoint (o navegador conhece o próprio endpoint, não o id)."""
+    conn.execute(
+        text("DELETE FROM push_inscricoes WHERE endpoint = :e AND user_id = :u"),
+        {"e": endpoint, "u": user_id},
+    )
+
+
 def remover_push(conn: Connection, user_id: str, inscricao_id: int) -> None:
     apagado = conn.execute(
         text("DELETE FROM push_inscricoes WHERE inscricao_id = :i AND user_id = :u"),

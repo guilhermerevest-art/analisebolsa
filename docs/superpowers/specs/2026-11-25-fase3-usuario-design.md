@@ -4,6 +4,9 @@ Data: 2026-11-25
 Status: aguardando revisão
 Depende de: [Fase 1](2026-11-24-fase1-fundacao-design.md), [Fase 2](2026-11-25-fase2-analise-design.md)
 
+> Atualização (2026-11-26): os alertas deixaram de ir por e-mail e passaram a ir por push e
+> WhatsApp. Ver a [Fase 5](2026-11-26-fase5-notificacoes-carteira-design.md).
+
 ## 1. Objetivo
 
 A Fase 3 traz as funcionalidades que dependem do usuário logado, mais o simulador, que é

@@ -52,6 +52,13 @@ def registrar_push(conn: Conn, usuario: Logado, corpo: s.InscricaoPush, push: Pu
     return Response(status_code=204)
 
 
+@router.post("/push/cancelar", status_code=204, summary="Desliga o push deste aparelho")
+def cancelar_push(conn: Conn, usuario: Logado, corpo: s.CancelamentoPush):
+    nt.cancelar_push(conn, usuario.id, corpo.endpoint)
+    conn.commit()
+    return Response(status_code=204)
+
+
 @router.delete("/push/{inscricao_id}", status_code=204, summary="Remove um aparelho")
 def remover_push(conn: Conn, usuario: Logado, inscricao_id: int):
     nt.remover_push(conn, usuario.id, inscricao_id)

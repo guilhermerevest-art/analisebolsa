@@ -30,6 +30,7 @@ class Settings(BaseSettings):
     # dois, o WhatsApp fica desligado. Os modelos precisam estar aprovados no WhatsApp Manager.
     whatsapp_token: str = ""
     whatsapp_phone_number_id: str = ""
+    whatsapp_api_url: str = "https://graph.facebook.com"
     whatsapp_api_versao: str = "v23.0"
     whatsapp_modelo_alertas: str = "alertas_disparados"
     whatsapp_modelo_codigo: str = "codigo_verificacao"

@@ -4,12 +4,13 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { auth } from "@/auth";
+import { CanaisNotificacao } from "@/components/alertas/canais";
 import { FormularioAlerta } from "@/components/alertas/formulario-alerta";
 import { Button } from "@/components/ui/button";
 import { alternarAlerta, excluirAlerta } from "@/lib/acoes-alertas";
 import { chamarApi } from "@/lib/api";
 import { formatarData } from "@/lib/formato";
-import type { Alertas } from "@/lib/tipos-api";
+import type { Alertas, Notificacoes } from "@/lib/tipos-api";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Alertas", robots: { index: false } };
@@ -19,10 +20,15 @@ type Props = { searchParams: Promise<{ ticker?: string }> };
 
 export default async function PaginaAlertas({ searchParams }: Props) {
   if (!(await auth())?.user) redirect("/entrar?voltar=/alertas");
-  const resp = await chamarApi("/v1/alertas", { cache: "no-store" });
+  const [resp, respCanais] = await Promise.all([
+    chamarApi("/v1/alertas", { cache: "no-store" }),
+    chamarApi("/v1/notificacoes", { cache: "no-store" }),
+  ]);
   if (resp.status === 401) redirect("/entrar?voltar=/alertas");
   if (!resp.ok) throw new Error(`API ${resp.status} em /v1/alertas`);
   const dados = (await resp.json()) as Alertas;
+  const canais = respCanais.ok ? ((await respCanais.json()) as Notificacoes) : null;
+  const semCanal = canais !== null && canais.push.aparelhos.length === 0 && !(canais.whatsapp.confirmado && canais.whatsapp.ativo);
   const { ticker = "" } = await searchParams;
   const cheio = dados.ligados >= dados.limite;
 
@@ -31,9 +37,24 @@ export default async function PaginaAlertas({ searchParams }: Props) {
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Alertas</h1>
         <p className="mt-1 max-w-2xl text-muted-foreground">
-          Avaliados no fim de cada pregão. Quando um alerta dispara, você recebe um e-mail no mesmo dia com tudo o que disparou.
+          Avaliados no fim de cada pregão. Quando um alerta dispara, você recebe no mesmo dia, pela notificação do aparelho ou pelo WhatsApp, tudo o que
+          disparou.
         </p>
       </div>
+
+      {canais && (
+        <section aria-labelledby="titulo-canais" className="grid gap-3">
+          <div>
+            <h2 id="titulo-canais" className="text-xl font-semibold">
+              Onde avisar
+            </h2>
+            {semCanal && (
+              <p className="mt-1 text-sm text-muted-foreground">Ligue pelo menos um dos dois para receber os alertas. Até lá, eles ficam só nesta página.</p>
+            )}
+          </div>
+          <CanaisNotificacao estado={canais} />
+        </section>
+      )}
 
       <section aria-labelledby="titulo-novo" className="grid gap-3 rounded-lg border p-4">
         <h2 id="titulo-novo" className="font-semibold">
@@ -102,7 +123,7 @@ export default async function PaginaAlertas({ searchParams }: Props) {
             {dados.disparos.map((d) => (
               <li key={`${d.alerta_id}-${d.data}`} className="flex flex-wrap justify-between gap-x-4">
                 <span>{d.texto}</span>
-                <span className="text-xs text-muted-foreground">{d.enviado_em ? "e-mail enviado" : "e-mail pendente"}</span>
+                <span className="text-xs text-muted-foreground">{descreverEntrega(d.canais)}</span>
               </li>
             ))}
           </ul>
@@ -110,4 +131,11 @@ export default async function PaginaAlertas({ searchParams }: Props) {
       )}
     </div>
   );
+}
+
+const NOME_CANAL: Record<string, string> = { push: "notificação", whatsapp: "WhatsApp", email: "e-mail" };
+
+function descreverEntrega(canais: string[]): string {
+  if (canais.length === 0) return "ainda não entregue";
+  return `entregue por ${canais.map((c) => NOME_CANAL[c] ?? c).join(" e ")}`;
 }
