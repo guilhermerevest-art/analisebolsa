@@ -8,6 +8,7 @@ import { lerPosicao } from "@/lib/dados";
 import { formatarData, formatarPreco } from "@/lib/formato";
 import { lerParamsPosicao } from "@/lib/posicao";
 import type { Posicao } from "@/lib/tipos-api";
+import { classeSelect } from "@/components/ui/select-nativo";
 
 export const metadata: Metadata = {
   title: "Calculadora de posição",
@@ -29,14 +30,14 @@ export default async function PaginaPosicao({ searchParams }: Props) {
   return (
     <div className="grid grid-cols-[minmax(0,1fr)] gap-8">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Calculadora de posição</h1>
+        <h1 className="text-3xl font-semibold tracking-tight">Calculadora de posição</h1>
         <p className="mt-1 max-w-2xl text-muted-foreground">
           Defina quanto do capital aceita perder se o stop for atingido. A calculadora mostra a quantidade que mantém essa perda no limite, sem
           passar da fatia máxima do capital numa posição só.
         </p>
       </div>
 
-      <form method="get" action="/posicao" className="grid gap-5 rounded-lg border p-4">
+      <form method="get" action="/posicao" className="grid gap-5 rounded-xl border bg-card p-4">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <Campo nome="capital" rotulo="Capital (R$)" inputMode="decimal" placeholder="50.000" defaultValue={entrada.capital} required erro={erros.capital} />
           <Campo nome="risco" rotulo="Risco por operação (% do capital)" inputMode="decimal" defaultValue={entrada.risco} erro={erros.risco} />
@@ -63,16 +64,16 @@ export default async function PaginaPosicao({ searchParams }: Props) {
         <fieldset className="grid gap-3">
           <legend className="mb-2 text-sm font-medium">Stop</legend>
           <div className="grid gap-4 sm:grid-cols-2">
-            <div className="grid gap-2">
+            <div className="grid content-start gap-2">
               <label className="flex items-center gap-2 text-sm">
-                <input type="radio" name="modo" value="preco" defaultChecked={entrada.modo === "preco"} className="size-4 accent-primary" />
+                <input type="radio" name="modo" value="preco" defaultChecked={entrada.modo === "preco"} className="size-4 accent-[var(--cobalto)]" />
                 Preço do stop
               </label>
               <Campo nome="stop" rotulo="Stop (R$)" inputMode="decimal" placeholder="27,50" defaultValue={entrada.stop} erro={erros.stop} />
             </div>
-            <div className="grid gap-2">
+            <div className="grid content-start gap-2">
               <label className="flex items-center gap-2 text-sm">
-                <input type="radio" name="modo" value="atr" defaultChecked={entrada.modo === "atr"} className="size-4 accent-primary" />
+                <input type="radio" name="modo" value="atr" defaultChecked={entrada.modo === "atr"} className="size-4 accent-[var(--cobalto)]" />
                 Distância em ATR do ativo
               </label>
               <Campo nome="atr" rotulo="Múltiplo do ATR de 14 pregões" inputMode="decimal" defaultValue={entrada.atr} erro={erros.atr} />
@@ -81,9 +82,9 @@ export default async function PaginaPosicao({ searchParams }: Props) {
         </fieldset>
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <div className="grid gap-2">
+          <div className="grid content-start gap-2">
             <Label htmlFor="lote">Lote</Label>
-            <select id="lote" name="lote" defaultValue={entrada.lote} className="h-9 w-full rounded-md border bg-background px-2 text-sm">
+            <select id="lote" name="lote" defaultValue={entrada.lote} className={classeSelect}>
               <option value="100">Lote padrão (100)</option>
               <option value="1">Fracionário (1)</option>
             </select>
@@ -104,7 +105,7 @@ export default async function PaginaPosicao({ searchParams }: Props) {
 
 function Valor({ rotulo, valor, detalhe }: { rotulo: string; valor: string; detalhe?: string }) {
   return (
-    <div className="rounded-lg border p-4">
+    <div className="rounded-xl border bg-card p-4">
       <dt className="text-sm text-muted-foreground">{rotulo}</dt>
       <dd className="mt-1 text-xl font-semibold tabular-nums">{valor}</dd>
       {detalhe && <dd className="text-xs text-muted-foreground">{detalhe}</dd>}
@@ -172,7 +173,7 @@ function Resultado({ p }: { p: Posicao }) {
 
 function Explicacao() {
   return (
-    <section aria-labelledby="titulo-conta" className="grid gap-2 rounded-lg border p-4 text-sm text-muted-foreground">
+    <section aria-labelledby="titulo-conta" className="grid gap-2 rounded-xl border bg-card p-4 text-sm text-muted-foreground">
       <h2 id="titulo-conta" className="text-lg font-semibold text-foreground">
         Como a conta é feita
       </h2>

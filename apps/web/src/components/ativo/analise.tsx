@@ -57,7 +57,7 @@ export function PainelAnalise({ dados }: { dados: AnaliseAtivo | null }) {
   return (
     <div className="grid gap-6">
       {!dados.elegivel && (
-        <div className="rounded-lg border border-dashed p-4 text-sm">
+        <div className="rounded-xl border border-dashed bg-card p-4 text-sm">
           <p className="font-medium">Dados insuficientes para análise técnica confiável</p>
           <p className="mt-1 text-muted-foreground">{dados.motivo}</p>
         </div>

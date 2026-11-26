@@ -46,7 +46,7 @@ export function FormularioOperacao({ carteira, hoje, operacao }: Props) {
         <legend className="sr-only">Tipo de operação</legend>
         {(["compra", "venda"] as const).map((t) => (
           <Label key={t} className="flex items-center gap-2 font-normal">
-            <input type="radio" name="tipo" value={t} defaultChecked={t === (operacao?.tipo ?? "compra")} className="accent-primary" />
+            <input type="radio" name="tipo" value={t} defaultChecked={t === (operacao?.tipo ?? "compra")} className="accent-[var(--cobalto)]" />
             {t === "compra" ? "Compra" : "Venda"}
           </Label>
         ))}
@@ -59,7 +59,7 @@ export function FormularioOperacao({ carteira, hoje, operacao }: Props) {
         <Campo nome="custos" rotulo="Custos (R$)" inputMode="decimal" placeholder="0,00" defaultValue={operacao && campo(operacao.custos)} erro={estado.erros?.custos} />
         <div className="flex items-end gap-2">
           <Button type="submit" disabled={pendente} className="w-full">
-            {operacao ? (pendente ? "Salvando..." : "Salvar") : pendente ? "Lançando..." : "Lançar"}
+            {operacao ? (pendente ? "Salvando…" : "Salvar") : pendente ? "Lançando…" : "Lançar"}
           </Button>
           {operacao && (
             <Button asChild variant="ghost">

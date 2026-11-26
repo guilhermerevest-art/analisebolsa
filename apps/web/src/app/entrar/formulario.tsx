@@ -27,7 +27,7 @@ export function FormularioEntrar({ voltar }: { voltar?: string }) {
       />
       <Campo nome="senha" rotulo="Senha" type="password" autoComplete="current-password" required erro={estado.erros?.senha} />
       <Button type="submit" disabled={pendente}>
-        {pendente ? "Entrando..." : "Entrar"}
+        {pendente ? "Entrando…" : "Entrar"}
       </Button>
     </form>
   );

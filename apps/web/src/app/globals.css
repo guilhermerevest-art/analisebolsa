@@ -3,6 +3,7 @@
 @custom-variant dark (@media (prefers-color-scheme: dark));
 
 :root {
+  color-scheme: light dark;
   /* Paleta: tinta (navy), papel frio, cobalto como único acento. Verde e vermelho ficam para alta e baixa. */
   --background: #f6f7f9;
   --foreground: #0e1b2e;
@@ -73,6 +74,19 @@
   }
   body {
     @apply bg-background text-foreground antialiased;
+    -webkit-tap-highlight-color: transparent;
+  }
+  a,
+  button,
+  input,
+  select,
+  label,
+  summary {
+    touch-action: manipulation;
+  }
+  /* O cabeçalho é fixo: âncoras e foco não ficam escondidos atrás dele. */
+  html {
+    scroll-padding-top: 5rem;
   }
   h1,
   h2,

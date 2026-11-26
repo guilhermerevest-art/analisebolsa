@@ -32,7 +32,7 @@ const qtd = (v: string) => formatarNumero(v, Number.isInteger(Number(v)) ? 0 : 4
 
 function Valor({ rotulo, valor, classe, detalhe }: { rotulo: string; valor: string; classe?: string; detalhe?: string }) {
   return (
-    <div className="rounded-lg border p-4">
+    <div className="rounded-xl border bg-card p-4">
       <dt className="text-sm text-muted-foreground">{rotulo}</dt>
       <dd className={cn("mt-1 text-xl font-semibold tabular-nums", classe)}>{valor}</dd>
       {detalhe && <dd className="text-xs text-muted-foreground">{detalhe}</dd>}
@@ -102,7 +102,7 @@ export default async function PaginaCarteira({ searchParams }: Props) {
     <div className="grid grid-cols-[minmax(0,1fr)] gap-8">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">{atual.nome}</h1>
+          <h1 className="text-3xl font-semibold tracking-tight">{atual.nome}</h1>
           <p className="mt-1 text-muted-foreground">Posições pelo último fechamento. Preço médio pelo método da Receita.</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
@@ -172,7 +172,7 @@ export default async function PaginaCarteira({ searchParams }: Props) {
                   Retorno acumulado desde {formatarData(rent.inicio)}, ponderado pelo tempo (aportes e retiradas não distorcem), com proventos. CDI e Ibovespa no mesmo período.
                 </p>
               </div>
-              <div className="rounded-lg border p-4">
+              <div className="rounded-xl border bg-card p-4">
                 <GraficoRentabilidadeCliente dados={rent} />
               </div>
               <details className="text-sm">
@@ -259,7 +259,7 @@ export default async function PaginaCarteira({ searchParams }: Props) {
               <h2 id="titulo-alocacao" className="text-xl font-semibold">
                 Alocação
               </h2>
-              <div className="grid gap-6 rounded-lg border p-4 sm:grid-cols-3">
+              <div className="grid gap-6 rounded-xl border bg-card p-4 sm:grid-cols-3">
                 <BarrasAlocacao titulo="Ativo" fatias={resumo.alocacao.ativo} />
                 <BarrasAlocacao titulo="Setor" fatias={resumo.alocacao.setor} />
                 <BarrasAlocacao titulo="Tipo" fatias={resumo.alocacao.tipo} />
@@ -276,7 +276,7 @@ export default async function PaginaCarteira({ searchParams }: Props) {
                 <Link href={`/carteira/importar?c=${atual.id}`}>Importar da B3</Link>
               </Button>
             </div>
-            <div className="rounded-lg border p-4">
+            <div className="rounded-xl border bg-card p-4">
               <FormularioOperacao key={emEdicao?.id ?? "nova"} carteira={atual.id} hoje={hoje} operacao={emEdicao} />
             </div>
           </section>
@@ -374,7 +374,7 @@ export default async function PaginaCarteira({ searchParams }: Props) {
             </section>
           )}
 
-          <details className="rounded-lg border p-4 text-sm">
+          <details className="rounded-xl border bg-card p-4 text-sm">
             <summary className="cursor-pointer font-medium">Gerenciar carteira</summary>
             <div className="mt-4 flex flex-wrap items-end gap-6">
               <form action={renomearCarteira} className="flex gap-2">

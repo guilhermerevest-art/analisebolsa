@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { NOMES_TIPO } from "@/lib/formato";
 import { LIQUIDEZ_PADRAO, TENDENCIAS, TIPOS } from "@/lib/screener";
 import type { CampoScreener } from "@/lib/tipos-api";
+import { classeSelect } from "@/components/ui/select-nativo";
 
 type Props = {
   campos: CampoScreener[];
@@ -36,7 +37,7 @@ function dica(c: CampoScreener): string | undefined {
   return `${f(c.min)} a ${f(c.max)}`;
 }
 
-const classeCampo = "h-9 w-full rounded-md border bg-background px-2 text-sm tabular-nums";
+
 
 export function FiltrosScreener({ campos, setores, valores }: Props) {
   const router = useRouter();
@@ -72,7 +73,7 @@ export function FiltrosScreener({ campos, setores, valores }: Props) {
       <div className="grid grid-cols-2 gap-3">
         <label className="grid gap-1 text-sm">
           <span className="font-medium">Setor</span>
-          <select name="setor" defaultValue={valor(valores.setor)} className={classeCampo}>
+          <select name="setor" defaultValue={valor(valores.setor)} className={classeSelect}>
             <option value="">Todos</option>
             {setores.map((s) => (
               <option key={s}>{s}</option>
@@ -81,7 +82,7 @@ export function FiltrosScreener({ campos, setores, valores }: Props) {
         </label>
         <label className="grid gap-1 text-sm">
           <span className="font-medium">Tendência</span>
-          <select name="tendencia" defaultValue={valor(valores.tendencia)} className={classeCampo}>
+          <select name="tendencia" defaultValue={valor(valores.tendencia)} className={classeSelect}>
             <option value="">Todas</option>
             {TENDENCIAS.map((t) => (
               <option key={t} value={t}>
@@ -103,7 +104,7 @@ export function FiltrosScreener({ campos, setores, valores }: Props) {
       </label>
 
       {GRUPOS.map((g) => (
-        <details key={g.id} open={g.id !== "fundamentos" || campos.some((c) => c.grupo === g.id && (valores[`${c.campo}_min`] || valores[`${c.campo}_max`]))} className="group rounded-lg border p-3">
+        <details key={g.id} open={g.id !== "fundamentos" || campos.some((c) => c.grupo === g.id && (valores[`${c.campo}_min`] || valores[`${c.campo}_max`]))} className="group rounded-xl border bg-card p-3">
           <summary className="cursor-pointer text-sm font-medium">{g.titulo}</summary>
           <div className="mt-3 grid gap-3">
             {campos
@@ -120,7 +121,7 @@ export function FiltrosScreener({ campos, setores, valores }: Props) {
                       aria-label={`${c.rotulo} mínimo`}
                       placeholder="mín."
                       defaultValue={valor(valores[`${c.campo}_min`])}
-                      className={classeCampo}
+                      className={classeSelect}
                     />
                     <input
                       name={`${c.campo}_max`}
@@ -128,7 +129,7 @@ export function FiltrosScreener({ campos, setores, valores }: Props) {
                       aria-label={`${c.rotulo} máximo`}
                       placeholder="máx."
                       defaultValue={valor(valores[`${c.campo}_max`])}
-                      className={classeCampo}
+                      className={classeSelect}
                     />
                   </div>
                   {dica(c) && <span className="text-xs text-muted-foreground">Faixa comum: {dica(c)}</span>}

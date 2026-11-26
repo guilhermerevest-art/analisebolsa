@@ -39,7 +39,7 @@ export function FormularioCadastro() {
         erro={estado.erros?.confirmacao}
       />
       <Button type="submit" disabled={pendente}>
-        {pendente ? "Criando conta..." : "Criar conta"}
+        {pendente ? "Criando conta…" : "Criar conta"}
       </Button>
     </form>
   );

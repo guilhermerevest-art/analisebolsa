@@ -6,7 +6,7 @@ type Props = React.ComponentProps<"input"> & { nome: string; rotulo: string; err
 export function Campo({ nome, rotulo, erro, ...props }: Props) {
   const idErro = `${nome}-erro`;
   return (
-    <div className="grid gap-2">
+    <div className="grid content-start gap-2">
       <Label htmlFor={nome}>{rotulo}</Label>
       <Input
         id={nome}

@@ -12,7 +12,7 @@ export function ExcluirConta() {
     <form action={acao} className="grid gap-3">
       <Campo nome="confirmacao" rotulo='Digite "excluir" para confirmar' autoComplete="off" erro={estado.erro} />
       <Button type="submit" variant="outline" className="text-destructive" disabled={pendente}>
-        {pendente ? "Excluindo..." : "Excluir minha conta e todos os dados"}
+        {pendente ? "Excluindo…" : "Excluir minha conta e todos os dados"}
       </Button>
     </form>
   );

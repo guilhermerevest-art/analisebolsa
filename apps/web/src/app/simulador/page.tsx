@@ -35,7 +35,7 @@ const SERIES_FAIXA: SerieLinha[] = [
 
 function Valor({ rotulo, valor, detalhe }: { rotulo: string; valor: string; detalhe?: string }) {
   return (
-    <div className="rounded-lg border p-4">
+    <div className="rounded-xl border bg-card p-4">
       <dt className="text-sm text-muted-foreground">{rotulo}</dt>
       <dd className="mt-1 text-xl font-semibold tabular-nums">{valor}</dd>
       {detalhe && <dd className="text-xs text-muted-foreground">{detalhe}</dd>}
@@ -54,14 +54,14 @@ export default async function PaginaSimulador({ searchParams }: Props) {
   return (
     <div className="grid grid-cols-[minmax(0,1fr)] gap-8">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Simulador de aportes</h1>
+        <h1 className="text-3xl font-semibold tracking-tight">Simulador de aportes</h1>
         <p className="mt-1 max-w-2xl text-muted-foreground">
           Veja como teriam evoluído aportes mensais num ativo, com os proventos reinvestidos, e os mesmos aportes no CDI e corrigidos pelo
           IPCA. Sem ativo, a comparação fica só entre CDI e IPCA.
         </p>
       </div>
 
-      <form method="get" action="/simulador" className="grid gap-4 rounded-lg border p-4 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_1fr_1fr_auto] lg:items-end">
+      <form method="get" action="/simulador" className="grid gap-4 rounded-xl border bg-card p-4 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_1fr_1fr_auto]">
         <Campo
           nome="ticker"
           rotulo="Ativo (opcional)"
@@ -75,10 +75,10 @@ export default async function PaginaSimulador({ searchParams }: Props) {
         <Campo nome="inicio" rotulo="Início" type="month" min={INICIO_MINIMO} max={mesMaximo()} defaultValue={valoresIniciais.inicio} required erro={erros.inicio} />
         <Campo nome="inicial" rotulo="Aporte inicial (R$)" inputMode="decimal" placeholder="0" defaultValue={valoresIniciais.inicial} erro={erros.inicial ?? erros.aportes} />
         <Campo nome="mensal" rotulo="Aporte mensal (R$)" inputMode="decimal" placeholder="0" defaultValue={valoresIniciais.mensal} erro={erros.mensal} />
-        <div className="grid gap-3 sm:col-span-2 lg:col-span-1">
-          <div className="flex items-center gap-2">
+        <div className="grid content-start gap-3 sm:col-span-2 lg:col-span-1">
+          <div className="flex h-[14px] items-center gap-2">
             <input type="hidden" name="reinvestir" value="0" />
-            <input id="reinvestir" type="checkbox" name="reinvestir" value="1" defaultChecked={valoresIniciais.reinvestir} className="size-4 accent-primary" />
+            <input id="reinvestir" type="checkbox" name="reinvestir" value="1" defaultChecked={valoresIniciais.reinvestir} className="size-4 accent-[var(--cobalto)]" />
             <Label htmlFor="reinvestir" className="font-normal">
               Reinvestir proventos
             </Label>

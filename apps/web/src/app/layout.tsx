@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Bricolage_Grotesque, IBM_Plex_Sans } from "next/font/google";
 import Link from "next/link";
 
@@ -15,6 +15,13 @@ export const metadata: Metadata = {
   description: "Análise educacional de ações, FIIs, ETFs e BDRs da B3: gráficos, indicadores, fundamentos e proventos.",
 };
 
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f6f7f9" },
+    { media: "(prefers-color-scheme: dark)", color: "#0a1220" },
+  ],
+};
+
 const RODAPE = [
   { titulo: "Analisar", links: [["Screener", "/screener"], ["Backtest", "/backtest"], ["Simulador", "/simulador"], ["Calculadora de posição", "/posicao"]] },
   { titulo: "Sua conta", links: [["Carteira", "/carteira"], ["Watchlist", "/watchlist"], ["Alertas", "/alertas"], ["Criar conta", "/cadastro"]] },
@@ -24,8 +31,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="pt-BR" className={`${titulo.variable} ${texto.variable}`}>
       <body className="flex min-h-dvh flex-col">
+        <a
+          href="#conteudo"
+          className="sr-only z-50 rounded-md bg-card px-4 py-2 text-sm font-medium shadow focus:not-sr-only focus:fixed focus:left-4 focus:top-4"
+        >
+          Pular para o conteúdo
+        </a>
         <Cabecalho />
-        <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8">{children}</main>
+        <main id="conteudo" tabIndex={-1} className="mx-auto w-full max-w-6xl flex-1 scroll-mt-20 px-4 py-8 outline-none">
+          {children}
+        </main>
         <footer className="mt-16 border-t bg-card">
           <div className="mx-auto grid max-w-6xl gap-10 px-4 py-12 sm:grid-cols-[1.5fr_1fr_1fr]">
             <div className="grid content-start gap-3">

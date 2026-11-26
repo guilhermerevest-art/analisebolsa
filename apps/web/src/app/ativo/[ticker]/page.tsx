@@ -94,7 +94,7 @@ export default async function PaginaAtivo({ params }: Props) {
           },
         ]}
       />
-      <div className="rounded-lg border border-dashed p-4">
+      <div className="rounded-xl border border-dashed bg-card p-4">
         <AvisoEducacional />
       </div>
     </div>

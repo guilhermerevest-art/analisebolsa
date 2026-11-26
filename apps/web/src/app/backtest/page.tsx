@@ -44,7 +44,7 @@ export default async function PaginaBacktest({ searchParams }: Props) {
   return (
     <div className="grid grid-cols-[minmax(0,1fr)] gap-8">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Backtest de estratégias</h1>
+        <h1 className="text-3xl font-semibold tracking-tight">Backtest de estratégias</h1>
         <p className="mt-1 max-w-2xl text-muted-foreground">
           Veja como uma regra de análise técnica teria se comportado no histórico de um ativo, com custos, ao lado de manter o ativo o tempo todo e
           do CDI. É um exercício sobre o passado para entender a regra, não um sinal para hoje.
@@ -175,7 +175,7 @@ function estadoDaRegra(r: Backtest): string {
 
 function Valor({ rotulo, valor, detalhe, cor }: { rotulo: string; valor: string; detalhe: string; cor: number }) {
   return (
-    <div className="rounded-lg border p-4">
+    <div className="rounded-xl border bg-card p-4">
       <dt className="text-sm text-muted-foreground">{rotulo}</dt>
       <dd className={cn("mt-1 text-xl font-semibold tabular-nums", classeVariacao(cor))}>{valor}</dd>
       <dd className="text-xs text-muted-foreground">{detalhe}</dd>
@@ -278,7 +278,7 @@ function Operacoes({ r }: { r: Backtest }) {
 
 function Vieses() {
   return (
-    <section aria-labelledby="titulo-vieses" className="grid gap-3 rounded-lg border p-4">
+    <section aria-labelledby="titulo-vieses" className="grid gap-3 rounded-xl border bg-card p-4">
       <h2 id="titulo-vieses" className="text-lg font-semibold">
         Como o teste é feito e o que ele não mostra
       </h2>
