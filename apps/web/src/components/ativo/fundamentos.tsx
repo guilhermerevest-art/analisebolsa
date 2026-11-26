@@ -21,7 +21,7 @@ export function PainelFundamentos({ dados }: { dados: Fundamentos | null }) {
         {METRICAS.map((m) => {
           const valor = u[m.chave];
           return (
-            <div key={m.chave} className="rounded-lg border p-4">
+            <div key={m.chave} className="rounded-xl border bg-card p-4">
               <p className="text-xs text-muted-foreground">{m.rotulo}</p>
               <p className="mt-1 text-lg font-semibold tabular-nums">
                 {valor === null || valor === undefined ? "—" : `${"prefixo" in m ? m.prefixo : ""}${formatarNumero(valor)}${"sufixo" in m ? m.sufixo : ""}`}
@@ -29,7 +29,7 @@ export function PainelFundamentos({ dados }: { dados: Fundamentos | null }) {
             </div>
           );
         })}
-        <div className="rounded-lg border p-4">
+        <div className="rounded-xl border bg-card p-4">
           <p className="text-xs text-muted-foreground">Valor de mercado</p>
           <p className="mt-1 text-lg font-semibold tabular-nums">{u.valor_mercado ? `R$ ${formatarCompacto(u.valor_mercado)}` : "—"}</p>
         </div>

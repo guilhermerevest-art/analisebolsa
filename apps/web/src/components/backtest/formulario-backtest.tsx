@@ -7,8 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { ESTRATEGIAS, type EntradaBacktest, estrategiaPorCodigo, INICIO_MINIMO_BACKTEST, PRONTAS } from "@/lib/backtest";
 import { cn } from "@/lib/utils";
+import { classeSelect } from "@/components/ui/select-nativo";
 
-const classeSelect = "h-9 w-full rounded-md border bg-background px-2 text-sm";
 
 type Props = { inicial: EntradaBacktest; erros: Partial<Record<string, string>>; erroTicker?: string; mesMaximo: string };
 
@@ -20,7 +20,7 @@ export function FormularioBacktest({ inicial, erros, erroTicker, mesMaximo }: Pr
   const ativa = PRONTAS.find((p) => p.estrategia === estrategia && Object.entries(p.parametros).every(([k, v]) => parametros[k] === String(v)));
 
   return (
-    <form method="get" action="/backtest" className="grid gap-5 rounded-lg border p-4">
+    <form method="get" action="/backtest" className="grid gap-5 rounded-xl border bg-card p-4">
       <fieldset className="grid gap-2">
         <legend className="mb-2 text-sm font-medium">Estratégias prontas</legend>
         <div className="flex flex-wrap gap-2">
@@ -58,7 +58,7 @@ export function FormularioBacktest({ inicial, erros, erroTicker, mesMaximo }: Pr
           required
           erro={erros.ticker ?? erroTicker}
         />
-        <div className="grid gap-2">
+        <div className="grid content-start gap-2">
           <Label htmlFor="estrategia">Regra</Label>
           <select id="estrategia" name="estrategia" value={estrategia} onChange={(e) => setEstrategia(e.target.value)} className={classeSelect}>
             {ESTRATEGIAS.map((e) => (
@@ -103,7 +103,7 @@ export function FormularioBacktest({ inicial, erros, erroTicker, mesMaximo }: Pr
         </div>
         <div className="mt-3 flex items-center gap-2">
           <input type="hidden" name="cdi" value="0" />
-          <input id="cdi" type="checkbox" name="cdi" value="1" defaultChecked={inicial.cdi} className="size-4 accent-primary" />
+          <input id="cdi" type="checkbox" name="cdi" value="1" defaultChecked={inicial.cdi} className="size-4 accent-[var(--cobalto)]" />
           <Label htmlFor="cdi" className="font-normal">
             Caixa rende o CDI fora da posição
           </Label>

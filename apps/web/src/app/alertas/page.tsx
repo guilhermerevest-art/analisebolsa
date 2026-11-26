@@ -35,7 +35,7 @@ export default async function PaginaAlertas({ searchParams }: Props) {
   return (
     <div className="grid grid-cols-[minmax(0,1fr)] gap-8">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Alertas</h1>
+        <h1 className="text-3xl font-semibold tracking-tight">Alertas</h1>
         <p className="mt-1 max-w-2xl text-muted-foreground">
           Avaliados no fim de cada pregão. Quando um alerta dispara, você recebe no mesmo dia, pela notificação do aparelho ou pelo WhatsApp, tudo o que
           disparou.
@@ -56,7 +56,7 @@ export default async function PaginaAlertas({ searchParams }: Props) {
         </section>
       )}
 
-      <section aria-labelledby="titulo-novo" className="grid gap-3 rounded-lg border p-4">
+      <section aria-labelledby="titulo-novo" className="grid gap-3 rounded-xl border bg-card p-4">
         <h2 id="titulo-novo" className="font-semibold">
           Novo alerta
         </h2>
@@ -77,7 +77,7 @@ export default async function PaginaAlertas({ searchParams }: Props) {
             Nenhum alerta ainda. Você também pode criar a partir da <Link href="/watchlist" className="underline">watchlist</Link>.
           </p>
         ) : (
-          <ul className="divide-y rounded-lg border">
+          <ul className="divide-y rounded-xl border bg-card">
             {dados.itens.map((a) => (
               <li key={a.id} className={cn("flex flex-wrap items-center gap-x-4 gap-y-2 p-3", !a.ativo && "text-muted-foreground")}>
                 <Link href={`/ativo/${a.ticker}`} className="w-16 font-semibold hover:underline">

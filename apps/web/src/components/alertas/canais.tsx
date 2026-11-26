@@ -199,7 +199,7 @@ function CartaoPush({ estado }: { estado: Notificacoes["push"] }) {
       {estado.aparelhos.length > 0 && (
         <div className="grid gap-1">
           <p className="text-xs text-muted-foreground">Aparelhos que recebem</p>
-          <ul className="divide-y rounded-lg border text-sm">
+          <ul className="divide-y rounded-xl border bg-card text-sm">
             {estado.aparelhos.map((a) => (
               <li key={a.id} className="flex items-center gap-3 px-3 py-1.5">
                 <Smartphone aria-hidden className="size-4 shrink-0 text-muted-foreground" />

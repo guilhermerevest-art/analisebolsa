@@ -97,17 +97,17 @@ export function BuscaGlobal({ variante = "cabecalho" }: { variante?: "cabecalho"
         )}
       >
         <Search aria-hidden className={cn("size-4", variante === "hero" && "size-5 text-cobalto")} />
-        <span className={cn("flex-1 truncate text-left", variante === "cabecalho" && "sr-only sm:not-sr-only")}>{variante === "hero" ? "Busque por ticker ou empresa: PETR4, Vale, HGLG11..." : "Buscar ativo"}</span>
+        <span className={cn("flex-1 truncate text-left", variante === "cabecalho" && "sr-only sm:not-sr-only")}>{variante === "hero" ? "Busque por ticker ou empresa: PETR4, Vale, HGLG11…" : "Buscar ativo"}</span>
         {variante === "cabecalho" && <kbd className="hidden rounded border px-1.5 text-[10px] sm:inline">Ctrl K</kbd>}
       </button>
       <dialog
         ref={dialogo}
         onClose={fechar}
         onClick={(e) => e.target === dialogo.current && fechar()}
-        className="m-auto mt-[15vh] w-[min(36rem,calc(100vw-2rem))] rounded-xl border bg-background p-0 text-foreground shadow-2xl backdrop:bg-black/40"
+        className="m-auto mt-[15vh] w-[min(36rem,calc(100vw-2rem))] overscroll-contain rounded-xl border bg-card p-0 text-foreground shadow-2xl backdrop:bg-black/40"
         aria-label="Buscar ativo"
       >
-        <div className="flex items-center gap-2 border-b px-4">
+        <div className="flex items-center gap-2 border-b px-4 focus-within:border-ring">
           <Search aria-hidden className="size-4 text-muted-foreground" />
           <input
             autoFocus
@@ -116,6 +116,8 @@ export function BuscaGlobal({ variante = "cabecalho" }: { variante?: "cabecalho"
             onKeyDown={teclado}
             placeholder="Ticker ou nome da empresa"
             className="h-12 flex-1 bg-transparent outline-none"
+            spellCheck={false}
+            autoComplete="off"
             role="combobox"
             aria-expanded={itens.length > 0}
             aria-controls="resultados-busca"

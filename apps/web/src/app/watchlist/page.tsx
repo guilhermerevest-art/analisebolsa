@@ -28,7 +28,7 @@ export default async function PaginaWatchlist() {
   return (
     <div className="grid grid-cols-[minmax(0,1fr)] gap-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Minha watchlist</h1>
+        <h1 className="text-3xl font-semibold tracking-tight">Minha watchlist</h1>
         <p className="mt-1 text-muted-foreground">
           Os ativos que você acompanha, com os dados do último pregão. Adicione pela estrela na página de cada ativo.
         </p>
@@ -39,7 +39,7 @@ export default async function PaginaWatchlist() {
           Não foi possível carregar a watchlist agora. Tente de novo em instantes.
         </p>
       ) : dados.itens.length === 0 ? (
-        <div className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">
+        <div className="rounded-xl border border-dashed bg-card p-8 text-center text-sm text-muted-foreground">
           <p>Sua watchlist está vazia.</p>
           <p className="mt-2">
             Use a busca (Ctrl+K) ou o{" "}

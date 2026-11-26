@@ -30,7 +30,7 @@ export default async function Screener({ searchParams }: Props) {
   return (
     <div className="grid gap-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Screener</h1>
+        <h1 className="text-3xl font-semibold tracking-tight">Screener</h1>
         <p className="mt-1 text-muted-foreground">Filtre os ativos da B3 por indicadores técnicos e fundamentos. Os dados são do último pregão.</p>
       </div>
 
@@ -69,9 +69,9 @@ export default async function Screener({ searchParams }: Props) {
 
         <section aria-live="polite" className="grid min-w-0 content-start gap-4">
           {resultado === null ? (
-            <p className="rounded-lg border p-6 text-sm text-muted-foreground">Não foi possível carregar o screener agora. Tente de novo em instantes.</p>
+            <p className="rounded-xl border bg-card p-6 text-sm text-muted-foreground">Não foi possível carregar o screener agora. Tente de novo em instantes.</p>
           ) : total === 0 ? (
-            <div className="rounded-lg border p-6 text-sm">
+            <div className="rounded-xl border bg-card p-6 text-sm">
               <p className="font-medium">Nenhum ativo passa nesses filtros.</p>
               <p className="mt-1 text-muted-foreground">Afrouxe algum limite ou inclua os ativos com pouca negociação.</p>
             </div>

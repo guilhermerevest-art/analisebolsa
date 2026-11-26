@@ -19,7 +19,7 @@ export function CabecalhoAtivo({ ativo }: { ativo: AtivoDetalhe }) {
           <img src={ativo.logo_url} alt="" width={48} height={48} className="size-12 rounded-lg border bg-white object-contain p-1" />
         )}
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">
+          <h1 className="text-2xl font-semibold tracking-tight">
             {ativo.ticker} <span className="text-base font-normal text-muted-foreground">{ativo.nome}</span>
           </h1>
           <p className="text-sm text-muted-foreground">
@@ -33,9 +33,9 @@ export function CabecalhoAtivo({ ativo }: { ativo: AtivoDetalhe }) {
         </div>
       </div>
       {u && (
-        <div className="text-right">
-          <NumberTicker valor={Number(u.fechamento)} formatar={fmt} className="text-3xl font-semibold" />
-          <dl className="mt-1 flex justify-end gap-4 text-sm">
+        <div className="sm:text-right">
+          <NumberTicker valor={Number(u.fechamento)} formatar={fmt} className="font-display text-3xl font-semibold tracking-tight" />
+          <dl className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-sm sm:justify-end">
             {(
               [
                 ["Dia", v.dia],
@@ -45,7 +45,7 @@ export function CabecalhoAtivo({ ativo }: { ativo: AtivoDetalhe }) {
             ).map(([rotulo, valor]) => (
               <div key={rotulo} className="flex gap-1">
                 <dt className="text-muted-foreground">{rotulo}</dt>
-                <dd className={cn("font-medium", classeVariacao(valor))}>{formatarPct(valor)}</dd>
+                <dd className={cn("font-medium tabular-nums", classeVariacao(valor))}>{formatarPct(valor)}</dd>
               </div>
             ))}
           </dl>

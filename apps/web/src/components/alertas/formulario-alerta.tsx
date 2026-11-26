@@ -7,9 +7,9 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { criarAlerta, type EstadoAlerta } from "@/lib/acoes-alertas";
 import { TIPOS_ALERTA } from "@/lib/validacao";
+import { classeSelect } from "@/components/ui/select-nativo";
 
 type Tipo = keyof typeof TIPOS_ALERTA;
-const classeSelect = "h-9 w-full rounded-md border bg-background px-2 text-sm";
 
 export function FormularioAlerta({ ticker, sinais, desabilitado }: { ticker: string; sinais: { codigo: string; descricao: string }[]; desabilitado: boolean }) {
   const [estado, acao, pendente] = useActionState<EstadoAlerta, FormData>(criarAlerta, {});
@@ -44,7 +44,7 @@ export function FormularioAlerta({ ticker, sinais, desabilitado }: { ticker: str
       )}
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-[10rem_16rem_1fr_auto] lg:items-start">
         <Campo nome="ticker" rotulo="Ticker" placeholder="PETR4" defaultValue={ticker} autoCapitalize="characters" autoComplete="off" required erro={estado.erros?.ticker} />
-        <div className="grid gap-2">
+        <div className="grid content-start gap-2">
           <Label htmlFor="tipo">Quando</Label>
           <select id="tipo" name="tipo" value={tipo} onChange={(e) => setTipo(e.target.value as Tipo)} className={classeSelect}>
             {Object.entries(TIPOS_ALERTA).map(([valor, rotulo]) => (
@@ -55,7 +55,7 @@ export function FormularioAlerta({ ticker, sinais, desabilitado }: { ticker: str
           </select>
         </div>
         {tipo === "insight" ? (
-          <div className="grid gap-2">
+          <div className="grid content-start gap-2">
             <Label htmlFor="codigo">Sinal</Label>
             <select id="codigo" name="codigo" defaultValue="" className={classeSelect} aria-invalid={estado.erros?.codigo ? true : undefined}>
               <option value="" disabled>
@@ -80,12 +80,12 @@ export function FormularioAlerta({ ticker, sinais, desabilitado }: { ticker: str
             erro={estado.erros?.parametro}
           />
         )}
-        <div className="grid gap-2">
+        <div className="grid content-start gap-2">
           <span aria-hidden className="hidden text-sm lg:block">
             &nbsp;
           </span>
           <Button type="submit" disabled={pendente || desabilitado}>
-            {pendente ? "Criando..." : "Criar alerta"}
+            {pendente ? "Criando…" : "Criar alerta"}
           </Button>
         </div>
       </div>

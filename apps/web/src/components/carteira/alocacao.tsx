@@ -19,7 +19,7 @@ export function BarrasAlocacao({ titulo, fatias }: { titulo: string; fatias: Fat
                 </span>
               </div>
               <div className="h-2 rounded-full bg-muted" aria-hidden>
-                <div className="h-2 rounded-full bg-primary" style={{ width: `${Math.max(f.percentual, 1)}%` }} />
+                <div className="h-2 rounded-full bg-cobalto" style={{ width: `${Math.max(f.percentual, 1)}%` }} />
               </div>
             </li>
           ))}
