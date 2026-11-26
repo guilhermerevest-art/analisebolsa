@@ -7807,6 +7807,10 @@
             "type": "string",
             "title": "Prejuizo Fii"
           },
+          "prejuizo_day_trade": {
+            "type": "string",
+            "title": "Prejuizo Day Trade"
+          },
           "pendente": {
             "type": "string",
             "title": "Pendente",
@@ -7826,7 +7830,7 @@
             },
             "type": "array",
             "title": "Day Trade",
-            "description": "Vendas no mesmo dia de uma compra do mesmo ativo (podem ser day trade)"
+            "description": "Dias com compra e venda do mesmo ativo, apurados como day trade"
           },
           "aviso": {
             "type": "string",
@@ -7839,6 +7843,7 @@
           "anos",
           "prejuizo_comum",
           "prejuizo_fii",
+          "prejuizo_day_trade",
           "pendente",
           "saldo_irrf",
           "codigo_darf",
@@ -8699,6 +8704,11 @@
             "type": "string",
             "title": "Resultado Fii"
           },
+          "resultado_day_trade": {
+            "type": "string",
+            "title": "Resultado Day Trade",
+            "description": "Day trade de ações, ETFs e BDRs"
+          },
           "compensado": {
             "type": "string",
             "title": "Compensado",
@@ -8713,6 +8723,11 @@
             "type": "string",
             "title": "Base Fii",
             "description": "Base de FIIs (20%)"
+          },
+          "base_day_trade": {
+            "type": "string",
+            "title": "Base Day Trade",
+            "description": "Base de day trade (20%)"
           },
           "imposto_devido": {
             "type": "string",
@@ -8761,6 +8776,10 @@
           "prejuizo_fii": {
             "type": "string",
             "title": "Prejuizo Fii"
+          },
+          "prejuizo_day_trade": {
+            "type": "string",
+            "title": "Prejuizo Day Trade"
           }
         },
         "type": "object",
@@ -8773,9 +8792,11 @@
           "ganho_isento",
           "resultado_etf_bdr",
           "resultado_fii",
+          "resultado_day_trade",
           "compensado",
           "base_comum",
           "base_fii",
+          "base_day_trade",
           "imposto_devido",
           "irrf",
           "irrf_usado",
@@ -8784,7 +8805,8 @@
           "vencimento",
           "fica_para_depois",
           "prejuizo_comum",
-          "prejuizo_fii"
+          "prejuizo_fii",
+          "prejuizo_day_trade"
         ],
         "title": "MesImposto"
       },

@@ -46,6 +46,19 @@ export async function lancarOperacao(_: EstadoOperacao, form: FormData): Promise
   return { ok: Date.now() };
 }
 
+export async function editarOperacao(_: EstadoOperacao, form: FormData): Promise<EstadoOperacao> {
+  const c = id(form.get("carteira"));
+  const op = id(form.get("operacao"));
+  if (!c || !op) return { erros: { form: "Operação inválida" } };
+  const parsed = esquemaOperacao.safeParse(Object.fromEntries(["ticker", "tipo", "data", "quantidade", "preco", "custos"].map((k) => [k, String(form.get(k) ?? "")])));
+  if (!parsed.success) return { erros: errosPorCampo(parsed.error) };
+  const r = await enviar(`/v1/carteiras/${c}/operacoes/${op}`, "PUT", parsed.data);
+  if (r.status === 404) return { erros: { form: "Operação não encontrada" } };
+  if (!r.ok) return { erros: { form: r.detalhe ?? "Não foi possível salvar a operação" } };
+  revalidatePath("/carteira");
+  redirect(`/carteira?c=${c}&editada=1`);
+}
+
 export async function removerOperacao(form: FormData): Promise<void> {
   const c = id(form.get("carteira"));
   const op = id(form.get("operacao"));

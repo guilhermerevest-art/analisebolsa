@@ -1,4 +1,4 @@
-import { AlertTriangle } from "lucide-react";
+import { Info } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
@@ -46,7 +46,7 @@ function Resultado({ v }: { v: string }) {
 function situacao(m: Mes): string {
   const partes: string[] = [];
   if (n(m.ganho_isento) > 0) partes.push("Ganho em ações isento (vendas até R$ 20 mil)");
-  const prejuizo = [m.resultado_acoes, m.resultado_etf_bdr, m.resultado_fii].filter((v) => n(v) < 0).reduce((t, v) => t - n(v), 0);
+  const prejuizo = [m.resultado_acoes, m.resultado_etf_bdr, m.resultado_fii, m.resultado_day_trade].filter((v) => n(v) < 0).reduce((t, v) => t - n(v), 0);
   if (prejuizo > 0) partes.push(`Prejuízo de ${formatarPreco(prejuizo)} fica para compensar`);
   if (n(m.darf) > 0) partes.push(`DARF vence em ${formatarData(m.vencimento)}`);
   else if (n(m.fica_para_depois) > 0) partes.push(`${formatarPreco(m.fica_para_depois)} abaixo do mínimo de R$ 10 passa para o mês seguinte`);
@@ -75,7 +75,7 @@ export default async function PaginaImposto({ searchParams }: Props) {
         </Link>
         <h1 className="mt-2 text-3xl font-semibold tracking-tight">Imposto de renda</h1>
         <p className="mt-1 max-w-2xl text-muted-foreground">
-          Apuração mês a mês das vendas da carteira {carteira.nome}, em operações comuns: ações, ETFs e BDRs a 15% e FIIs a 20%, com a isenção de
+          Apuração mês a mês das vendas da carteira {carteira.nome}: ações, ETFs e BDRs a 15%, FIIs a 20% e day trade a 20%, com a isenção de
           vendas de ações até R$ 20 mil no mês e a compensação de prejuízos.
         </p>
       </div>
@@ -100,8 +100,8 @@ export default async function PaginaImposto({ searchParams }: Props) {
             />
             <Cartao
               rotulo="Prejuízo a compensar"
-              valor={formatarPreco(String(n(dados.prejuizo_comum) + n(dados.prejuizo_fii)))}
-              detalhe={`Ações, ETFs e BDRs: ${formatarPreco(dados.prejuizo_comum)}. FIIs: ${formatarPreco(dados.prejuizo_fii)}.`}
+              valor={formatarPreco(String(n(dados.prejuizo_comum) + n(dados.prejuizo_fii) + n(dados.prejuizo_day_trade)))}
+              detalhe={`Ações, ETFs e BDRs: ${formatarPreco(dados.prejuizo_comum)}. FIIs: ${formatarPreco(dados.prejuizo_fii)}. Day trade: ${formatarPreco(dados.prejuizo_day_trade)}.`}
             />
             {anoAtual && (
               <Cartao rotulo={`Ganhos isentos em ${anoAtual.ano}`} valor={formatarPreco(anoAtual.ganho_isento)} detalhe="Ações em meses com vendas até R$ 20 mil" />
@@ -114,14 +114,14 @@ export default async function PaginaImposto({ searchParams }: Props) {
           </dl>
 
           {dados.day_trade.length > 0 && (
-            <div role="note" className="flex gap-3 rounded-xl border border-amber-500/40 bg-amber-500/10 p-4 text-sm">
-              <AlertTriangle aria-hidden className="mt-0.5 size-4 shrink-0 text-amber-600 dark:text-amber-400" />
+            <div role="note" className="flex gap-3 rounded-xl border bg-card p-4 text-sm">
+              <Info aria-hidden className="mt-0.5 size-4 shrink-0 text-cobalto" />
               <div className="grid gap-1">
-                <p className="font-medium">Vendas no mesmo dia de uma compra do mesmo ativo</p>
+                <p className="font-medium">Day trade</p>
                 <p className="text-muted-foreground">
-                  Se a compra e a venda foram na mesma corretora, a operação é day trade: alíquota de 20%, sem isenção e com prejuízo separado. Aqui
-                  elas entram como operação comum. Confira:{" "}
-                  {dados.day_trade.map((d) => `${d.ticker} em ${formatarData(d.data)}`).join(", ")}.
+                  Compra e venda do mesmo ativo no mesmo dia foram apuradas como day trade (20%, sem isenção e com prejuízo separado), como se
+                  tivessem sido na mesma corretora. Se foram em corretoras diferentes, não é day trade: lance cada corretora numa carteira. Dias
+                  apurados assim: {dados.day_trade.map((d) => `${d.ticker} em ${formatarData(d.data)}`).join(", ")}.
                 </p>
               </div>
             </div>
@@ -155,6 +155,10 @@ export default async function PaginaImposto({ searchParams }: Props) {
                     <dd className="text-right tabular-nums">
                       <Resultado v={m.resultado_fii} />
                     </dd>
+                    <dt className="text-muted-foreground">Day trade</dt>
+                    <dd className="text-right tabular-nums">
+                      <Resultado v={m.resultado_day_trade} />
+                    </dd>
                     <dt className="text-muted-foreground">Imposto</dt>
                     <dd className="text-right tabular-nums">{formatarPreco(m.imposto_devido)}</dd>
                   </dl>
@@ -166,8 +170,8 @@ export default async function PaginaImposto({ searchParams }: Props) {
               <table className="w-full text-sm">
                 <thead className="border-b text-left text-muted-foreground">
                   <tr>
-                    {["Mês", "Vendas de ações", "Ações", "ETFs e BDRs", "FIIs", "Prejuízo usado", "Imposto", "IRRF usado", "DARF", "Situação"].map((c, i) => (
-                      <th key={c} scope="col" className={cn("px-3 py-2 font-medium", i > 0 && i < 9 && "text-right")}>
+                    {["Mês", "Vendas de ações", "Ações", "ETFs e BDRs", "FIIs", "Day trade", "Prejuízo usado", "Imposto", "IRRF usado", "DARF", "Situação"].map((c, i) => (
+                      <th key={c} scope="col" className={cn("px-3 py-2 font-medium", i > 0 && i < 10 && "text-right")}>
                         {c}
                       </th>
                     ))}
@@ -188,6 +192,9 @@ export default async function PaginaImposto({ searchParams }: Props) {
                       </td>
                       <td className="px-3 py-2 text-right tabular-nums">
                         <Resultado v={m.resultado_fii} />
+                      </td>
+                      <td className="px-3 py-2 text-right tabular-nums">
+                        <Resultado v={m.resultado_day_trade} />
                       </td>
                       <td className="px-3 py-2 text-right tabular-nums">{n(m.compensado) > 0 ? formatarPreco(m.compensado) : "—"}</td>
                       <td className="px-3 py-2 text-right tabular-nums">{n(m.imposto_devido) > 0 ? formatarPreco(m.imposto_devido) : "—"}</td>

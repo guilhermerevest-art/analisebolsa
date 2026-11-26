@@ -109,13 +109,69 @@ def test_irrf_maior_que_o_imposto_fica_para_depois():
     assert fev.irrf_usado == D("6.50") and fev.darf == D("0") and fev.fica_para_depois == D("8.50")
 
 
-def test_marca_possivel_day_trade_e_ativo_sem_tipo():
+def dt(ticker, dia, valor, resultado):
+    valor, resultado = D(str(valor)), D(str(resultado))
+    return VendaRealizada(ticker, dia, D(1), valor, D(0), valor - resultado, resultado, True)
+
+
+def test_day_trade_20_por_cento_sem_isencao_e_irrf_de_1_por_cento():
     ap = apurar(
-        [venda("PETR4", date(2026, 1, 5), 1000, 10), venda("XYZW3", date(2026, 1, 6), 1, 0)],
+        [
+            dt("PETR4", date(2026, 5, 4), 10000, 500),
+            dt("VALE3", date(2026, 5, 4), 8000, -100),  # mesmo dia: IRRF sobre 400
+            venda("PETR4", date(2026, 5, 20), 15000, 1000),  # comum, isenta
+            venda("XYZW3", date(2026, 5, 21), 1, 0),
+        ],
         TIPOS,
-        {"PETR4": {date(2026, 1, 5)}},
     )
-    assert ap.day_trade == [("PETR4", date(2026, 1, 5))] and ap.sem_tipo == ["XYZW3"]
+    (m,) = ap.meses
+    # As vendas de day trade não contam para os R$ 20 mil: as ações seguem isentas.
+    # (o ativo sem tipo cadastrado conta como ação: 15.001)
+    assert m.vendas_acoes == 15001 and m.isento_acoes and m.ganho_isento == 1000
+    assert m.resultado_day_trade == 400 and m.imposto_day_trade == D("80.00")
+    assert m.irrf == D("4.00")  # 1% de 400; o 0,005% de 15.000 (0,75) é dispensado
+    assert m.darf == D("76.00")
+    assert ap.day_trade == [("PETR4", date(2026, 5, 4)), ("VALE3", date(2026, 5, 4))]
+    assert ap.sem_tipo == ["XYZW3"]
+
+
+def test_prejuizo_de_day_trade_so_compensa_day_trade():
+    ap = apurar(
+        [
+            dt("PETR4", date(2026, 5, 4), 10000, -300),
+            venda("PETR4", date(2026, 6, 4), 30000, 1000),
+            dt("VALE3", date(2026, 7, 4), 10000, 500),
+        ],
+        TIPOS,
+    )
+    mai, jun, jul = ap.meses
+    assert mai.prejuizo_day_trade == 300 and jun.compensado_day_trade == 0
+    assert jun.base_comum == 1000
+    assert jul.compensado_day_trade == 300 and jul.base_day_trade == 200
+    assert jul.imposto_day_trade == D("40.00")
+
+
+def test_day_trade_na_consolidacao():
+    c = consolidar(
+        [
+            Operacao(1, "PETR4", "compra", date(2026, 1, 2), D(100), D(30), D(0)),
+            # Dia com compra de 300 e venda de 200: 200 casadas são day trade.
+            Operacao(2, "PETR4", "compra", date(2026, 2, 2), D(300), D(40), D(6)),
+            Operacao(3, "PETR4", "venda", date(2026, 2, 2), D(200), D(41), D(4)),
+            # Dia com venda maior que a compra: 50 casadas e 50 da posição.
+            Operacao(4, "PETR4", "compra", date(2026, 3, 2), D(50), D(42), D(0)),
+            Operacao(5, "PETR4", "venda", date(2026, 3, 2), D(100), D(43), D(0)),
+        ]
+    )
+    dt_fev, dt_mar, comum_mar = c.vendas
+    # Fevereiro: custo unitário do dia (12.006 / 300) = 40,02; venda 8.200 − 4 − 8.004.
+    assert dt_fev.day_trade and dt_fev.quantidade == 200 and dt_fev.resultado == D("192")
+    # A sobra de 100 entra na posição pelo custo do dia: (3.000 + 4.002) / 200 = 35,01.
+    assert dt_mar.day_trade and dt_mar.resultado == D("50")  # (43 − 42) × 50
+    assert not comum_mar.day_trade and comum_mar.quantidade == 50
+    assert comum_mar.custo_medio == D("1750.50") and comum_mar.resultado == D("399.50")
+    pos = c.posicoes["PETR4"]
+    assert pos.quantidade == 150 and pos.preco_medio == D("35.01")
 
 
 def test_vendas_vem_da_consolidacao_com_custos():
@@ -165,9 +221,10 @@ def test_api_imposto(api):  # noqa: F811
     assert fev["resultado_acoes"] == "4980.00" and fev["imposto_devido"] == "747.00"
     assert fev["irrf"] == "1.75" and fev["darf"] == "745.25"
     assert fev["vencimento"] == "2026-03-31"
-    # FII: ganho de 100 a 20% = 20,00; IRRF de 1.100 dispensado.
-    assert mar["base_fii"] == "100.00" and mar["darf"] == "20.00"
+    # FII comprado e vendido no mesmo dia: day trade no grupo dos FIIs, 20% de 100 = 20,00,
+    # menos o IRRF de 1% sobre o resultado do dia (1,00).
+    assert mar["base_fii"] == "100.00" and mar["irrf"] == "1.00" and mar["darf"] == "19.00"
     assert dados["day_trade"] == [{"ticker": "HGLG11", "data": "2026-03-02"}]
     assert dados["anos"] == [
-        {"ano": 2026, "ganho_isento": "0.00", "darf": "765.25", "vendas": "36100.00"}
+        {"ano": 2026, "ganho_isento": "0.00", "darf": "764.25", "vendas": "36100.00"}
     ]

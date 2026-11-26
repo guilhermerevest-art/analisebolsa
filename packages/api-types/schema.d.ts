@@ -1426,6 +1426,8 @@ export interface components {
             prejuizo_comum: string;
             /** Prejuizo Fii */
             prejuizo_fii: string;
+            /** Prejuizo Day Trade */
+            prejuizo_day_trade: string;
             /**
              * Pendente
              * @description DARF abaixo de R$ 10 ainda não pago
@@ -1437,7 +1439,7 @@ export interface components {
             codigo_darf: string;
             /**
              * Day Trade
-             * @description Vendas no mesmo dia de uma compra do mesmo ativo (podem ser day trade)
+             * @description Dias com compra e venda do mesmo ativo, apurados como day trade
              */
             day_trade: components["schemas"]["PossivelDayTrade"][];
             /** Aviso */
@@ -1674,6 +1676,11 @@ export interface components {
             /** Resultado Fii */
             resultado_fii: string;
             /**
+             * Resultado Day Trade
+             * @description Day trade de ações, ETFs e BDRs
+             */
+            resultado_day_trade: string;
+            /**
              * Compensado
              * @description Prejuízo de meses anteriores usado no mês
              */
@@ -1688,6 +1695,11 @@ export interface components {
              * @description Base de FIIs (20%)
              */
             base_fii: string;
+            /**
+             * Base Day Trade
+             * @description Base de day trade (20%)
+             */
+            base_day_trade: string;
             /** Imposto Devido */
             imposto_devido: string;
             /**
@@ -1718,6 +1730,8 @@ export interface components {
             prejuizo_comum: string;
             /** Prejuizo Fii */
             prejuizo_fii: string;
+            /** Prejuizo Day Trade */
+            prejuizo_day_trade: string;
         };
         /** MetricasAtivo */
         MetricasAtivo: {

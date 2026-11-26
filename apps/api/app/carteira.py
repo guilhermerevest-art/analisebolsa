@@ -373,8 +373,9 @@ def rentabilidade(conn: Connection, user_id: str, carteira_id: int) -> dict:
 
 AVISO_IMPOSTO = (
     "Conta feita com as operações lançadas, para conferência. Não substitui a declaração nem "
-    "um contador. O IRRF é uma estimativa (confira nas notas de corretagem), day trade e "
-    "ETFs de renda fixa têm outras regras."
+    "um contador. O IRRF é uma estimativa (confira nas notas de corretagem). Compra e venda "
+    "do mesmo ativo no mesmo dia contam como day trade, como se fossem na mesma corretora; "
+    "ETFs de renda fixa têm outra regra."
 )
 
 
@@ -388,11 +389,7 @@ def imposto(conn: Connection, user_id: str, carteira_id: int) -> dict:
     }
     consolidado = consolidar(ops, eventos)
     tipos = {t: r["tipo"] for t, r in _cadastro_e_precos(conn, tickers).items()}
-    compras: dict[str, set[date]] = defaultdict(set)
-    for o in ops:
-        if o.tipo == "compra":
-            compras[o.ticker].add(o.data)
-    ap = apurar(consolidado.vendas, tipos, compras)
+    ap = apurar(consolidado.vendas, tipos)
 
     meses = [
         {
@@ -404,9 +401,11 @@ def imposto(conn: Connection, user_id: str, carteira_id: int) -> dict:
             "ganho_isento": m.ganho_isento,
             "resultado_etf_bdr": m.resultado_etf_bdr,
             "resultado_fii": m.resultado_fii,
-            "compensado": m.compensado_comum + m.compensado_fii,
+            "resultado_day_trade": m.resultado_day_trade,
+            "compensado": m.compensado_comum + m.compensado_fii + m.compensado_day_trade,
             "base_comum": m.base_comum,
             "base_fii": m.base_fii,
+            "base_day_trade": m.base_day_trade,
             "imposto_devido": m.imposto_devido,
             "irrf": m.irrf,
             "irrf_usado": m.irrf_usado,
@@ -416,6 +415,7 @@ def imposto(conn: Connection, user_id: str, carteira_id: int) -> dict:
             "fica_para_depois": m.fica_para_depois,
             "prejuizo_comum": m.prejuizo_comum,
             "prejuizo_fii": m.prejuizo_fii,
+            "prejuizo_day_trade": m.prejuizo_day_trade,
         }
         for m in reversed(ap.meses)
     ]
@@ -438,6 +438,7 @@ def imposto(conn: Connection, user_id: str, carteira_id: int) -> dict:
         "anos": sorted(anos.values(), key=lambda a: -a["ano"]),
         "prejuizo_comum": ap.prejuizo_comum,
         "prejuizo_fii": ap.prejuizo_fii,
+        "prejuizo_day_trade": ap.prejuizo_day_trade,
         "pendente": ap.pendente,
         "saldo_irrf": ap.saldo_irrf,
         "codigo_darf": CODIGO_DARF,

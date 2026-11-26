@@ -779,9 +779,11 @@ class MesImposto(BaseModel):
     ganho_isento: Preco = Field(description="Ganho em ações num mês isento")
     resultado_etf_bdr: Preco
     resultado_fii: Preco
+    resultado_day_trade: Preco = Field(description="Day trade de ações, ETFs e BDRs")
     compensado: Preco = Field(description="Prejuízo de meses anteriores usado no mês")
     base_comum: Preco = Field(description="Base de ações, ETFs e BDRs (15%)")
     base_fii: Preco = Field(description="Base de FIIs (20%)")
+    base_day_trade: Preco = Field(description="Base de day trade (20%)")
     imposto_devido: Preco
     irrf: Preco = Field(description="IRRF estimado do mês (0,005% das vendas)")
     irrf_usado: Preco
@@ -791,6 +793,7 @@ class MesImposto(BaseModel):
     fica_para_depois: Preco
     prejuizo_comum: Preco = Field(description="Saldo de prejuízo de ações, ETFs e BDRs")
     prejuizo_fii: Preco
+    prejuizo_day_trade: Preco
 
 
 class AnoImposto(BaseModel):
@@ -810,10 +813,11 @@ class ImpostoCarteira(BaseModel):
     anos: list[AnoImposto]
     prejuizo_comum: Preco
     prejuizo_fii: Preco
+    prejuizo_day_trade: Preco
     pendente: Preco = Field(description="DARF abaixo de R$ 10 ainda não pago")
     saldo_irrf: Preco
     codigo_darf: str
     day_trade: list[PossivelDayTrade] = Field(
-        description="Vendas no mesmo dia de uma compra do mesmo ativo (podem ser day trade)"
+        description="Dias com compra e venda do mesmo ativo, apurados como day trade"
     )
     aviso: str
