@@ -93,6 +93,24 @@ export const PRESETS: Preset[] = [
   { id: "tendencia-alta", titulo: "Tendência de alta", descricao: "Preço acima da MM50, MM50 acima da MM200 e MM200 subindo", params: { tendencia: "alta", ordem: "-var_12m" } },
   { id: "dy-6", titulo: "Dividend yield acima de 6%", descricao: "Proventos de 12 meses acima de 6% do preço", params: { dy_12m_min: "6", ordem: "-dy_12m" } },
   { id: "baixa-volatilidade", titulo: "Baixa volatilidade", descricao: "Volatilidade anualizada abaixo de 25%", params: { volatilidade_12m_max: "25", ordem: "volatilidade_12m" } },
+  {
+    id: "estilo-barsi",
+    titulo: "Estilo Barsi",
+    descricao: "Ações com dividend yield acima de 6% e dívida líquida até 3 vezes o EBITDA, inspirado no método de Luiz Barsi (que também prefere setores perenes, como energia, saneamento, bancos e seguros)",
+    params: { tipo: "acao", dy_12m_min: "6", div_liq_ebitda_max: "3", ordem: "-dy_12m" },
+  },
+  {
+    id: "estilo-graham",
+    titulo: "Estilo Graham",
+    descricao: "Ações com P/L positivo até 15 e P/VP até 1,5, os limites de Benjamin Graham para o investidor defensivo",
+    params: { tipo: "acao", pl_min: "0.01", pl_max: "15", pvp_max: "1.5", ordem: "pl" },
+  },
+  {
+    id: "magic-formula",
+    titulo: "Magic Formula (adaptada)",
+    descricao: "Ações com ROE acima de 15% e P/L positivo, ordenadas pelo menor P/L. Adaptação da fórmula de Joel Greenblatt: ROE no lugar do ROIC e P/L no lugar de EV/EBIT",
+    params: { tipo: "acao", roe_min: "15", pl_min: "0.01", ordem: "pl" },
+  },
   { id: "mais-negociados", titulo: "Mais negociados", descricao: "Ordenados pela liquidez diária", params: { ordem: "-volume_financeiro_20d" } },
 ];
 
