@@ -1,4 +1,4 @@
-import { BarChart3, Bell, Briefcase, Calculator, CandlestickChart, Coins, Filter, FlaskConical, Lightbulb, Target } from "lucide-react";
+import { BarChart3, Bell, Briefcase, Calculator, CandlestickChart, Coins, Filter, FlaskConical, Lightbulb, Scale, Target } from "lucide-react";
 import Link from "next/link";
 
 import { BuscaGlobal } from "@/components/busca-global";
@@ -23,7 +23,8 @@ const FUNCIONALIDADES = [
   { titulo: "Carteira", descricao: "Posições, preço médio, proventos recebidos e alocação.", icone: <Briefcase />, href: "/carteira" },
   { titulo: "Simulador", descricao: "Aportes mensais com reinvestimento, comparados ao CDI e ao IPCA.", icone: <Calculator />, href: "/simulador" },
   { titulo: "Backtest", descricao: "Golden cross, IFR2, Setup 9.1, MACD e outras regras testadas no histórico, com custos.", icone: <FlaskConical />, href: "/backtest", classe: "md:col-span-2" },
-  { titulo: "Alertas", descricao: "Avisos por e-mail quando um ativo cruza um preço, varia muito no dia ou gera um sinal.", icone: <Bell />, href: "/alertas" },
+  { titulo: "Calculadora de posição", descricao: "Quantidade pelo risco até o stop, manual ou por ATR.", icone: <Scale />, href: "/posicao" },
+  { titulo: "Alertas", descricao: "Avisos por e-mail quando um ativo cruza um preço, varia muito no dia ou gera um sinal.", icone: <Bell />, href: "/alertas", classe: "md:col-span-2" },
 ];
 
 function ItemFaixa({ d }: { d: Destaque }) {
