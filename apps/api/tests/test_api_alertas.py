@@ -65,11 +65,12 @@ def test_exportar_e_excluir_conta_em_cascata(api, db):  # noqa: F811
     assert dados["watchlist"][0]["ticker"] == "PETR4"
     assert dados["carteiras"][0]["operacoes"][0]["ticker"] == "PETR4"
     assert len(dados["alertas"]) == 1
+    assert dados["push_aparelhos"] == [] and dados["whatsapp"] is None
     assert "password_hash" not in str(dados)
 
     assert api.delete("/v1/conta", headers=auth()).status_code == 204
     with db.connect() as conn:
-        for tabela in ("users", "carteiras", "operacoes", "alertas", "watchlist"):
+        for tabela in ("users", "carteiras", "operacoes", "alertas", "watchlist", "whatsapp"):
             n = conn.execute(text(f"SELECT count(*) FROM {tabela}")).scalar()
             assert n == (1 if tabela == "users" else 0), tabela  # sobra o u2
     assert api.get("/v1/conta/exportar", headers=auth()).status_code == 401

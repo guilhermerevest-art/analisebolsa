@@ -13,6 +13,7 @@ dependencies = [
     "pydantic>=2.7",
     "pydantic-settings>=2.3",
     "pyjwt>=2.8",
+    "pywebpush>=2.0",
     "sqlalchemy>=2.0.30",
     "uvicorn[standard]>=0.54.0",
 ]

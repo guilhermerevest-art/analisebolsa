@@ -19,6 +19,7 @@ from app.rotas import (
     health,
     indices,
     mercado,
+    notificacoes,
     posicao,
     screener,
     simulador,
@@ -63,6 +64,7 @@ def create_app() -> FastAPI:
         watchlist,
         carteiras,
         alertas,
+        notificacoes,
         conta,
         admin,
     )

@@ -637,7 +637,9 @@ class DisparoAlerta(BaseModel):
     ticker: str
     data: date
     texto: str
-    enviado_em: datetime | None
+    canais: list[Literal["email", "push", "whatsapp"]] = Field(
+        description="Canais por onde o disparo já foi entregue"
+    )
 
 
 class SinalAlerta(BaseModel):
@@ -651,3 +653,54 @@ class Alertas(BaseModel):
     ligados: int
     disparos: list[DisparoAlerta] = Field(description="Últimos disparos, do mais recente")
     sinais: list[SinalAlerta] = Field(description="Sinais que podem virar alerta")
+
+
+class AparelhoPush(BaseModel):
+    id: int
+    aparelho: str | None
+    criado_em: datetime
+
+
+class EstadoPush(BaseModel):
+    disponivel: bool = Field(description="O servidor tem as chaves VAPID")
+    chave_publica: str | None = Field(description="applicationServerKey para o navegador")
+    aparelhos: list[AparelhoPush]
+
+
+class EstadoWhatsApp(BaseModel):
+    disponivel: bool = Field(description="O servidor tem a API do WhatsApp configurada")
+    telefone: str | None = Field(description="Número mascarado, ex.: +55 (11) 9****-4321")
+    confirmado: bool
+    ativo: bool
+
+
+class Notificacoes(BaseModel):
+    push: EstadoPush
+    whatsapp: EstadoWhatsApp
+
+
+class ChavesPush(BaseModel):
+    p256dh: Annotated[str, Field(min_length=20, max_length=200)]
+    auth: Annotated[str, Field(min_length=8, max_length=100)]
+
+
+class InscricaoPush(BaseModel):
+    endpoint: Annotated[str, Field(pattern=r"^https://", max_length=1000)]
+    keys: ChavesPush
+    aparelho: Annotated[str | None, Field(max_length=80)] = None
+
+
+class TestePush(BaseModel):
+    enviados: int = Field(description="Aparelhos que receberam")
+
+
+class NumeroWhatsApp(BaseModel):
+    numero: Annotated[str, Field(min_length=8, max_length=30)]
+
+
+class CodigoWhatsApp(BaseModel):
+    codigo: Annotated[str, Field(pattern=r"^\s*\d{6}\s*$")]
+
+
+class AlteracaoWhatsApp(BaseModel):
+    ativo: bool = Field(description="Pausa ou retoma os alertas pelo WhatsApp")
