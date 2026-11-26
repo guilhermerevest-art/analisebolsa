@@ -388,6 +388,34 @@ class OperacaoCarteira(BaseModel):
     custos: Preco
 
 
+class ArquivoImportacao(BaseModel):
+    arquivo: Annotated[str, Field(max_length=3_000_000, description="O .xlsx em base64")]
+
+
+class LinhaImportacao(BaseModel):
+    linha: int = Field(description="Número da linha na planilha")
+    data: date | None
+    tipo: Literal["compra", "venda"] | None
+    ticker: str | None
+    quantidade: Quantidade | None
+    preco: Preco | None
+    situacao: Literal["nova", "duplicada", "ignorada"]
+    motivo: str | None
+
+
+class PreviaImportacao(BaseModel):
+    linhas: list[LinhaImportacao]
+    novas: int
+    duplicadas: int
+    ignoradas: int
+
+
+class ResultadoImportacao(BaseModel):
+    importadas: int
+    duplicadas: int
+    ignoradas: int
+
+
 class Operacoes(BaseModel):
     itens: list[OperacaoCarteira]
 
@@ -637,7 +665,9 @@ class DisparoAlerta(BaseModel):
     ticker: str
     data: date
     texto: str
-    enviado_em: datetime | None
+    canais: list[Literal["email", "push", "whatsapp"]] = Field(
+        description="Canais por onde o disparo já foi entregue"
+    )
 
 
 class SinalAlerta(BaseModel):
@@ -651,3 +681,178 @@ class Alertas(BaseModel):
     ligados: int
     disparos: list[DisparoAlerta] = Field(description="Últimos disparos, do mais recente")
     sinais: list[SinalAlerta] = Field(description="Sinais que podem virar alerta")
+
+
+class AparelhoPush(BaseModel):
+    id: int
+    aparelho: str | None
+    criado_em: datetime
+
+
+class EstadoPush(BaseModel):
+    disponivel: bool = Field(description="O servidor tem as chaves VAPID")
+    chave_publica: str | None = Field(description="applicationServerKey para o navegador")
+    aparelhos: list[AparelhoPush]
+
+
+class EstadoWhatsApp(BaseModel):
+    disponivel: bool = Field(description="O servidor tem a API do WhatsApp configurada")
+    telefone: str | None = Field(description="Número mascarado, ex.: +55 (11) 9****-4321")
+    confirmado: bool
+    ativo: bool
+
+
+class Notificacoes(BaseModel):
+    push: EstadoPush
+    whatsapp: EstadoWhatsApp
+
+
+class ChavesPush(BaseModel):
+    p256dh: Annotated[str, Field(min_length=20, max_length=200)]
+    auth: Annotated[str, Field(min_length=8, max_length=100)]
+
+
+class InscricaoPush(BaseModel):
+    endpoint: Annotated[str, Field(pattern=r"^https://", max_length=1000)]
+    keys: ChavesPush
+    aparelho: Annotated[str | None, Field(max_length=80)] = None
+
+
+class CancelamentoPush(BaseModel):
+    endpoint: Annotated[str, Field(pattern=r"^https://", max_length=1000)]
+
+
+class TestePush(BaseModel):
+    enviados: int = Field(description="Aparelhos que receberam")
+
+
+class NumeroWhatsApp(BaseModel):
+    numero: Annotated[str, Field(min_length=8, max_length=30)]
+
+
+class CodigoWhatsApp(BaseModel):
+    codigo: Annotated[str, Field(pattern=r"^\s*\d{6}\s*$")]
+
+
+class AlteracaoWhatsApp(BaseModel):
+    ativo: bool = Field(description="Pausa ou retoma os alertas pelo WhatsApp")
+
+
+class ConfigWhatsApp(BaseModel):
+    configurada: bool
+    url: str | None
+    instancia: str | None
+    chave_final: str | None = Field(description="Últimos 4 caracteres da API key, ex.: …a1b2")
+    ativo: bool
+    atualizado_em: datetime | None
+    provedor_em_uso: Literal["evolution", "meta"] | None = Field(
+        description="Por onde os alertas saem agora"
+    )
+
+
+class NovaConfigWhatsApp(BaseModel):
+    url: Annotated[str, Field(min_length=8, max_length=300)]
+    instancia: Annotated[str, Field(min_length=1, max_length=100, pattern=r"^[^/?#\s]+$")]
+    chave: Annotated[str | None, Field(max_length=300)] = Field(
+        default=None, description="API key; vazia mantém a guardada"
+    )
+    ativo: bool = True
+
+
+class EstadoInstancia(BaseModel):
+    estado: str = Field(description="open (conectada), connecting, close ou erro")
+    qr: str | None = Field(description="QR code em data URL, quando não está conectada")
+    codigo_pareamento: str | None
+    erro: str | None
+
+
+class TesteWhatsApp(BaseModel):
+    numero: Annotated[str, Field(min_length=8, max_length=30)]
+
+
+class MesImposto(BaseModel):
+    mes: date = Field(description="Primeiro dia do mês de apuração")
+    vendas_acoes: Preco = Field(description="Total vendido em ações (isenção até R$ 20 mil)")
+    vendas_total: Preco
+    isento_acoes: bool
+    resultado_acoes: Preco
+    ganho_isento: Preco = Field(description="Ganho em ações num mês isento")
+    resultado_etf_bdr: Preco
+    resultado_fii: Preco
+    resultado_day_trade: Preco = Field(description="Day trade de ações, ETFs e BDRs")
+    compensado: Preco = Field(description="Prejuízo de meses anteriores usado no mês")
+    base_comum: Preco = Field(description="Base de ações, ETFs e BDRs (15%)")
+    base_fii: Preco = Field(description="Base de FIIs (20%)")
+    base_day_trade: Preco = Field(description="Base de day trade (20%)")
+    imposto_devido: Preco
+    irrf: Preco = Field(description="IRRF estimado do mês (0,005% das vendas)")
+    irrf_usado: Preco
+    acumulado_anterior: Preco = Field(description="DARF abaixo de R$ 10 de meses anteriores")
+    darf: Preco = Field(description="Valor a pagar no mês (zero abaixo de R$ 10)")
+    vencimento: date | None
+    fica_para_depois: Preco
+    prejuizo_comum: Preco = Field(description="Saldo de prejuízo de ações, ETFs e BDRs")
+    prejuizo_fii: Preco
+    prejuizo_day_trade: Preco
+
+
+class AnoImposto(BaseModel):
+    ano: int
+    ganho_isento: Preco = Field(description="Ganhos isentos com ações no ano (para a declaração)")
+    darf: Preco
+    vendas: Preco
+
+
+class PossivelDayTrade(BaseModel):
+    ticker: str
+    data: date
+
+
+class ImpostoCarteira(BaseModel):
+    meses: list[MesImposto] = Field(description="Meses com venda, do mais recente")
+    anos: list[AnoImposto]
+    prejuizo_comum: Preco
+    prejuizo_fii: Preco
+    prejuizo_day_trade: Preco
+    pendente: Preco = Field(description="DARF abaixo de R$ 10 ainda não pago")
+    saldo_irrf: Preco
+    codigo_darf: str
+    day_trade: list[PossivelDayTrade] = Field(
+        description="Dias com compra e venda do mesmo ativo, apurados como day trade"
+    )
+    aviso: str
+
+
+class BemDeclaracao(BaseModel):
+    ticker: str
+    nome: str
+    tipo: Literal["acao", "fii", "etf", "bdr"]
+    grupo: str | None = Field(description="Grupo da ficha Bens e Direitos, quando fixo")
+    codigo: str | None
+    descricao_grupo: str
+    quantidade_anterior: Quantidade = Field(description="Em 31/12 do ano anterior")
+    custo_anterior: Preco
+    quantidade: Quantidade = Field(description="Em 31/12 do ano")
+    custo: Preco
+    discriminacao: str = Field(description="Texto pronto para o campo Discriminação")
+
+
+class RendimentoDeclaracao(BaseModel):
+    ticker: str
+    nome: str
+    bruto: Preco
+    ir: Preco = Field(description="IR retido na fonte (JCP: 15%)")
+    liquido: Preco
+
+
+class DeclaracaoCarteira(BaseModel):
+    ano: int
+    anos: list[int] = Field(description="Anos com operações, do mais recente")
+    bens: list[BemDeclaracao]
+    dividendos: list[RendimentoDeclaracao]
+    rendimentos_fii: list[RendimentoDeclaracao]
+    jcp: list[RendimentoDeclaracao]
+    ganho_isento_acoes: Preco = Field(description="Ganhos com ações em meses isentos")
+    darfs: Preco = Field(description="DARFs de renda variável apurados no ano")
+    meses_com_venda: int
+    aviso: str

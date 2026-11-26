@@ -3,6 +3,7 @@
 from sqlalchemy import Connection, RowMapping, text
 
 from app import consultas as q
+from app import notificacoes
 from app.erros import Problema
 from app.usuario import exigir_usuario_existente
 from dominio.alertas import INSIGHTS_ALERTA, Regra, descrever
@@ -105,7 +106,10 @@ def disparos(conn: Connection, user_id: str, limite: int = 50) -> list[RowMappin
         conn.execute(
             text(
                 """
-                SELECT d.alerta_id, a.ticker, d.data, d.texto, d.enviado_em
+                SELECT d.alerta_id, a.ticker, d.data, d.texto,
+                       ARRAY(SELECT e.canal FROM alertas_envios e
+                             WHERE e.alerta_id = d.alerta_id AND e.data = d.data
+                             ORDER BY e.canal) AS canais
                 FROM alertas_disparos d
                 JOIN alertas al USING (alerta_id)
                 JOIN ativos a ON a.ativo_id = al.ativo_id
@@ -165,6 +169,7 @@ def exportar(conn: Connection, user_id: str) -> dict:
         ],
         "alertas": listar(conn, user_id),
         "alertas_disparos": [dict(r) for r in disparos(conn, user_id, limite=10_000)],
+        **notificacoes.exportar(conn, user_id),
     }
 
 

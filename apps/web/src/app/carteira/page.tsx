@@ -1,4 +1,4 @@
-import { Trash2 } from "lucide-react";
+import { Pencil, Trash2 } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -19,7 +19,7 @@ import { cn } from "@/lib/utils";
 export const metadata: Metadata = { title: "Minha carteira", robots: { index: false } };
 export const dynamic = "force-dynamic";
 
-type Props = { searchParams: Promise<{ c?: string }> };
+type Props = { searchParams: Promise<{ c?: string; importadas?: string; editar?: string; editada?: string }> };
 
 async function ler<T>(caminho: string): Promise<T | null> {
   const resp = await chamarApi(caminho, { cache: "no-store" });
@@ -81,7 +81,10 @@ export default async function PaginaCarteira({ searchParams }: Props) {
     );
   }
 
-  const pedida = Number((await searchParams).c);
+  const params = await searchParams;
+  const pedida = Number(params.c);
+  const importadas = Number(params.importadas);
+  const editarId = Number(params.editar);
   const atual = lista.itens.find((c) => c.id === pedida) ?? lista.itens[0];
   const [resumo, ops, rent] = await Promise.all([
     ler<ResumoCarteira>(`/v1/carteiras/${atual.id}/resumo`),
@@ -92,6 +95,7 @@ export default async function PaginaCarteira({ searchParams }: Props) {
   const mensal = (rent?.pontos ?? []).filter((p, i, todos) => todos[i + 1]?.data.slice(0, 7) !== p.data.slice(0, 7)).reverse();
   const hoje = new Date().toLocaleDateString("sv-SE", { timeZone: "America/Sao_Paulo" });
   const t = resumo?.totais;
+  const emEdicao = Number.isInteger(editarId) ? ops?.itens.find((o) => o.id === editarId) : undefined;
   const variacaoTotal = t && Number(t.custo) > 0 ? ((Number(t.patrimonio) - Number(t.custo)) / Number(t.custo)) * 100 : null;
 
   return (
@@ -101,8 +105,29 @@ export default async function PaginaCarteira({ searchParams }: Props) {
           <h1 className="text-3xl font-bold tracking-tight">{atual.nome}</h1>
           <p className="mt-1 text-muted-foreground">Posições pelo último fechamento. Preço médio pelo método da Receita.</p>
         </div>
-        {lista.itens.length < lista.limite && <NovaCarteira primeira={false} />}
+        <div className="flex flex-wrap items-center gap-2">
+          <Button asChild variant="outline">
+            <Link href={`/carteira/imposto?c=${atual.id}`}>Imposto de renda</Link>
+          </Button>
+          <Button asChild variant="outline">
+            <Link href={`/carteira/declaracao?c=${atual.id}`}>Declaração anual</Link>
+          </Button>
+          {lista.itens.length < lista.limite && <NovaCarteira primeira={false} />}
+        </div>
       </div>
+
+      {Number.isInteger(importadas) && importadas > 0 && (
+        <p role="status" className="rounded-lg bg-positivo/10 px-4 py-3 text-sm text-positivo">
+          {importadas === 1 ? "1 operação importada da B3." : `${importadas} operações importadas da B3.`} Corretagem e taxas entraram como zero:
+          use o lápis ao lado de cada operação para incluir.
+        </p>
+      )}
+
+      {params.editada === "1" && (
+        <p role="status" className="rounded-lg bg-positivo/10 px-4 py-3 text-sm text-positivo">
+          Operação salva.
+        </p>
+      )}
 
       {lista.itens.length > 1 && (
         <nav aria-label="Carteiras" className="flex flex-wrap gap-2">
@@ -242,12 +267,17 @@ export default async function PaginaCarteira({ searchParams }: Props) {
             </section>
           )}
 
-          <section aria-labelledby="titulo-lancar" className="grid gap-3">
-            <h2 id="titulo-lancar" className="text-xl font-semibold">
-              Lançar operação
-            </h2>
+          <section id="lancar" aria-labelledby="titulo-lancar" className="grid scroll-mt-24 gap-3">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <h2 id="titulo-lancar" className="text-xl font-semibold">
+                {emEdicao ? `Editar operação de ${emEdicao.ticker} em ${formatarData(emEdicao.data)}` : "Lançar operação"}
+              </h2>
+              <Button asChild variant="outline" size="sm">
+                <Link href={`/carteira/importar?c=${atual.id}`}>Importar da B3</Link>
+              </Button>
+            </div>
             <div className="rounded-lg border p-4">
-              <FormularioOperacao carteira={atual.id} hoje={hoje} />
+              <FormularioOperacao key={emEdicao?.id ?? "nova"} carteira={atual.id} hoje={hoje} operacao={emEdicao} />
             </div>
           </section>
 
@@ -266,21 +296,29 @@ export default async function PaginaCarteira({ searchParams }: Props) {
                       <th scope="col" className="py-2 pl-3 text-right font-normal">Quantidade</th>
                       <th scope="col" className="py-2 pl-3 text-right font-normal">Preço</th>
                       <th scope="col" className="hidden py-2 pl-3 text-right font-normal sm:table-cell">Custos</th>
-                      <th scope="col" className="w-10">
-                        <span className="sr-only">Excluir</span>
+                      <th scope="col" className="w-20">
+                        <span className="sr-only">Editar ou excluir</span>
                       </th>
                     </tr>
                   </thead>
                   <tbody>
                     {ops.itens.map((o) => (
-                      <tr key={o.id} className="border-t">
+                      <tr key={o.id} className={cn("border-t", o.id === emEdicao?.id && "bg-accent")}>
                         <td className="whitespace-nowrap py-2 tabular-nums">{formatarData(o.data)}</td>
                         <td className="py-2 pl-3 font-medium">{o.ticker}</td>
                         <td className={cn("py-2 pl-3", o.tipo === "venda" && "text-muted-foreground")}>{o.tipo === "compra" ? "Compra" : "Venda"}</td>
                         <td className="whitespace-nowrap py-2 pl-3 text-right tabular-nums">{qtd(o.quantidade)}</td>
                         <td className="whitespace-nowrap py-2 pl-3 text-right tabular-nums">{formatarPreco(o.preco)}</td>
                         <td className="hidden whitespace-nowrap py-2 pl-3 text-right tabular-nums sm:table-cell">{formatarPreco(o.custos)}</td>
-                        <td className="py-1 pl-2 text-right">
+                        <td className="flex justify-end gap-0.5 py-1 pl-2">
+                          <Button asChild variant="ghost" size="icon" className="size-8" title="Editar operação">
+                            <Link href={`/carteira?c=${atual.id}&editar=${o.id}#lancar`}>
+                              <Pencil aria-hidden />
+                              <span className="sr-only">
+                                Editar {o.tipo} de {o.ticker} em {formatarData(o.data)}
+                              </span>
+                            </Link>
+                          </Button>
                           <form action={removerOperacao}>
                             <input type="hidden" name="carteira" value={atual.id} />
                             <input type="hidden" name="operacao" value={o.id} />
@@ -297,7 +335,7 @@ export default async function PaginaCarteira({ searchParams }: Props) {
                   </tbody>
                 </table>
               </div>
-              <p className="text-xs text-muted-foreground">Uma operação que deixaria uma venda posterior sem posição não pode ser excluída.</p>
+              <p className="text-xs text-muted-foreground">Uma operação que deixaria uma venda posterior sem posição não pode ser alterada nem excluída.</p>
             </section>
           )}
 

@@ -90,12 +90,14 @@ export function BuscaGlobal({ variante = "cabecalho" }: { variante?: "cabecalho"
         type="button"
         onClick={abrir}
         className={cn(
-          "flex items-center gap-2 rounded-md border text-muted-foreground transition-colors hover:bg-accent",
-          variante === "hero" ? "h-12 w-full max-w-lg px-4 text-base shadow-sm" : "h-8 px-3 text-sm",
+          "flex items-center gap-2 border text-muted-foreground transition-colors",
+          variante === "hero"
+            ? "h-14 w-full max-w-lg rounded-xl bg-card px-4 text-base shadow-[0_8px_24px_-12px_rgb(14_27_46/0.25)] hover:border-cobalto"
+            : "h-9 rounded-md bg-card px-2.5 text-sm hover:bg-accent sm:px-3",
         )}
       >
-        <Search aria-hidden className="size-4" />
-        <span className="flex-1 text-left">{variante === "hero" ? "Busque por ticker ou empresa: PETR4, Vale, HGLG11..." : "Buscar ativo"}</span>
+        <Search aria-hidden className={cn("size-4", variante === "hero" && "size-5 text-cobalto")} />
+        <span className={cn("flex-1 truncate text-left", variante === "cabecalho" && "sr-only sm:not-sr-only")}>{variante === "hero" ? "Busque por ticker ou empresa: PETR4, Vale, HGLG11..." : "Buscar ativo"}</span>
         {variante === "cabecalho" && <kbd className="hidden rounded border px-1.5 text-[10px] sm:inline">Ctrl K</kbd>}
       </button>
       <dialog

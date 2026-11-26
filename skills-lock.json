@@ -22,6 +22,13 @@
       "skillPath": "skills/data-quality-checker/SKILL.md",
       "computedHash": "ff4909c1b979d0bf1655e0f1a30ff72168c51fd5a2e22f0fbf2a949494b0cc0c"
     },
+    "frontend-design": {
+      "source": "anthropics/skills",
+      "commit": "e4bb5d960d87126ff3b3a8af1a104b7db67560ba",
+      "sourceType": "github",
+      "skillPath": "skills/frontend-design/SKILL.md",
+      "computedHash": "83485963700bcf11d5bf78118facb301676b69d918fee2e45a95e7f1a2840f6c"
+    },
     "lightweight-charts": {
       "source": "tradingview/lightweight-charts",
       "commit": "dbd6ae7831fe9496996794687206bc5fc212afa7",
@@ -43,6 +50,13 @@
       "skillPath": "plugins/database-design/skills/postgresql-table-design/SKILL.md",
       "computedHash": "c2d9f4b5037b4320be0cc2489eeb287d3147477ae1f48b33f5f897e2c562ed06"
     },
+    "shadcn": {
+      "source": "shadcn-ui/ui",
+      "commit": "0e5b2e621a9ee4cf6a604bbe6c5c0d5b70561eb4",
+      "sourceType": "github",
+      "skillPath": "skills/shadcn/SKILL.md",
+      "computedHash": "388962d16c7a4f13aaeee0d8f128e50a87df8553d42ef7988c39c0e1c74a40e8"
+    },
     "technical-analyst": {
       "source": "tradermonty/claude-trading-skills",
       "commit": "4080042a7863f5eeb48aabeaf60bd547efb99949",
@@ -56,6 +70,13 @@
       "sourceType": "github",
       "skillPath": "skills/value-dividend-screener/SKILL.md",
       "computedHash": "e7398d9ca7ab492c53b26ba6482502e172efc761c2be5aca7ab2d85b39590bd6"
+    },
+    "web-design-guidelines": {
+      "source": "vercel-labs/agent-skills",
+      "commit": "5a37a6329fbad3666c3207392a6a7c0110e92efb",
+      "sourceType": "github",
+      "skillPath": "skills/web-design-guidelines/SKILL.md",
+      "computedHash": "5994e4cfd86144903d2ba750f862b9e36af15e3297aac983679e347b99f6cb71"
     }
   }
 }

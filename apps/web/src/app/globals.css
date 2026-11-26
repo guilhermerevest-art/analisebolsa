@@ -1,43 +1,46 @@
 @import "tailwindcss";
 
-@custom-variant dark (&:is(.dark *));
+@custom-variant dark (@media (prefers-color-scheme: dark));
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.141 0.005 285.823);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.141 0.005 285.823);
-  --primary: oklch(0.21 0.006 285.885);
-  --primary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.967 0.001 286.375);
-  --muted-foreground: oklch(0.552 0.016 285.938);
-  --accent: oklch(0.967 0.001 286.375);
-  --accent-foreground: oklch(0.21 0.006 285.885);
-  --destructive: oklch(0.577 0.245 27.325);
-  --positivo: oklch(0.6 0.15 150);
-  --border: oklch(0.92 0.004 286.32);
-  --input: oklch(0.92 0.004 286.32);
-  --ring: oklch(0.705 0.015 286.067);
-  --radius: 0.625rem;
+  /* Paleta: tinta (navy), papel frio, cobalto como único acento. Verde e vermelho ficam para alta e baixa. */
+  --background: #f6f7f9;
+  --foreground: #0e1b2e;
+  --card: #ffffff;
+  --card-foreground: #0e1b2e;
+  --primary: #0e1b2e;
+  --primary-foreground: #f6f7f9;
+  --muted: #eceff3;
+  --muted-foreground: #556273;
+  --accent: #e8edfb;
+  --accent-foreground: #0e1b2e;
+  --cobalto: #2b50d8;
+  --destructive: #c8322b;
+  --positivo: #12804a;
+  --border: #dde2e9;
+  --input: #cfd6df;
+  --ring: #2b50d8;
+  --radius: 0.5rem;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: oklch(0.141 0.005 285.823);
-    --foreground: oklch(0.985 0 0);
-    --card: oklch(0.21 0.006 285.885);
-    --card-foreground: oklch(0.985 0 0);
-    --primary: oklch(0.92 0.004 286.32);
-    --primary-foreground: oklch(0.21 0.006 285.885);
-    --muted: oklch(0.274 0.006 286.033);
-    --muted-foreground: oklch(0.705 0.015 286.067);
-    --accent: oklch(0.274 0.006 286.033);
-    --accent-foreground: oklch(0.985 0 0);
-    --destructive: oklch(0.704 0.191 22.216);
-    --positivo: oklch(0.7 0.15 150);
-    --border: oklch(1 0 0 / 10%);
-    --input: oklch(1 0 0 / 15%);
-    --ring: oklch(0.552 0.016 285.938);
+    --background: #0a1220;
+    --foreground: #e7ecf4;
+    --card: #111c2e;
+    --card-foreground: #e7ecf4;
+    --primary: #e7ecf4;
+    --primary-foreground: #0a1220;
+    --muted: #17243a;
+    --muted-foreground: #95a3b8;
+    --accent: #1a2a48;
+    --accent-foreground: #e7ecf4;
+    --cobalto: #7d99ff;
+    --destructive: #f2716b;
+    --positivo: #3fbf7f;
+    --border: #22314a;
+    --input: #2c3d5a;
+    --ring: #7d99ff;
   }
 }
 
@@ -52,11 +55,14 @@
   --color-muted-foreground: var(--muted-foreground);
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
+  --color-cobalto: var(--cobalto);
   --color-destructive: var(--destructive);
   --color-positivo: var(--positivo);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  --font-sans: var(--fonte-texto), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--fonte-titulo), var(--fonte-texto), ui-sans-serif, sans-serif;
   --radius-md: calc(var(--radius) - 2px);
   --radius-xl: calc(var(--radius) + 4px);
 }
@@ -68,6 +74,19 @@
   body {
     @apply bg-background text-foreground antialiased;
   }
+  h1,
+  h2,
+  h3 {
+    @apply font-display;
+    text-wrap: balance;
+  }
+  ::selection {
+    background: color-mix(in oklab, var(--cobalto) 25%, transparent);
+  }
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
 }
 
 @keyframes marquee {
@@ -76,5 +95,23 @@
   }
   to {
     transform: translateX(-100%);
+  }
+}
+
+/* Traço do gráfico do Ibovespa desenhado uma vez na carga. */
+@keyframes desenhar {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes surgir {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }

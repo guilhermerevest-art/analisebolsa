@@ -9,6 +9,8 @@ from sqlalchemy import Connection, RowMapping, text
 from app.erros import Problema
 from app.usuario import exigir_usuario_existente
 from dominio.carteira import Consolidacao, Operacao, VendaAcimaDaPosicao, alocacao, consolidar
+from dominio.declaracao import montar as montar_declaracao
+from dominio.imposto import CODIGO_DARF, apurar
 from dominio.modelos import Provento
 from dominio.rentabilidade import reduzir, serie_rentabilidade
 
@@ -365,4 +367,151 @@ def rentabilidade(conn: Connection, user_id: str, carteira_id: int) -> dict:
             "cdi": ultimo.cdi,
             "ibov": ultimo.ibov,
         },
+    }
+
+
+# Imposto de renda (Fase 5, etapa 3)
+
+AVISO_IMPOSTO = (
+    "Conta feita com as operações lançadas, para conferência. Não substitui a declaração nem "
+    "um contador. O IRRF é uma estimativa (confira nas notas de corretagem). Compra e venda "
+    "do mesmo ativo no mesmo dia contam como day trade, como se fossem na mesma corretora; "
+    "ETFs de renda fixa têm outra regra."
+)
+
+
+def imposto(conn: Connection, user_id: str, carteira_id: int) -> dict:
+    obter(conn, user_id, carteira_id)
+    ops = _operacoes_dominio(conn, carteira_id)
+    tickers = sorted({o.ticker for o in ops})
+    eventos = {
+        t: [p for p in lista if p.societario]
+        for t, lista in _proventos_e_eventos(conn, tickers).items()
+    }
+    consolidado = consolidar(ops, eventos)
+    tipos = {t: r["tipo"] for t, r in _cadastro_e_precos(conn, tickers).items()}
+    ap = apurar(consolidado.vendas, tipos)
+
+    meses = [
+        {
+            "mes": m.mes,
+            "vendas_acoes": m.vendas_acoes,
+            "vendas_total": m.vendas_total,
+            "isento_acoes": m.isento_acoes,
+            "resultado_acoes": m.resultado_acoes,
+            "ganho_isento": m.ganho_isento,
+            "resultado_etf_bdr": m.resultado_etf_bdr,
+            "resultado_fii": m.resultado_fii,
+            "resultado_day_trade": m.resultado_day_trade,
+            "compensado": m.compensado_comum + m.compensado_fii + m.compensado_day_trade,
+            "base_comum": m.base_comum,
+            "base_fii": m.base_fii,
+            "base_day_trade": m.base_day_trade,
+            "imposto_devido": m.imposto_devido,
+            "irrf": m.irrf,
+            "irrf_usado": m.irrf_usado,
+            "acumulado_anterior": m.acumulado_anterior,
+            "darf": m.darf,
+            "vencimento": m.vencimento,
+            "fica_para_depois": m.fica_para_depois,
+            "prejuizo_comum": m.prejuizo_comum,
+            "prejuizo_fii": m.prejuizo_fii,
+            "prejuizo_day_trade": m.prejuizo_day_trade,
+        }
+        for m in reversed(ap.meses)
+    ]
+    anos: dict[int, dict] = {}
+    for m in ap.meses:
+        a = anos.setdefault(
+            m.mes.year,
+            {
+                "ano": m.mes.year,
+                "ganho_isento": Decimal(0),
+                "darf": Decimal(0),
+                "vendas": Decimal(0),
+            },
+        )
+        a["ganho_isento"] += m.ganho_isento
+        a["darf"] += m.darf
+        a["vendas"] += m.vendas_total
+    return {
+        "meses": meses,
+        "anos": sorted(anos.values(), key=lambda a: -a["ano"]),
+        "prejuizo_comum": ap.prejuizo_comum,
+        "prejuizo_fii": ap.prejuizo_fii,
+        "prejuizo_day_trade": ap.prejuizo_day_trade,
+        "pendente": ap.pendente,
+        "saldo_irrf": ap.saldo_irrf,
+        "codigo_darf": CODIGO_DARF,
+        "day_trade": [{"ticker": t, "data": d} for t, d in ap.day_trade],
+        "aviso": AVISO_IMPOSTO,
+    }
+
+
+# Declaração anual (Fase 6)
+
+AVISO_DECLARACAO = (
+    "Montado com as operações e os proventos lançados no site, para conferência com os "
+    "informes de rendimentos das empresas, das corretoras e da B3. Não substitui a declaração "
+    "nem um contador. O CNPJ de cada fonte pagadora está nos informes."
+)
+
+
+def declaracao(
+    conn: Connection, user_id: str, carteira_id: int, ano: int | None, hoje: date
+) -> dict:
+    """Sem ano, o da última declaração (o anterior), mas nunca antes da primeira operação."""
+    obter(conn, user_id, carteira_id)
+    ops = _operacoes_dominio(conn, carteira_id)
+    primeiro = min((o.data.year for o in ops), default=hoje.year)
+    anos = list(range(hoje.year, primeiro - 1, -1))
+    ano = ano or max(hoje.year - 1, primeiro)
+    tickers = sorted({o.ticker for o in ops})
+    cadastro = {t: (r["nome"], r["tipo"]) for t, r in _cadastro_e_precos(conn, tickers).items()}
+    proventos = _proventos_e_eventos(conn, tickers)
+    d = montar_declaracao(ops, proventos, cadastro, ano)
+
+    eventos = {t: [p for p in lista if p.societario] for t, lista in proventos.items()}
+    ap = (
+        apurar(consolidar(ops, eventos).vendas, {t: c[1] for t, c in cadastro.items()})
+        if ops
+        else None
+    )
+    meses = [m for m in (ap.meses if ap else []) if m.mes.year == ano]
+
+    def rend(r) -> dict:
+        return {
+            "ticker": r.ticker,
+            "nome": r.nome,
+            "bruto": r.bruto,
+            "ir": r.ir,
+            "liquido": r.liquido,
+        }
+
+    return {
+        "ano": ano,
+        "anos": anos,
+        "bens": [
+            {
+                "ticker": b.ticker,
+                "nome": b.nome,
+                "tipo": b.tipo,
+                "grupo": b.grupo,
+                "codigo": b.codigo,
+                "descricao_grupo": b.descricao_grupo,
+                "quantidade_anterior": b.quantidade_anterior,
+                "custo_anterior": b.custo_anterior,
+                "quantidade": b.quantidade,
+                "custo": b.custo,
+                "discriminacao": b.discriminacao,
+            }
+            for b in d.bens
+        ],
+        "dividendos": [rend(r) for r in d.dividendos],
+        "rendimentos_fii": [rend(r) for r in d.rendimentos_fii],
+        "jcp": [rend(r) for r in d.jcp],
+        "ganho_isento_acoes": sum((m.ganho_isento for m in meses), Decimal(0)),
+        "darfs": sum((m.darf for m in meses), Decimal(0)),
+        "meses_com_venda": len(meses),
+        "aviso": AVISO_DECLARACAO,
     }

@@ -1,7 +1,7 @@
 import "server-only";
 
 import { cabecalhosApi, env } from "@/lib/env";
-import type { AnaliseAtivo, Backtest, Posicao, Simulacao, SinaisDoDia, AtivoDetalhe, CamposScreener, Destaques, Fundamentos, PaginaAtivos, PaginaScreener, Proventos } from "@/lib/tipos-api";
+import type { AnaliseAtivo, Indice, Backtest, Posicao, Simulacao, SinaisDoDia, AtivoDetalhe, CamposScreener, Destaques, Fundamentos, PaginaAtivos, PaginaScreener, Proventos } from "@/lib/tipos-api";
 
 const UMA_HORA = 3600;
 
@@ -36,6 +36,15 @@ export async function lerDestaques(): Promise<Destaques | null> {
 export async function lerSinais(): Promise<SinaisDoDia | null> {
   try {
     return await lerApi<SinaisDoDia>("/v1/mercado/sinais?exemplos=4", ["mercado"], 300);
+  } catch {
+    return null;
+  }
+}
+
+/** Ibovespa dos últimos 12 meses, para o gráfico da landing. */
+export async function lerIbovespa(): Promise<Indice | null> {
+  try {
+    return await lerApi<Indice>("/v1/indices/ibov", ["mercado"], 300);
   } catch {
     return null;
   }

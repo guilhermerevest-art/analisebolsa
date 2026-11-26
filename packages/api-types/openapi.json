@@ -3833,6 +3833,200 @@
         }
       }
     },
+    "/v1/carteiras/{carteira_id}/imposto": {
+      "get": {
+        "tags": [
+          "usuário"
+        ],
+        "summary": "Apuração mensal do imposto sobre as vendas (operações comuns)",
+        "operationId": "imposto_v1_carteiras__carteira_id__imposto_get",
+        "parameters": [
+          {
+            "name": "carteira_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "title": "Carteira Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImpostoCarteira"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        }
+      }
+    },
+    "/v1/carteiras/{carteira_id}/declaracao": {
+      "get": {
+        "tags": [
+          "usuário"
+        ],
+        "summary": "Bens e direitos, proventos e renda variável para a declaração anual",
+        "operationId": "declaracao_v1_carteiras__carteira_id__declaracao_get",
+        "parameters": [
+          {
+            "name": "carteira_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "title": "Carteira Id"
+            }
+          },
+          {
+            "name": "ano",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "maximum": 2100,
+                  "minimum": 2000
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Ano"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeclaracaoCarteira"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        }
+      }
+    },
     "/v1/carteiras/{carteira_id}/rentabilidade": {
       "get": {
         "tags": [
@@ -3859,6 +4053,202 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/RentabilidadeCarteira"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        }
+      }
+    },
+    "/v1/carteiras/{carteira_id}/importacao/previa": {
+      "post": {
+        "tags": [
+          "usuário"
+        ],
+        "summary": "Prévia da importação do extrato de negociação da B3",
+        "operationId": "previa_importacao_v1_carteiras__carteira_id__importacao_previa_post",
+        "parameters": [
+          {
+            "name": "carteira_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "title": "Carteira Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ArquivoImportacao"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PreviaImportacao"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        }
+      }
+    },
+    "/v1/carteiras/{carteira_id}/importacao": {
+      "post": {
+        "tags": [
+          "usuário"
+        ],
+        "summary": "Importa as operações novas do extrato de negociação da B3",
+        "operationId": "importar_v1_carteiras__carteira_id__importacao_post",
+        "parameters": [
+          {
+            "name": "carteira_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "title": "Carteira Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ArquivoImportacao"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultadoImportacao"
                 }
               }
             }
@@ -4256,6 +4646,719 @@
         }
       }
     },
+    "/v1/notificacoes": {
+      "get": {
+        "tags": [
+          "usuário"
+        ],
+        "summary": "Canais de notificação do usuário",
+        "operationId": "estado_v1_notificacoes_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Notificacoes"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/notificacoes/push": {
+      "post": {
+        "tags": [
+          "usuário"
+        ],
+        "summary": "Registra o push deste aparelho",
+        "operationId": "registrar_push_v1_notificacoes_push_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InscricaoPush"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/notificacoes/push/cancelar": {
+      "post": {
+        "tags": [
+          "usuário"
+        ],
+        "summary": "Desliga o push deste aparelho",
+        "operationId": "cancelar_push_v1_notificacoes_push_cancelar_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CancelamentoPush"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/notificacoes/push/{inscricao_id}": {
+      "delete": {
+        "tags": [
+          "usuário"
+        ],
+        "summary": "Remove um aparelho",
+        "operationId": "remover_push_v1_notificacoes_push__inscricao_id__delete",
+        "parameters": [
+          {
+            "name": "inscricao_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Inscricao Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        }
+      }
+    },
+    "/v1/notificacoes/push/teste": {
+      "post": {
+        "tags": [
+          "usuário"
+        ],
+        "summary": "Notificação de teste",
+        "operationId": "testar_push_v1_notificacoes_push_teste_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TestePush"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/notificacoes/whatsapp": {
+      "put": {
+        "tags": [
+          "usuário"
+        ],
+        "summary": "Cadastra o número e envia o código",
+        "operationId": "cadastrar_whatsapp_v1_notificacoes_whatsapp_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NumeroWhatsApp"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Notificacoes"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "usuário"
+        ],
+        "summary": "Remove o número",
+        "operationId": "remover_whatsapp_v1_notificacoes_whatsapp_delete",
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "usuário"
+        ],
+        "summary": "Pausa ou retoma o WhatsApp",
+        "operationId": "alterar_whatsapp_v1_notificacoes_whatsapp_patch",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AlteracaoWhatsApp"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Notificacoes"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/notificacoes/whatsapp/confirmar": {
+      "post": {
+        "tags": [
+          "usuário"
+        ],
+        "summary": "Confirma o número com o código",
+        "operationId": "confirmar_whatsapp_v1_notificacoes_whatsapp_confirmar_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CodigoWhatsApp"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Notificacoes"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/conta/exportar": {
       "get": {
         "tags": [
@@ -4492,6 +5595,388 @@
           }
         }
       }
+    },
+    "/v1/admin/whatsapp": {
+      "get": {
+        "tags": [
+          "admin"
+        ],
+        "summary": "Instância do WhatsApp",
+        "operationId": "ler_whatsapp_v1_admin_whatsapp_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConfigWhatsApp"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "admin"
+        ],
+        "summary": "Salva a instância da Evolution",
+        "operationId": "salvar_whatsapp_v1_admin_whatsapp_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NovaConfigWhatsApp"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConfigWhatsApp"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "admin"
+        ],
+        "summary": "Remove a instância",
+        "operationId": "remover_whatsapp_v1_admin_whatsapp_delete",
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/admin/whatsapp/estado": {
+      "get": {
+        "tags": [
+          "admin"
+        ],
+        "summary": "Conexão da instância e QR code",
+        "operationId": "estado_whatsapp_v1_admin_whatsapp_estado_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EstadoInstancia"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/admin/whatsapp/teste": {
+      "post": {
+        "tags": [
+          "admin"
+        ],
+        "summary": "Envia uma mensagem de teste",
+        "operationId": "testar_whatsapp_v1_admin_whatsapp_teste_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TesteWhatsApp"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -4716,6 +6201,20 @@
         ],
         "title": "AlteracaoAlerta"
       },
+      "AlteracaoWhatsApp": {
+        "properties": {
+          "ativo": {
+            "type": "boolean",
+            "title": "Ativo",
+            "description": "Pausa ou retoma os alertas pelo WhatsApp"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ativo"
+        ],
+        "title": "AlteracaoWhatsApp"
+      },
       "AlvoPosicao": {
         "properties": {
           "multiplo": {
@@ -4796,6 +6295,81 @@
           "cenario"
         ],
         "title": "AnaliseAtivo"
+      },
+      "AnoImposto": {
+        "properties": {
+          "ano": {
+            "type": "integer",
+            "title": "Ano"
+          },
+          "ganho_isento": {
+            "type": "string",
+            "title": "Ganho Isento",
+            "description": "Ganhos isentos com ações no ano (para a declaração)"
+          },
+          "darf": {
+            "type": "string",
+            "title": "Darf"
+          },
+          "vendas": {
+            "type": "string",
+            "title": "Vendas"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ano",
+          "ganho_isento",
+          "darf",
+          "vendas"
+        ],
+        "title": "AnoImposto"
+      },
+      "AparelhoPush": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "aparelho": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Aparelho"
+          },
+          "criado_em": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Criado Em"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "aparelho",
+          "criado_em"
+        ],
+        "title": "AparelhoPush"
+      },
+      "ArquivoImportacao": {
+        "properties": {
+          "arquivo": {
+            "type": "string",
+            "maxLength": 3000000,
+            "title": "Arquivo",
+            "description": "O .xlsx em base64"
+          }
+        },
+        "type": "object",
+        "required": [
+          "arquivo"
+        ],
+        "title": "ArquivoImportacao"
       },
       "AtivoDetalhe": {
         "properties": {
@@ -5093,6 +6667,93 @@
         ],
         "title": "Backtest"
       },
+      "BemDeclaracao": {
+        "properties": {
+          "ticker": {
+            "type": "string",
+            "title": "Ticker"
+          },
+          "nome": {
+            "type": "string",
+            "title": "Nome"
+          },
+          "tipo": {
+            "type": "string",
+            "enum": [
+              "acao",
+              "fii",
+              "etf",
+              "bdr"
+            ],
+            "title": "Tipo"
+          },
+          "grupo": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Grupo",
+            "description": "Grupo da ficha Bens e Direitos, quando fixo"
+          },
+          "codigo": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Codigo"
+          },
+          "descricao_grupo": {
+            "type": "string",
+            "title": "Descricao Grupo"
+          },
+          "quantidade_anterior": {
+            "type": "string",
+            "title": "Quantidade Anterior",
+            "description": "Em 31/12 do ano anterior"
+          },
+          "custo_anterior": {
+            "type": "string",
+            "title": "Custo Anterior"
+          },
+          "quantidade": {
+            "type": "string",
+            "title": "Quantidade",
+            "description": "Em 31/12 do ano"
+          },
+          "custo": {
+            "type": "string",
+            "title": "Custo"
+          },
+          "discriminacao": {
+            "type": "string",
+            "title": "Discriminacao",
+            "description": "Texto pronto para o campo Discriminação"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ticker",
+          "nome",
+          "tipo",
+          "grupo",
+          "codigo",
+          "descricao_grupo",
+          "quantidade_anterior",
+          "custo_anterior",
+          "quantidade",
+          "custo",
+          "discriminacao"
+        ],
+        "title": "BemDeclaracao"
+      },
       "CampoScreener": {
         "properties": {
           "campo": {
@@ -5197,6 +6858,21 @@
           "tipos"
         ],
         "title": "CamposScreener"
+      },
+      "CancelamentoPush": {
+        "properties": {
+          "endpoint": {
+            "type": "string",
+            "maxLength": 1000,
+            "pattern": "^https://",
+            "title": "Endpoint"
+          }
+        },
+        "type": "object",
+        "required": [
+          "endpoint"
+        ],
+        "title": "CancelamentoPush"
       },
       "Candle": {
         "properties": {
@@ -5465,6 +7141,42 @@
         ],
         "title": "CenariosAtivo"
       },
+      "ChavesPush": {
+        "properties": {
+          "p256dh": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 20,
+            "title": "P256Dh"
+          },
+          "auth": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 8,
+            "title": "Auth"
+          }
+        },
+        "type": "object",
+        "required": [
+          "p256dh",
+          "auth"
+        ],
+        "title": "ChavesPush"
+      },
+      "CodigoWhatsApp": {
+        "properties": {
+          "codigo": {
+            "type": "string",
+            "pattern": "^\\s*\\d{6}\\s*$",
+            "title": "Codigo"
+          }
+        },
+        "type": "object",
+        "required": [
+          "codigo"
+        ],
+        "title": "CodigoWhatsApp"
+      },
       "ComparacaoBacktest": {
         "properties": {
           "estrategia": {
@@ -5484,6 +7196,91 @@
           "cdi"
         ],
         "title": "ComparacaoBacktest"
+      },
+      "ConfigWhatsApp": {
+        "properties": {
+          "configurada": {
+            "type": "boolean",
+            "title": "Configurada"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Url"
+          },
+          "instancia": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Instancia"
+          },
+          "chave_final": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Chave Final",
+            "description": "Últimos 4 caracteres da API key, ex.: …a1b2"
+          },
+          "ativo": {
+            "type": "boolean",
+            "title": "Ativo"
+          },
+          "atualizado_em": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Atualizado Em"
+          },
+          "provedor_em_uso": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "evolution",
+                  "meta"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provedor Em Uso",
+            "description": "Por onde os alertas saem agora"
+          }
+        },
+        "type": "object",
+        "required": [
+          "configurada",
+          "url",
+          "instancia",
+          "chave_final",
+          "ativo",
+          "atualizado_em",
+          "provedor_em_uso"
+        ],
+        "title": "ConfigWhatsApp"
       },
       "Cotacoes": {
         "properties": {
@@ -5547,6 +7344,82 @@
           "total"
         ],
         "title": "CustosBacktest"
+      },
+      "DeclaracaoCarteira": {
+        "properties": {
+          "ano": {
+            "type": "integer",
+            "title": "Ano"
+          },
+          "anos": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array",
+            "title": "Anos",
+            "description": "Anos com operações, do mais recente"
+          },
+          "bens": {
+            "items": {
+              "$ref": "#/components/schemas/BemDeclaracao"
+            },
+            "type": "array",
+            "title": "Bens"
+          },
+          "dividendos": {
+            "items": {
+              "$ref": "#/components/schemas/RendimentoDeclaracao"
+            },
+            "type": "array",
+            "title": "Dividendos"
+          },
+          "rendimentos_fii": {
+            "items": {
+              "$ref": "#/components/schemas/RendimentoDeclaracao"
+            },
+            "type": "array",
+            "title": "Rendimentos Fii"
+          },
+          "jcp": {
+            "items": {
+              "$ref": "#/components/schemas/RendimentoDeclaracao"
+            },
+            "type": "array",
+            "title": "Jcp"
+          },
+          "ganho_isento_acoes": {
+            "type": "string",
+            "title": "Ganho Isento Acoes",
+            "description": "Ganhos com ações em meses isentos"
+          },
+          "darfs": {
+            "type": "string",
+            "title": "Darfs",
+            "description": "DARFs de renda variável apurados no ano"
+          },
+          "meses_com_venda": {
+            "type": "integer",
+            "title": "Meses Com Venda"
+          },
+          "aviso": {
+            "type": "string",
+            "title": "Aviso"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ano",
+          "anos",
+          "bens",
+          "dividendos",
+          "rendimentos_fii",
+          "jcp",
+          "ganho_isento_acoes",
+          "darfs",
+          "meses_com_venda",
+          "aviso"
+        ],
+        "title": "DeclaracaoCarteira"
       },
       "Destaque": {
         "properties": {
@@ -5643,17 +7516,18 @@
             "type": "string",
             "title": "Texto"
           },
-          "enviado_em": {
-            "anyOf": [
-              {
-                "type": "string",
-                "format": "date-time"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Enviado Em"
+          "canais": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "email",
+                "push",
+                "whatsapp"
+              ]
+            },
+            "type": "array",
+            "title": "Canais",
+            "description": "Canais por onde o disparo já foi entregue"
           }
         },
         "type": "object",
@@ -5662,7 +7536,7 @@
           "ticker",
           "data",
           "texto",
-          "enviado_em"
+          "canais"
         ],
         "title": "DisparoAlerta"
       },
@@ -5696,6 +7570,92 @@
         ],
         "title": "DyAno"
       },
+      "EstadoInstancia": {
+        "properties": {
+          "estado": {
+            "type": "string",
+            "title": "Estado",
+            "description": "open (conectada), connecting, close ou erro"
+          },
+          "qr": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Qr",
+            "description": "QR code em data URL, quando não está conectada"
+          },
+          "codigo_pareamento": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Codigo Pareamento"
+          },
+          "erro": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Erro"
+          }
+        },
+        "type": "object",
+        "required": [
+          "estado",
+          "qr",
+          "codigo_pareamento",
+          "erro"
+        ],
+        "title": "EstadoInstancia"
+      },
+      "EstadoPush": {
+        "properties": {
+          "disponivel": {
+            "type": "boolean",
+            "title": "Disponivel",
+            "description": "O servidor tem as chaves VAPID"
+          },
+          "chave_publica": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Chave Publica",
+            "description": "applicationServerKey para o navegador"
+          },
+          "aparelhos": {
+            "items": {
+              "$ref": "#/components/schemas/AparelhoPush"
+            },
+            "type": "array",
+            "title": "Aparelhos"
+          }
+        },
+        "type": "object",
+        "required": [
+          "disponivel",
+          "chave_publica",
+          "aparelhos"
+        ],
+        "title": "EstadoPush"
+      },
       "EstadoWatchlist": {
         "properties": {
           "ticker": {
@@ -5713,6 +7673,43 @@
           "na_lista"
         ],
         "title": "EstadoWatchlist"
+      },
+      "EstadoWhatsApp": {
+        "properties": {
+          "disponivel": {
+            "type": "boolean",
+            "title": "Disponivel",
+            "description": "O servidor tem a API do WhatsApp configurada"
+          },
+          "telefone": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Telefone",
+            "description": "Número mascarado, ex.: +55 (11) 9****-4321"
+          },
+          "confirmado": {
+            "type": "boolean",
+            "title": "Confirmado"
+          },
+          "ativo": {
+            "type": "boolean",
+            "title": "Ativo"
+          }
+        },
+        "type": "object",
+        "required": [
+          "disponivel",
+          "telefone",
+          "confirmado",
+          "ativo"
+        ],
+        "title": "EstadoWhatsApp"
       },
       "Execucao": {
         "properties": {
@@ -6054,6 +8051,76 @@
         ],
         "title": "Health"
       },
+      "ImpostoCarteira": {
+        "properties": {
+          "meses": {
+            "items": {
+              "$ref": "#/components/schemas/MesImposto"
+            },
+            "type": "array",
+            "title": "Meses",
+            "description": "Meses com venda, do mais recente"
+          },
+          "anos": {
+            "items": {
+              "$ref": "#/components/schemas/AnoImposto"
+            },
+            "type": "array",
+            "title": "Anos"
+          },
+          "prejuizo_comum": {
+            "type": "string",
+            "title": "Prejuizo Comum"
+          },
+          "prejuizo_fii": {
+            "type": "string",
+            "title": "Prejuizo Fii"
+          },
+          "prejuizo_day_trade": {
+            "type": "string",
+            "title": "Prejuizo Day Trade"
+          },
+          "pendente": {
+            "type": "string",
+            "title": "Pendente",
+            "description": "DARF abaixo de R$ 10 ainda não pago"
+          },
+          "saldo_irrf": {
+            "type": "string",
+            "title": "Saldo Irrf"
+          },
+          "codigo_darf": {
+            "type": "string",
+            "title": "Codigo Darf"
+          },
+          "day_trade": {
+            "items": {
+              "$ref": "#/components/schemas/PossivelDayTrade"
+            },
+            "type": "array",
+            "title": "Day Trade",
+            "description": "Dias com compra e venda do mesmo ativo, apurados como day trade"
+          },
+          "aviso": {
+            "type": "string",
+            "title": "Aviso"
+          }
+        },
+        "type": "object",
+        "required": [
+          "meses",
+          "anos",
+          "prejuizo_comum",
+          "prejuizo_fii",
+          "prejuizo_day_trade",
+          "pendente",
+          "saldo_irrf",
+          "codigo_darf",
+          "day_trade",
+          "aviso"
+        ],
+        "title": "ImpostoCarteira"
+      },
       "Indicadores": {
         "properties": {
           "ticker": {
@@ -6268,6 +8335,37 @@
           "pontos"
         ],
         "title": "Indice"
+      },
+      "InscricaoPush": {
+        "properties": {
+          "endpoint": {
+            "type": "string",
+            "maxLength": 1000,
+            "pattern": "^https://",
+            "title": "Endpoint"
+          },
+          "keys": {
+            "$ref": "#/components/schemas/ChavesPush"
+          },
+          "aparelho": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 80
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Aparelho"
+          }
+        },
+        "type": "object",
+        "required": [
+          "endpoint",
+          "keys"
+        ],
+        "title": "InscricaoPush"
       },
       "InsightAtivo": {
         "properties": {
@@ -6736,6 +8834,251 @@
         ],
         "title": "ItemWatchlist"
       },
+      "LinhaImportacao": {
+        "properties": {
+          "linha": {
+            "type": "integer",
+            "title": "Linha",
+            "description": "Número da linha na planilha"
+          },
+          "data": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Data"
+          },
+          "tipo": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "compra",
+                  "venda"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tipo"
+          },
+          "ticker": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ticker"
+          },
+          "quantidade": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quantidade"
+          },
+          "preco": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Preco"
+          },
+          "situacao": {
+            "type": "string",
+            "enum": [
+              "nova",
+              "duplicada",
+              "ignorada"
+            ],
+            "title": "Situacao"
+          },
+          "motivo": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Motivo"
+          }
+        },
+        "type": "object",
+        "required": [
+          "linha",
+          "data",
+          "tipo",
+          "ticker",
+          "quantidade",
+          "preco",
+          "situacao",
+          "motivo"
+        ],
+        "title": "LinhaImportacao"
+      },
+      "MesImposto": {
+        "properties": {
+          "mes": {
+            "type": "string",
+            "format": "date",
+            "title": "Mes",
+            "description": "Primeiro dia do mês de apuração"
+          },
+          "vendas_acoes": {
+            "type": "string",
+            "title": "Vendas Acoes",
+            "description": "Total vendido em ações (isenção até R$ 20 mil)"
+          },
+          "vendas_total": {
+            "type": "string",
+            "title": "Vendas Total"
+          },
+          "isento_acoes": {
+            "type": "boolean",
+            "title": "Isento Acoes"
+          },
+          "resultado_acoes": {
+            "type": "string",
+            "title": "Resultado Acoes"
+          },
+          "ganho_isento": {
+            "type": "string",
+            "title": "Ganho Isento",
+            "description": "Ganho em ações num mês isento"
+          },
+          "resultado_etf_bdr": {
+            "type": "string",
+            "title": "Resultado Etf Bdr"
+          },
+          "resultado_fii": {
+            "type": "string",
+            "title": "Resultado Fii"
+          },
+          "resultado_day_trade": {
+            "type": "string",
+            "title": "Resultado Day Trade",
+            "description": "Day trade de ações, ETFs e BDRs"
+          },
+          "compensado": {
+            "type": "string",
+            "title": "Compensado",
+            "description": "Prejuízo de meses anteriores usado no mês"
+          },
+          "base_comum": {
+            "type": "string",
+            "title": "Base Comum",
+            "description": "Base de ações, ETFs e BDRs (15%)"
+          },
+          "base_fii": {
+            "type": "string",
+            "title": "Base Fii",
+            "description": "Base de FIIs (20%)"
+          },
+          "base_day_trade": {
+            "type": "string",
+            "title": "Base Day Trade",
+            "description": "Base de day trade (20%)"
+          },
+          "imposto_devido": {
+            "type": "string",
+            "title": "Imposto Devido"
+          },
+          "irrf": {
+            "type": "string",
+            "title": "Irrf",
+            "description": "IRRF estimado do mês (0,005% das vendas)"
+          },
+          "irrf_usado": {
+            "type": "string",
+            "title": "Irrf Usado"
+          },
+          "acumulado_anterior": {
+            "type": "string",
+            "title": "Acumulado Anterior",
+            "description": "DARF abaixo de R$ 10 de meses anteriores"
+          },
+          "darf": {
+            "type": "string",
+            "title": "Darf",
+            "description": "Valor a pagar no mês (zero abaixo de R$ 10)"
+          },
+          "vencimento": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Vencimento"
+          },
+          "fica_para_depois": {
+            "type": "string",
+            "title": "Fica Para Depois"
+          },
+          "prejuizo_comum": {
+            "type": "string",
+            "title": "Prejuizo Comum",
+            "description": "Saldo de prejuízo de ações, ETFs e BDRs"
+          },
+          "prejuizo_fii": {
+            "type": "string",
+            "title": "Prejuizo Fii"
+          },
+          "prejuizo_day_trade": {
+            "type": "string",
+            "title": "Prejuizo Day Trade"
+          }
+        },
+        "type": "object",
+        "required": [
+          "mes",
+          "vendas_acoes",
+          "vendas_total",
+          "isento_acoes",
+          "resultado_acoes",
+          "ganho_isento",
+          "resultado_etf_bdr",
+          "resultado_fii",
+          "resultado_day_trade",
+          "compensado",
+          "base_comum",
+          "base_fii",
+          "base_day_trade",
+          "imposto_devido",
+          "irrf",
+          "irrf_usado",
+          "acumulado_anterior",
+          "darf",
+          "vencimento",
+          "fica_para_depois",
+          "prejuizo_comum",
+          "prejuizo_fii",
+          "prejuizo_day_trade"
+        ],
+        "title": "MesImposto"
+      },
       "MetricasAtivo": {
         "properties": {
           "data": {
@@ -7172,6 +9515,22 @@
         ],
         "title": "NivelPreco"
       },
+      "Notificacoes": {
+        "properties": {
+          "push": {
+            "$ref": "#/components/schemas/EstadoPush"
+          },
+          "whatsapp": {
+            "$ref": "#/components/schemas/EstadoWhatsApp"
+          }
+        },
+        "type": "object",
+        "required": [
+          "push",
+          "whatsapp"
+        ],
+        "title": "Notificacoes"
+      },
       "NovaCarteira": {
         "properties": {
           "nome": {
@@ -7186,6 +9545,47 @@
           "nome"
         ],
         "title": "NovaCarteira"
+      },
+      "NovaConfigWhatsApp": {
+        "properties": {
+          "url": {
+            "type": "string",
+            "maxLength": 300,
+            "minLength": 8,
+            "title": "Url"
+          },
+          "instancia": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[^/?#\\s]+$",
+            "title": "Instancia"
+          },
+          "chave": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 300
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Chave",
+            "description": "API key; vazia mantém a guardada"
+          },
+          "ativo": {
+            "type": "boolean",
+            "title": "Ativo",
+            "default": true
+          }
+        },
+        "type": "object",
+        "required": [
+          "url",
+          "instancia"
+        ],
+        "title": "NovaConfigWhatsApp"
       },
       "NovaOperacao": {
         "properties": {
@@ -7305,6 +9705,21 @@
           "tipo"
         ],
         "title": "NovoAlerta"
+      },
+      "NumeroWhatsApp": {
+        "properties": {
+          "numero": {
+            "type": "string",
+            "maxLength": 30,
+            "minLength": 8,
+            "title": "Numero"
+          }
+        },
+        "type": "object",
+        "required": [
+          "numero"
+        ],
+        "title": "NumeroWhatsApp"
       },
       "OperacaoBacktest": {
         "properties": {
@@ -7972,6 +10387,56 @@
         ],
         "title": "PosicaoCarteira"
       },
+      "PossivelDayTrade": {
+        "properties": {
+          "ticker": {
+            "type": "string",
+            "title": "Ticker"
+          },
+          "data": {
+            "type": "string",
+            "format": "date",
+            "title": "Data"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ticker",
+          "data"
+        ],
+        "title": "PossivelDayTrade"
+      },
+      "PreviaImportacao": {
+        "properties": {
+          "linhas": {
+            "items": {
+              "$ref": "#/components/schemas/LinhaImportacao"
+            },
+            "type": "array",
+            "title": "Linhas"
+          },
+          "novas": {
+            "type": "integer",
+            "title": "Novas"
+          },
+          "duplicadas": {
+            "type": "integer",
+            "title": "Duplicadas"
+          },
+          "ignoradas": {
+            "type": "integer",
+            "title": "Ignoradas"
+          }
+        },
+        "type": "object",
+        "required": [
+          "linhas",
+          "novas",
+          "duplicadas",
+          "ignoradas"
+        ],
+        "title": "PreviaImportacao"
+      },
       "Problema": {
         "properties": {
           "type": {
@@ -8143,6 +10608,40 @@
         ],
         "title": "Proventos"
       },
+      "RendimentoDeclaracao": {
+        "properties": {
+          "ticker": {
+            "type": "string",
+            "title": "Ticker"
+          },
+          "nome": {
+            "type": "string",
+            "title": "Nome"
+          },
+          "bruto": {
+            "type": "string",
+            "title": "Bruto"
+          },
+          "ir": {
+            "type": "string",
+            "title": "Ir",
+            "description": "IR retido na fonte (JCP: 15%)"
+          },
+          "liquido": {
+            "type": "string",
+            "title": "Liquido"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ticker",
+          "nome",
+          "bruto",
+          "ir",
+          "liquido"
+        ],
+        "title": "RendimentoDeclaracao"
+      },
       "RentabilidadeCarteira": {
         "properties": {
           "inicio": {
@@ -8182,6 +10681,29 @@
           "acumulado"
         ],
         "title": "RentabilidadeCarteira"
+      },
+      "ResultadoImportacao": {
+        "properties": {
+          "importadas": {
+            "type": "integer",
+            "title": "Importadas"
+          },
+          "duplicadas": {
+            "type": "integer",
+            "title": "Duplicadas"
+          },
+          "ignoradas": {
+            "type": "integer",
+            "title": "Ignoradas"
+          }
+        },
+        "type": "object",
+        "required": [
+          "importadas",
+          "duplicadas",
+          "ignoradas"
+        ],
+        "title": "ResultadoImportacao"
       },
       "ResumoCarteira": {
         "properties": {
@@ -8392,6 +10914,35 @@
           "descricao"
         ],
         "title": "SinalAlerta"
+      },
+      "TestePush": {
+        "properties": {
+          "enviados": {
+            "type": "integer",
+            "title": "Enviados",
+            "description": "Aparelhos que receberam"
+          }
+        },
+        "type": "object",
+        "required": [
+          "enviados"
+        ],
+        "title": "TestePush"
+      },
+      "TesteWhatsApp": {
+        "properties": {
+          "numero": {
+            "type": "string",
+            "maxLength": 30,
+            "minLength": 8,
+            "title": "Numero"
+          }
+        },
+        "type": "object",
+        "required": [
+          "numero"
+        ],
+        "title": "TesteWhatsApp"
       },
       "TotaisCarteira": {
         "properties": {

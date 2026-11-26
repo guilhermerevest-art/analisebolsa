@@ -5,7 +5,6 @@ Os textos descrevem o que aconteceu, nunca uma ação.
 
 from dataclasses import dataclass
 from datetime import date
-from html import escape
 
 from dominio.formato import num
 
@@ -56,7 +55,7 @@ def _pct(v: float) -> str:
 
 
 def descrever(regra: Regra) -> str:
-    """Descrição da regra para listas e e-mails."""
+    """Descrição da regra para listas e notificações."""
     if regra.tipo == "preco_acima":
         return f"Fechamento acima de {_reais(regra.parametro)}"
     if regra.tipo == "preco_abaixo":
@@ -111,40 +110,47 @@ class Disparo:
     texto: str
 
 
-AVISO_EMAIL = "Conteúdo educacional. Não é recomendação de investimento."
+AVISO = "Conteúdo educacional, não é recomendação de investimento."
+
+# A Meta limita cada variável de modelo a 1.024 caracteres e não aceita quebra de linha.
+LIMITE_WHATSAPP = 900
 
 
-def compor_email(disparos: list[Disparo], site: str) -> tuple[str, str, str]:
-    """Assunto, texto e HTML do e-mail diário de um usuário."""
-    site = site.rstrip("/")
+def compor_push(disparos: list[Disparo]) -> dict[str, str]:
+    """Título, corpo e caminho da notificação push de um usuário."""
     n = len(disparos)
-    assunto = (
-        f"analisebolsa: {disparos[0].texto.rstrip('.')}"
-        if n == 1
-        else f"analisebolsa: {n} alertas disparados"
+    titulo = "1 alerta disparado" if n == 1 else f"{n} alertas disparados"
+    corpo = disparos[0].texto + (f" E mais {n - 1}." if n > 1 else "")
+    url = f"/ativo/{disparos[0].ticker}" if n == 1 else "/alertas"
+    return {"titulo": titulo, "corpo": corpo, "url": url}
+
+
+def compor_whatsapp(disparos: list[Disparo]) -> str:
+    """Textos do dia numa linha só, para a variável {{1}} do modelo `alertas_disparados`."""
+    partes: list[str] = []
+    for i, d in enumerate(disparos):
+        resto = len(disparos) - i
+        candidato = "; ".join([*partes, d.texto.rstrip(".")])
+        sufixo = f"; e mais {resto - 1}" if resto > 1 else ""
+        if partes and len(candidato) + len(sufixo) > LIMITE_WHATSAPP:
+            return "; ".join(partes) + f"; e mais {resto}"
+        partes.append(d.texto.rstrip("."))
+    return " ".join("; ".join(partes).split())[:LIMITE_WHATSAPP]
+
+
+def compor_mensagem_whatsapp(disparos: list[Disparo], link: str) -> str:
+    """Mensagem livre (Evolution API): uma linha por disparo, com o link e o aviso."""
+    itens = "\n".join(f"• {d.texto}" for d in disparos)
+    cabecalho = (
+        "Alerta do pregão no analisebolsa:"
+        if len(disparos) == 1
+        else (f"{len(disparos)} alertas do pregão no analisebolsa:")
     )
-    gerenciar = f"{site}/alertas"
-    linhas = [f"- {d.texto} {site}/ativo/{d.ticker}" for d in disparos]
-    texto = "\n".join(
-        [
-            "Alertas disparados no último pregão:",
-            "",
-            *linhas,
-            "",
-            f"Gerenciar alertas: {gerenciar}",
-            "",
-            AVISO_EMAIL,
-        ]
+    return f"{cabecalho}\n\n{itens}\n\nGerencie seus alertas: {link}\n\n_{AVISO}_"
+
+
+def compor_codigo_whatsapp(codigo: str) -> str:
+    return (
+        f"Seu código do analisebolsa é *{codigo}*. Ele vale por 10 minutos.\n\n"
+        "Se não foi você que pediu, ignore esta mensagem."
     )
-    itens = "".join(
-        f'<li><a href="{escape(site)}/ativo/{escape(d.ticker)}">{escape(d.ticker)}</a>: '
-        f"{escape(d.texto)}</li>"
-        for d in disparos
-    )
-    html = (
-        "<p>Alertas disparados no último pregão:</p>"
-        f"<ul>{itens}</ul>"
-        f'<p><a href="{escape(gerenciar)}">Gerenciar alertas</a></p>'
-        f'<p style="color:#71717a;font-size:12px">{escape(AVISO_EMAIL)}</p>'
-    )
-    return assunto, texto, html

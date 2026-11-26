@@ -1,18 +1,19 @@
 from datetime import date
 from decimal import Decimal
-from html import escape
 
 import pytest
 from sqlalchemy import text
 
+from app.notificacao import Canais, InscricaoExpirada
 from dominio.alertas import (
-    AVISO_EMAIL,
     INSIGHTS_ALERTA,
+    LIMITE_WHATSAPP,
     Disparo,
     Pregao,
     Regra,
     avaliar,
-    compor_email,
+    compor_push,
+    compor_whatsapp,
     descrever,
 )
 from dominio.modelos import AtivoInfo, Candle
@@ -60,13 +61,24 @@ def test_insight_do_dia():
     assert avaliar(r, p(10, 9, {"volume_anormal"})) is None
 
 
-def test_email_agrupado_com_links():
-    ds = [Disparo("PETR4", D, "PETR4 fechou acima de R$ 40,00."), Disparo("VALE3", D, "VALE3 <x>")]
-    assunto, corpo, html = compor_email(ds, "https://site.com/")
-    assert assunto == "analisebolsa: 2 alertas disparados"
-    assert "https://site.com/ativo/PETR4" in corpo and "https://site.com/alertas" in corpo
-    assert "VALE3 &lt;x&gt;" in html and "<x>" not in html
-    assert compor_email(ds[:1], "https://s")[0] == "analisebolsa: PETR4 fechou acima de R$ 40,00"
+def test_push_um_ou_varios():
+    um = compor_push([Disparo("PETR4", D, "PETR4 fechou acima de R$ 40,00.")])
+    assert um == {
+        "titulo": "1 alerta disparado",
+        "corpo": "PETR4 fechou acima de R$ 40,00.",
+        "url": "/ativo/PETR4",
+    }
+    dois = compor_push([Disparo("PETR4", D, "a."), Disparo("VALE3", D, "b.")])
+    assert dois == {"titulo": "2 alertas disparados", "corpo": "a. E mais 1.", "url": "/alertas"}
+
+
+def test_whatsapp_numa_linha_e_cortado():
+    ds = [Disparo("PETR4", D, "PETR4 fechou acima de R$ 40,00."), Disparo("VALE3", D, "VALE3\nx")]
+    assert compor_whatsapp(ds) == "PETR4 fechou acima de R$ 40,00; VALE3 x"
+    muitos = [Disparo("PETR4", D, "x" * 100 + ".") for _ in range(20)]
+    texto = compor_whatsapp(muitos)
+    assert len(texto) <= LIMITE_WHATSAPP and texto.endswith("; e mais 12")
+    assert "\n" not in texto
 
 
 def test_textos_sem_linguagem_de_recomendacao():
@@ -82,22 +94,39 @@ def test_textos_sem_linguagem_de_recomendacao():
             descrever(regra),
             avaliar(regra, pregao if regra.tipo != "preco_abaixo" else p(1, 500)),
         ]
-    # O aviso padrão ("Não é recomendação...") é o único uso permitido da palavra.
-    email = compor_email([Disparo("PETR4", D, "x")], "https://s")
-    textos += [t.replace(AVISO_EMAIL, "").replace(escape(AVISO_EMAIL), "") for t in email]
+    ds = [Disparo("PETR4", D, t) for t in textos if t]
+    textos += [*compor_push(ds).values(), compor_whatsapp(ds)]
     assert None not in textos
     for t in textos:
         assert not PROIBIDAS.search(t), t
 
 
-class EnviadorFalso:
-    def __init__(self, falhar_para=()):
-        self.enviados, self.falhar_para = [], set(falhar_para)
+class PushFalso:
+    def __init__(self, falhar=(), expirados=()):
+        self.enviados, self.falhar, self.expirados = [], set(falhar), set(expirados)
 
-    def enviar(self, para, assunto, texto, html):
-        if para in self.falhar_para:
-            raise OSError("smtp fora")
-        self.enviados.append((para, assunto))
+    def enviar(self, endpoint, p256dh, auth, payload):
+        if endpoint in self.expirados:
+            raise InscricaoExpirada
+        if endpoint in self.falhar:
+            raise OSError("push fora")
+        self.enviados.append((endpoint, payload["titulo"]))
+
+
+class WhatsAppFalso:
+    def __init__(self, falhar=()):
+        self.enviados, self.falhar = [], set(falhar)
+
+    def enviar_alertas(self, telefone, disparos, link):
+        if telefone in self.falhar:
+            raise OSError("whatsapp fora")
+        self.enviados.append((telefone, compor_whatsapp(disparos), link))
+
+    def tem_whatsapp(self, telefone):
+        return False if telefone.endswith("99999999") else None
+
+    def enviar_codigo(self, telefone, codigo):
+        self.enviados.append((telefone, codigo))
 
 
 def preparar(db):
@@ -136,23 +165,81 @@ def test_avalia_grava_e_nao_repete(db):
     assert "fechou acima de R$ 40,00" in textos[0][0] and "variou +5,13%" in textos[1][0]
 
 
+def ligar_canais(db):
+    with db.begin() as conn:
+        conn.execute(
+            text(
+                "INSERT INTO push_inscricoes (user_id, endpoint, p256dh, auth, criado_em) VALUES "
+                "('u1', 'https://p/1', 'k', 'a', now() - interval '1 day'),"
+                "('u1', 'https://p/velho', 'k', 'a', now() - interval '1 day'),"
+                "('u2', 'https://p/2', 'k', 'a', now() - interval '1 day')"
+            )
+        )
+        conn.execute(
+            text(
+                "INSERT INTO whatsapp (user_id, telefone, confirmado_em, ativo) VALUES "
+                "('u1', '5511900000001', now() - interval '1 day', true),"
+                "('u2', '5511900000002', NULL, true)"
+            )
+        )
+
+
+def canais_enviados(db):
+    with db.connect() as conn:
+        return conn.execute(
+            text("SELECT alerta_id, canal FROM alertas_envios ORDER BY alerta_id, canal")
+        ).all()
+
+
 @pytest.mark.db
-def test_envio_um_email_por_usuario_e_reenvio_do_que_falhou(db):
+def test_sem_canal_configurado_guarda_os_disparos(db):
     preparar(db)
+    ligar_canais(db)
+    res = processar_alertas(db, Canais(), "https://s")
+    assert res == {"disparados": 2, "push": "não configurado", "whatsapp": "não configurado"}
+    assert canais_enviados(db) == []
+
+
+@pytest.mark.db
+def test_envio_por_canal_e_reenvio_do_que_falhou(db):
+    preparar(db)
+    ligar_canais(db)
     avaliar_alertas(db)
-    assert enviar_pendentes(db, None, "https://s")["pendentes"] == 2  # sem SMTP: guarda
 
-    falso = EnviadorFalso(falhar_para={"b@x.com"})
-    res = enviar_pendentes(db, falso, "https://s")
-    assert res == {"enviados": 1, "falhas": 1, "pendentes": 2}
-    assert falso.enviados[0][0] == "a@x.com"
-
-    falso = EnviadorFalso()
-    assert processar_alertas(db, falso, "https://s") == {
-        "disparados": 0,
-        "enviados": 1,
-        "falhas": 0,
-        "pendentes": 1,
+    push = PushFalso(falhar={"https://p/2"}, expirados={"https://p/velho"})
+    wa = WhatsAppFalso(falhar={"5511900000001"})
+    res = enviar_pendentes(db, Canais(push, wa), "https://s/")
+    # u1 recebe push (um aparelho expirado é apagado); u2 falha no push; WhatsApp: só u1 está
+    # confirmado e o envio falhou.
+    assert res == {
+        "push": {"enviados": 1, "falhas": 1, "pendentes": 2},
+        "whatsapp": {"enviados": 0, "falhas": 1, "pendentes": 1},
     }
-    assert [e[0] for e in falso.enviados] == ["b@x.com"]
-    assert enviar_pendentes(db, falso, "https://s") == {"enviados": 0, "pendentes": 0}
+    assert push.enviados == [("https://p/1", "1 alerta disparado")]
+    with db.connect() as conn:
+        endpoints = conn.execute(text("SELECT endpoint FROM push_inscricoes ORDER BY 1")).all()
+    assert [e[0] for e in endpoints] == ["https://p/1", "https://p/2"]
+    assert canais_enviados(db) == [(1, "push")]
+
+    push, wa = PushFalso(), WhatsAppFalso()
+    res = processar_alertas(db, Canais(push, wa), "https://s/")
+    assert res["push"] == {"enviados": 1, "falhas": 0, "pendentes": 1}
+    assert push.enviados == [("https://p/2", "1 alerta disparado")]
+    assert wa.enviados == [
+        ("5511900000001", wa.enviados[0][1], "https://s/alertas"),
+    ]
+    assert "fechou acima de R$ 40,00" in wa.enviados[0][1]
+    assert canais_enviados(db) == [(1, "push"), (1, "whatsapp"), (2, "push")]
+    assert enviar_pendentes(db, Canais(push, wa), "https://s")["push"]["pendentes"] == 0
+
+
+@pytest.mark.db
+def test_whatsapp_pausado_ou_ligado_depois_nao_recebe_antigos(db):
+    preparar(db)
+    ligar_canais(db)
+    avaliar_alertas(db)
+    with db.begin() as conn:
+        conn.execute(text("UPDATE whatsapp SET ativo = false WHERE user_id = 'u1'"))
+        conn.execute(text("UPDATE push_inscricoes SET criado_em = now() + interval '1 day'"))
+    res = enviar_pendentes(db, Canais(PushFalso(), WhatsAppFalso()), "https://s")
+    assert res["push"]["pendentes"] == 0 and res["whatsapp"]["pendentes"] == 0

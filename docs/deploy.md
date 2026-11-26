@@ -50,7 +50,7 @@ variáveis de produção do projeto `analisebolsa-api` (`vercel env pull`) antes
 - No projeto `analisebolsa-api`, além das variáveis da seção 3, ficam as do worker:
   `WEB_INTERNAL_URL=https://<site>` e, opcionalmente, `BRAPI_TOKEN`.
 - As variáveis que o worker usa (`DATABASE_URL`, `INTERNAL_JWT_SECRET`, `WEB_INTERNAL_URL`,
-  `BRAPI_TOKEN`) precisam ser do tipo **encrypted**, não **sensitive**: a Vercel não devolve
+  `BRAPI_TOKEN` e as de notificação abaixo) precisam ser do tipo **encrypted**, não **sensitive**: a Vercel não devolve
   o valor de variáveis sensitive, e o workflow falha avisando qual falta.
 - Se o time da Vercel obrigar variáveis sensitive em produção, crie o segredo
   `DATABASE_URL` no GitHub (Settings → Secrets and variables → Actions). Os workflows
@@ -58,22 +58,80 @@ variáveis de produção do projeto `analisebolsa-api` (`vercel env pull`) antes
 - O GitHub Actions só conecta por IPv4. Se o provedor do banco separar as strings, use no
   projeto da api a do pooler que aceita IPv4.
 
-### E-mail dos alertas (SMTP)
+### Notificações dos alertas (push e WhatsApp)
 
-O EOD avalia os alertas e envia um e-mail por usuário. Sem SMTP configurado, os disparos
-ficam gravados e saem no primeiro EOD depois da configuração (até 7 dias). No projeto
-`analisebolsa-api`, crie como **encrypted**:
+O EOD avalia os alertas e envia por push e por WhatsApp. Canal sem configuração é pulado: os
+disparos ficam gravados e saem por ele no primeiro EOD depois da configuração (até 7 dias,
+e só os de depois de o usuário ligar o canal). Para testar sem esperar o EOD: Actions →
+Worker → Run workflow com `modo=alertas`.
 
-| Variável | Resend | Gmail |
-|---|---|---|
-| `SMTP_HOST` | `smtp.resend.com` | `smtp.gmail.com` |
-| `SMTP_PORT` | `587` | `587` |
-| `SMTP_USUARIO` | `resend` | o endereço do Gmail |
-| `EMAIL_REMETENTE` | um endereço do domínio verificado no Resend | o mesmo endereço do Gmail |
+No projeto `analisebolsa-api`, além das variáveis abaixo, defina `SITE_URL=https://<site>`
+(os links das mensagens apontam para ele).
 
-A senha (`SMTP_SENHA`: a chave da API do Resend ou a senha de app do Gmail) vai como
-segredo `SMTP_SENHA` no GitHub, porque a Vercel não devolve variáveis sensitive. Para testar
-sem esperar o EOD: Actions → Worker → Run workflow com `modo=alertas`.
+#### Push (Web Push)
+
+1. Gere as chaves uma vez (em `apps/api`): `uv run python -m app.notificacao vapid`.
+2. Crie no projeto `analisebolsa-api`, como **encrypted**: `VAPID_PUBLIC_KEY`,
+   `VAPID_PRIVATE_KEY` e, opcionalmente, `VAPID_CONTATO` (`mailto:voce@dominio` ou a URL do
+   site; sem ela, vale o `SITE_URL`).
+3. Se o time obrigar variáveis sensitive, crie também o segredo `VAPID_PRIVATE_KEY` no GitHub
+   (o worker usa o segredo no lugar do valor da Vercel).
+
+Trocar as chaves invalida todas as inscrições: cada usuário precisa ligar o push de novo.
+No iPhone, o push só funciona com o site adicionado à tela de início (iOS 16.4 ou mais novo).
+
+#### WhatsApp pela Evolution API (recomendado: cadastro no /admin)
+
+O site manda os alertas e os códigos de confirmação por uma instância da
+[Evolution API](https://doc.evolution-api.com) (v2), que conecta um número pelo WhatsApp Web.
+Nada vai em variável de ambiente: a instância é cadastrada no `/admin`, e a API key fica
+guardada no banco cifrada com o `INTERNAL_JWT_SECRET` (se ele mudar, cadastre a chave de novo).
+
+1. Suba a Evolution API num servidor seu (Docker) com HTTPS e crie uma instância, por exemplo
+   `analisebolsa`. A API key pode ser a da instância ou a global (`AUTHENTICATION_API_KEY`).
+2. Entre no `/admin` com um e-mail de `ADMIN_EMAILS`, preencha a URL, o nome da instância e a
+   API key, e salve.
+3. Se a instância não estiver conectada, o `/admin` mostra o QR code: no celular do número de
+   envio, abra WhatsApp → Aparelhos conectados → Conectar um aparelho. A tela confere a
+   conexão sozinha a cada 5 segundos.
+4. Mande uma mensagem de teste pelo próprio `/admin`.
+
+Cuidados: use um número só para o site (não o seu pessoal). O WhatsApp pode bloquear números
+que mandam muitas mensagens pelo WhatsApp Web; por isso há uma pausa de 2 segundos entre
+envios (`WHATSAPP_INTERVALO_S`), e só recebe quem confirmou o próprio número com o código.
+
+Com a instância ligada no `/admin`, ela tem prioridade sobre a Cloud API da Meta abaixo.
+
+#### WhatsApp pela Cloud API oficial da Meta (alternativa)
+
+1. Em business.facebook.com, crie (ou use) uma conta empresarial. Em developers.facebook.com,
+   crie um app do tipo **Business** e adicione o produto **WhatsApp**.
+2. Em WhatsApp → API Setup, adicione o número de envio (um número que **não** esteja em uso
+   no WhatsApp comum) e anote o **Phone number ID**. O número de teste da Meta só envia para
+   até 5 números cadastrados, bom para testar.
+3. Em Business Settings → System users, crie um usuário do sistema com acesso ao app e à
+   conta do WhatsApp e gere um token **permanente** com as permissões
+   `whatsapp_business_messaging` e `whatsapp_business_management`.
+4. No WhatsApp Manager → Message templates, crie os dois modelos em **Portuguese (BR)**:
+   - `codigo_verificacao`, categoria **Authentication**, com o botão **Copy code** (o texto
+     do corpo é o padrão da Meta).
+   - `alertas_disparados`, categoria **Utility**, corpo:
+     `Alertas do pregão no analisebolsa: {{1}}. Gerencie em {{2}}. Conteúdo educacional, não é recomendação de investimento.`
+     (exemplos para a aprovação: `PETR4 fechou acima de R$ 40,00 em 26/11/2026, a R$ 41,00`
+     e `https://<site>/alertas`).
+5. Crie no projeto `analisebolsa-api`: `WHATSAPP_PHONE_NUMBER_ID` e `WHATSAPP_TOKEN`
+   (**encrypted**). A API usa o token para mandar o código de confirmação; o worker, para os
+   alertas. Se o time obrigar variáveis sensitive, crie também o segredo `WHATSAPP_TOKEN` no
+   GitHub.
+6. Opcionais, se os nomes ou a versão mudarem: `WHATSAPP_MODELO_ALERTAS`,
+   `WHATSAPP_MODELO_CODIGO`, `WHATSAPP_IDIOMA` (padrão `pt_BR`) e `WHATSAPP_API_VERSAO`
+   (padrão `v23.0`).
+
+A Meta cobra por mensagem de modelo enviada (preço por categoria e país), e limita os envios
+diários enquanto a empresa não é verificada.
+
+As variáveis antigas de e-mail (`SMTP_HOST`, `SMTP_PORT`, `SMTP_USUARIO`, `SMTP_SENHA`,
+`EMAIL_REMETENTE`) e o segredo `SMTP_SENHA` do GitHub não são mais usados e podem ser apagados.
 
 ## 6. Migrations
 

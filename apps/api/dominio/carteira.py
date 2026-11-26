@@ -2,8 +2,12 @@
 
 Preço médio pelo método da Receita Federal: compras somam quantidade e custo (preço ×
 quantidade + custos); vendas baixam a quantidade e o custo pelo preço médio, sem mudar o
-preço médio. Desdobramento, grupamento e bonificação multiplicam a quantidade pelo fator
-no fim da data-com e mantêm o custo total. Proventos em dinheiro valem para a quantidade
+preço médio. Num dia com compra e venda do mesmo ativo, a quantidade casada (a menor das
+duas) é day trade: o resultado sai do preço médio das compras e das vendas do próprio dia, e
+a posição não muda; só o que sobra entra como compra ou venda comum.
+
+Desdobramento, grupamento e bonificação multiplicam a quantidade pelo fator no fim da
+data-com e mantêm o custo total. Proventos em dinheiro valem para a quantidade
 em custódia no fim da data-com.
 """
 
@@ -69,10 +73,25 @@ class Posicao:
         return (self.custo / self.quantidade) if self.quantidade > 0 else None
 
 
+@dataclass(frozen=True, slots=True)
+class VendaRealizada:
+    """Uma venda com o custo baixado pelo preço médio (base da apuração do imposto)."""
+
+    ticker: str
+    data: date
+    quantidade: Decimal
+    valor: Decimal  # preço × quantidade, sem descontar custos
+    custos: Decimal
+    custo_medio: Decimal  # preço médio × quantidade vendida
+    resultado: Decimal  # valor − custos − custo_medio
+    day_trade: bool = False
+
+
 @dataclass(slots=True)
 class Consolidacao:
     posicoes: dict[str, Posicao] = field(default_factory=dict)
     proventos: list[ProventoRecebido] = field(default_factory=list)
+    vendas: list[VendaRealizada] = field(default_factory=list)
 
     @property
     def abertas(self) -> list[Posicao]:
@@ -100,8 +119,13 @@ def consolidar(
     for ticker, ops in sorted(por_ticker.items()):
         ops.sort(key=lambda o: (o.data, o.id))
         pos = Posicao(ticker)
-        # (data, ordem, item): ordem 0 = operação, 1 = provento em dinheiro, 2 = evento.
-        linha: list[tuple[date, int, int, object]] = [(o.data, 0, o.id, o) for o in ops]
+        # (data, ordem, item): ordem 0 = operações do dia, 1 = provento em dinheiro, 2 = evento.
+        dias: dict[date, list[Operacao]] = defaultdict(list)
+        for o in ops:
+            dias[o.data].append(o)
+        linha: list[tuple[date, int, int, object]] = [
+            (d, 0, lista[0].id, lista) for d, lista in dias.items()
+        ]
         inicio = ops[0].data
         for i, p in enumerate(proventos.get(ticker, [])):
             if p.data_com < inicio or (ate and p.data_com > ate) or p.valor <= 0:
@@ -111,7 +135,7 @@ def consolidar(
 
         for _, ordem, _, item in linha:
             if ordem == 0:
-                _aplicar_operacao(pos, item)
+                res.vendas.extend(_aplicar_dia(pos, item))
             elif ordem == 1 and pos.quantidade > 0:
                 total = (pos.quantidade * item.valor).quantize(CENTAVO)
                 pos.proventos += total
@@ -130,22 +154,64 @@ def consolidar(
                 pos.quantidade = (pos.quantidade * item.valor).quantize(CASAS_QTD)
         res.posicoes[ticker] = pos
     res.proventos.sort(key=lambda p: (p.data_com, p.ticker))
+    res.vendas.sort(key=lambda v: (v.data, v.ticker))
     return res
 
 
-def _aplicar_operacao(pos: Posicao, op: Operacao) -> None:
-    if op.tipo == "compra":
-        pos.quantidade += op.quantidade
-        pos.custo += op.preco * op.quantidade + op.custos
-        pos.primeira_compra = pos.primeira_compra or op.data
-        return
-    if op.quantidade > pos.quantidade:
-        raise VendaAcimaDaPosicao(op.ticker, op.data, pos.quantidade, op.quantidade)
-    pm = pos.custo / pos.quantidade
-    baixa = pm * op.quantidade
-    pos.resultado_realizado += op.preco * op.quantidade - op.custos - baixa
-    pos.quantidade -= op.quantidade
+def _comprar(pos: Posicao, dia: date, quantidade: Decimal, custo: Decimal) -> None:
+    pos.quantidade += quantidade
+    pos.custo += custo
+    pos.primeira_compra = pos.primeira_compra or dia
+
+
+def _vender(
+    pos: Posicao, dia: date, quantidade: Decimal, valor: Decimal, custos: Decimal
+) -> VendaRealizada:
+    if quantidade > pos.quantidade:
+        raise VendaAcimaDaPosicao(pos.ticker, dia, pos.quantidade, quantidade)
+    baixa = pos.custo / pos.quantidade * quantidade
+    resultado = valor - custos - baixa
+    pos.resultado_realizado += resultado
+    pos.quantidade -= quantidade
     pos.custo = ZERO if pos.quantidade == 0 else pos.custo - baixa
+    return VendaRealizada(pos.ticker, dia, quantidade, valor, custos, baixa, resultado)
+
+
+def _aplicar_dia(pos: Posicao, ops: list[Operacao]) -> list[VendaRealizada]:
+    """Operações de um ativo num dia, já em ordem de lançamento."""
+    compras = [o for o in ops if o.tipo == "compra"]
+    vendas = [o for o in ops if o.tipo == "venda"]
+    dia = ops[0].data
+    if not compras or not vendas:
+        saida = []
+        for o in ops:
+            if o.tipo == "compra":
+                _comprar(pos, dia, o.quantidade, o.preco * o.quantidade + o.custos)
+            else:
+                saida.append(_vender(pos, dia, o.quantidade, o.preco * o.quantidade, o.custos))
+        return saida
+
+    qc = sum((o.quantidade for o in compras), ZERO)
+    qv = sum((o.quantidade for o in vendas), ZERO)
+    custo_c = sum((o.preco * o.quantidade + o.custos for o in compras), ZERO)
+    valor_v = sum((o.preco * o.quantidade for o in vendas), ZERO)
+    custos_v = sum((o.custos for o in vendas), ZERO)
+    casada = min(qc, qv)
+    if qv - casada > pos.quantidade:
+        raise VendaAcimaDaPosicao(pos.ticker, dia, pos.quantidade + qc, qv)
+
+    custo_dt = custo_c / qc * casada
+    valor_dt, custos_dt = valor_v / qv * casada, custos_v / qv * casada
+    resultado_dt = valor_dt - custos_dt - custo_dt
+    pos.resultado_realizado += resultado_dt
+    saida = [
+        VendaRealizada(pos.ticker, dia, casada, valor_dt, custos_dt, custo_dt, resultado_dt, True)
+    ]
+    if qc > casada:
+        _comprar(pos, dia, qc - casada, custo_c - custo_dt)
+    if qv > casada:
+        saida.append(_vender(pos, dia, qv - casada, valor_v - valor_dt, custos_v - custos_dt))
+    return saida
 
 
 @dataclass(frozen=True, slots=True)

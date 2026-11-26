@@ -401,6 +401,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/carteiras/{carteira_id}/imposto": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Apuração mensal do imposto sobre as vendas (operações comuns) */
+        get: operations["imposto_v1_carteiras__carteira_id__imposto_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/carteiras/{carteira_id}/declaracao": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Bens e direitos, proventos e renda variável para a declaração anual */
+        get: operations["declaracao_v1_carteiras__carteira_id__declaracao_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/carteiras/{carteira_id}/rentabilidade": {
         parameters: {
             query?: never;
@@ -412,6 +446,40 @@ export interface paths {
         get: operations["rentabilidade_v1_carteiras__carteira_id__rentabilidade_get"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/carteiras/{carteira_id}/importacao/previa": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Prévia da importação do extrato de negociação da B3 */
+        post: operations["previa_importacao_v1_carteiras__carteira_id__importacao_previa_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/carteiras/{carteira_id}/importacao": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Importa as operações novas do extrato de negociação da B3 */
+        post: operations["importar_v1_carteiras__carteira_id__importacao_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -452,6 +520,127 @@ export interface paths {
         head?: never;
         /** Liga ou desliga */
         patch: operations["alterar_v1_alertas__alerta_id__patch"];
+        trace?: never;
+    };
+    "/v1/notificacoes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Canais de notificação do usuário */
+        get: operations["estado_v1_notificacoes_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/notificacoes/push": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Registra o push deste aparelho */
+        post: operations["registrar_push_v1_notificacoes_push_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/notificacoes/push/cancelar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Desliga o push deste aparelho */
+        post: operations["cancelar_push_v1_notificacoes_push_cancelar_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/notificacoes/push/{inscricao_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Remove um aparelho */
+        delete: operations["remover_push_v1_notificacoes_push__inscricao_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/notificacoes/push/teste": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Notificação de teste */
+        post: operations["testar_push_v1_notificacoes_push_teste_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/notificacoes/whatsapp": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Cadastra o número e envia o código */
+        put: operations["cadastrar_whatsapp_v1_notificacoes_whatsapp_put"];
+        post?: never;
+        /** Remove o número */
+        delete: operations["remover_whatsapp_v1_notificacoes_whatsapp_delete"];
+        options?: never;
+        head?: never;
+        /** Pausa ou retoma o WhatsApp */
+        patch: operations["alterar_whatsapp_v1_notificacoes_whatsapp_patch"];
+        trace?: never;
+    };
+    "/v1/notificacoes/whatsapp/confirmar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Confirma o número com o código */
+        post: operations["confirmar_whatsapp_v1_notificacoes_whatsapp_confirmar_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/v1/conta/exportar": {
@@ -499,6 +688,59 @@ export interface paths {
         get: operations["execucoes_v1_admin_execucoes_get"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/whatsapp": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Instância do WhatsApp */
+        get: operations["ler_whatsapp_v1_admin_whatsapp_get"];
+        /** Salva a instância da Evolution */
+        put: operations["salvar_whatsapp_v1_admin_whatsapp_put"];
+        post?: never;
+        /** Remove a instância */
+        delete: operations["remover_whatsapp_v1_admin_whatsapp_delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/whatsapp/estado": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Conexão da instância e QR code */
+        get: operations["estado_whatsapp_v1_admin_whatsapp_estado_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/admin/whatsapp/teste": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Envia uma mensagem de teste */
+        post: operations["testar_whatsapp_v1_admin_whatsapp_teste_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -588,6 +830,14 @@ export interface components {
              */
             ativo: boolean;
         };
+        /** AlteracaoWhatsApp */
+        AlteracaoWhatsApp: {
+            /**
+             * Ativo
+             * @description Pausa ou retoma os alertas pelo WhatsApp
+             */
+            ativo: boolean;
+        };
         /** AlvoPosicao */
         AlvoPosicao: {
             /**
@@ -616,6 +866,40 @@ export interface components {
             /** Insights */
             insights: components["schemas"]["InsightAtivo"][];
             cenario: components["schemas"]["CenariosAtivo"] | null;
+        };
+        /** AnoImposto */
+        AnoImposto: {
+            /** Ano */
+            ano: number;
+            /**
+             * Ganho Isento
+             * @description Ganhos isentos com ações no ano (para a declaração)
+             */
+            ganho_isento: string;
+            /** Darf */
+            darf: string;
+            /** Vendas */
+            vendas: string;
+        };
+        /** AparelhoPush */
+        AparelhoPush: {
+            /** Id */
+            id: number;
+            /** Aparelho */
+            aparelho: string | null;
+            /**
+             * Criado Em
+             * Format: date-time
+             */
+            criado_em: string;
+        };
+        /** ArquivoImportacao */
+        ArquivoImportacao: {
+            /**
+             * Arquivo
+             * @description O .xlsx em base64
+             */
+            arquivo: string;
         };
         /** AtivoDetalhe */
         AtivoDetalhe: {
@@ -717,6 +1001,46 @@ export interface components {
             /** Aviso */
             aviso: string;
         };
+        /** BemDeclaracao */
+        BemDeclaracao: {
+            /** Ticker */
+            ticker: string;
+            /** Nome */
+            nome: string;
+            /**
+             * Tipo
+             * @enum {string}
+             */
+            tipo: "acao" | "fii" | "etf" | "bdr";
+            /**
+             * Grupo
+             * @description Grupo da ficha Bens e Direitos, quando fixo
+             */
+            grupo: string | null;
+            /** Codigo */
+            codigo: string | null;
+            /** Descricao Grupo */
+            descricao_grupo: string;
+            /**
+             * Quantidade Anterior
+             * @description Em 31/12 do ano anterior
+             */
+            quantidade_anterior: string;
+            /** Custo Anterior */
+            custo_anterior: string;
+            /**
+             * Quantidade
+             * @description Em 31/12 do ano
+             */
+            quantidade: string;
+            /** Custo */
+            custo: string;
+            /**
+             * Discriminacao
+             * @description Texto pronto para o campo Discriminação
+             */
+            discriminacao: string;
+        };
         /** CampoScreener */
         CampoScreener: {
             /** Campo */
@@ -748,6 +1072,11 @@ export interface components {
             setores: string[];
             /** Tipos */
             tipos: ("acao" | "fii" | "etf" | "bdr")[];
+        };
+        /** CancelamentoPush */
+        CancelamentoPush: {
+            /** Endpoint */
+            endpoint: string;
         };
         /** Candle */
         Candle: {
@@ -840,11 +1169,46 @@ export interface components {
             /** Cenarios */
             cenarios: components["schemas"]["CenarioPreco"][];
         };
+        /** ChavesPush */
+        ChavesPush: {
+            /** P256Dh */
+            p256dh: string;
+            /** Auth */
+            auth: string;
+        };
+        /** CodigoWhatsApp */
+        CodigoWhatsApp: {
+            /** Codigo */
+            codigo: string;
+        };
         /** ComparacaoBacktest */
         ComparacaoBacktest: {
             estrategia: components["schemas"]["MetricasBacktest"];
             buy_and_hold: components["schemas"]["MetricasBacktest"];
             cdi: components["schemas"]["MetricasBacktest"];
+        };
+        /** ConfigWhatsApp */
+        ConfigWhatsApp: {
+            /** Configurada */
+            configurada: boolean;
+            /** Url */
+            url: string | null;
+            /** Instancia */
+            instancia: string | null;
+            /**
+             * Chave Final
+             * @description Últimos 4 caracteres da API key, ex.: …a1b2
+             */
+            chave_final: string | null;
+            /** Ativo */
+            ativo: boolean;
+            /** Atualizado Em */
+            atualizado_em: string | null;
+            /**
+             * Provedor Em Uso
+             * @description Por onde os alertas saem agora
+             */
+            provedor_em_uso: ("evolution" | "meta") | null;
         };
         /** Cotacoes */
         Cotacoes: {
@@ -880,6 +1244,38 @@ export interface components {
              * @description R$ gastos no período
              */
             total: number;
+        };
+        /** DeclaracaoCarteira */
+        DeclaracaoCarteira: {
+            /** Ano */
+            ano: number;
+            /**
+             * Anos
+             * @description Anos com operações, do mais recente
+             */
+            anos: number[];
+            /** Bens */
+            bens: components["schemas"]["BemDeclaracao"][];
+            /** Dividendos */
+            dividendos: components["schemas"]["RendimentoDeclaracao"][];
+            /** Rendimentos Fii */
+            rendimentos_fii: components["schemas"]["RendimentoDeclaracao"][];
+            /** Jcp */
+            jcp: components["schemas"]["RendimentoDeclaracao"][];
+            /**
+             * Ganho Isento Acoes
+             * @description Ganhos com ações em meses isentos
+             */
+            ganho_isento_acoes: string;
+            /**
+             * Darfs
+             * @description DARFs de renda variável apurados no ano
+             */
+            darfs: string;
+            /** Meses Com Venda */
+            meses_com_venda: number;
+            /** Aviso */
+            aviso: string;
         };
         /** Destaque */
         Destaque: {
@@ -919,8 +1315,11 @@ export interface components {
             data: string;
             /** Texto */
             texto: string;
-            /** Enviado Em */
-            enviado_em: string | null;
+            /**
+             * Canais
+             * @description Canais por onde o disparo já foi entregue
+             */
+            canais: ("email" | "push" | "whatsapp")[];
         };
         /** DyAno */
         DyAno: {
@@ -931,12 +1330,61 @@ export interface components {
             /** Dy */
             dy: number | null;
         };
+        /** EstadoInstancia */
+        EstadoInstancia: {
+            /**
+             * Estado
+             * @description open (conectada), connecting, close ou erro
+             */
+            estado: string;
+            /**
+             * Qr
+             * @description QR code em data URL, quando não está conectada
+             */
+            qr: string | null;
+            /** Codigo Pareamento */
+            codigo_pareamento: string | null;
+            /** Erro */
+            erro: string | null;
+        };
+        /** EstadoPush */
+        EstadoPush: {
+            /**
+             * Disponivel
+             * @description O servidor tem as chaves VAPID
+             */
+            disponivel: boolean;
+            /**
+             * Chave Publica
+             * @description applicationServerKey para o navegador
+             */
+            chave_publica: string | null;
+            /** Aparelhos */
+            aparelhos: components["schemas"]["AparelhoPush"][];
+        };
         /** EstadoWatchlist */
         EstadoWatchlist: {
             /** Ticker */
             ticker: string;
             /** Na Lista */
             na_lista: boolean;
+        };
+        /** EstadoWhatsApp */
+        EstadoWhatsApp: {
+            /**
+             * Disponivel
+             * @description O servidor tem a API do WhatsApp configurada
+             */
+            disponivel: boolean;
+            /**
+             * Telefone
+             * @description Número mascarado, ex.: +55 (11) 9****-4321
+             */
+            telefone: string | null;
+            /** Confirmado */
+            confirmado: boolean;
+            /** Ativo */
+            ativo: boolean;
         };
         /** Execucao */
         Execucao: {
@@ -1054,6 +1502,38 @@ export interface components {
              */
             banco: "ok";
         };
+        /** ImpostoCarteira */
+        ImpostoCarteira: {
+            /**
+             * Meses
+             * @description Meses com venda, do mais recente
+             */
+            meses: components["schemas"]["MesImposto"][];
+            /** Anos */
+            anos: components["schemas"]["AnoImposto"][];
+            /** Prejuizo Comum */
+            prejuizo_comum: string;
+            /** Prejuizo Fii */
+            prejuizo_fii: string;
+            /** Prejuizo Day Trade */
+            prejuizo_day_trade: string;
+            /**
+             * Pendente
+             * @description DARF abaixo de R$ 10 ainda não pago
+             */
+            pendente: string;
+            /** Saldo Irrf */
+            saldo_irrf: string;
+            /** Codigo Darf */
+            codigo_darf: string;
+            /**
+             * Day Trade
+             * @description Dias com compra e venda do mesmo ativo, apurados como day trade
+             */
+            day_trade: components["schemas"]["PossivelDayTrade"][];
+            /** Aviso */
+            aviso: string;
+        };
         /** Indicadores */
         Indicadores: {
             /** Ticker */
@@ -1107,6 +1587,14 @@ export interface components {
             unidade: "pct_dia" | "pct_mes" | "pontos";
             /** Pontos */
             pontos: components["schemas"]["PontoIndice"][];
+        };
+        /** InscricaoPush */
+        InscricaoPush: {
+            /** Endpoint */
+            endpoint: string;
+            keys: components["schemas"]["ChavesPush"];
+            /** Aparelho */
+            aparelho?: string | null;
         };
         /** InsightAtivo */
         InsightAtivo: {
@@ -1222,6 +1710,117 @@ export interface components {
              */
             adicionado_em: string;
             metricas: components["schemas"]["MetricasAtivo"] | null;
+        };
+        /** LinhaImportacao */
+        LinhaImportacao: {
+            /**
+             * Linha
+             * @description Número da linha na planilha
+             */
+            linha: number;
+            /** Data */
+            data: string | null;
+            /** Tipo */
+            tipo: ("compra" | "venda") | null;
+            /** Ticker */
+            ticker: string | null;
+            /** Quantidade */
+            quantidade: string | null;
+            /** Preco */
+            preco: string | null;
+            /**
+             * Situacao
+             * @enum {string}
+             */
+            situacao: "nova" | "duplicada" | "ignorada";
+            /** Motivo */
+            motivo: string | null;
+        };
+        /** MesImposto */
+        MesImposto: {
+            /**
+             * Mes
+             * Format: date
+             * @description Primeiro dia do mês de apuração
+             */
+            mes: string;
+            /**
+             * Vendas Acoes
+             * @description Total vendido em ações (isenção até R$ 20 mil)
+             */
+            vendas_acoes: string;
+            /** Vendas Total */
+            vendas_total: string;
+            /** Isento Acoes */
+            isento_acoes: boolean;
+            /** Resultado Acoes */
+            resultado_acoes: string;
+            /**
+             * Ganho Isento
+             * @description Ganho em ações num mês isento
+             */
+            ganho_isento: string;
+            /** Resultado Etf Bdr */
+            resultado_etf_bdr: string;
+            /** Resultado Fii */
+            resultado_fii: string;
+            /**
+             * Resultado Day Trade
+             * @description Day trade de ações, ETFs e BDRs
+             */
+            resultado_day_trade: string;
+            /**
+             * Compensado
+             * @description Prejuízo de meses anteriores usado no mês
+             */
+            compensado: string;
+            /**
+             * Base Comum
+             * @description Base de ações, ETFs e BDRs (15%)
+             */
+            base_comum: string;
+            /**
+             * Base Fii
+             * @description Base de FIIs (20%)
+             */
+            base_fii: string;
+            /**
+             * Base Day Trade
+             * @description Base de day trade (20%)
+             */
+            base_day_trade: string;
+            /** Imposto Devido */
+            imposto_devido: string;
+            /**
+             * Irrf
+             * @description IRRF estimado do mês (0,005% das vendas)
+             */
+            irrf: string;
+            /** Irrf Usado */
+            irrf_usado: string;
+            /**
+             * Acumulado Anterior
+             * @description DARF abaixo de R$ 10 de meses anteriores
+             */
+            acumulado_anterior: string;
+            /**
+             * Darf
+             * @description Valor a pagar no mês (zero abaixo de R$ 10)
+             */
+            darf: string;
+            /** Vencimento */
+            vencimento: string | null;
+            /** Fica Para Depois */
+            fica_para_depois: string;
+            /**
+             * Prejuizo Comum
+             * @description Saldo de prejuízo de ações, ETFs e BDRs
+             */
+            prejuizo_comum: string;
+            /** Prejuizo Fii */
+            prejuizo_fii: string;
+            /** Prejuizo Day Trade */
+            prejuizo_day_trade: string;
         };
         /** MetricasAtivo */
         MetricasAtivo: {
@@ -1339,10 +1938,32 @@ export interface components {
              */
             toques: number;
         };
+        /** Notificacoes */
+        Notificacoes: {
+            push: components["schemas"]["EstadoPush"];
+            whatsapp: components["schemas"]["EstadoWhatsApp"];
+        };
         /** NovaCarteira */
         NovaCarteira: {
             /** Nome */
             nome: string;
+        };
+        /** NovaConfigWhatsApp */
+        NovaConfigWhatsApp: {
+            /** Url */
+            url: string;
+            /** Instancia */
+            instancia: string;
+            /**
+             * Chave
+             * @description API key; vazia mantém a guardada
+             */
+            chave?: string | null;
+            /**
+             * Ativo
+             * @default true
+             */
+            ativo: boolean;
         };
         /** NovaOperacao */
         NovaOperacao: {
@@ -1387,6 +2008,11 @@ export interface components {
              * @description Código do sinal, no tipo insight
              */
             codigo?: string | null;
+        };
+        /** NumeroWhatsApp */
+        NumeroWhatsApp: {
+            /** Numero */
+            numero: string;
         };
         /** OperacaoBacktest */
         OperacaoBacktest: {
@@ -1673,6 +2299,27 @@ export interface components {
             /** Proventos */
             proventos: string;
         };
+        /** PossivelDayTrade */
+        PossivelDayTrade: {
+            /** Ticker */
+            ticker: string;
+            /**
+             * Data
+             * Format: date
+             */
+            data: string;
+        };
+        /** PreviaImportacao */
+        PreviaImportacao: {
+            /** Linhas */
+            linhas: components["schemas"]["LinhaImportacao"][];
+            /** Novas */
+            novas: number;
+            /** Duplicadas */
+            duplicadas: number;
+            /** Ignoradas */
+            ignoradas: number;
+        };
         /** Problema */
         Problema: {
             /**
@@ -1735,6 +2382,22 @@ export interface components {
             /** Dy Por Ano */
             dy_por_ano: components["schemas"]["DyAno"][];
         };
+        /** RendimentoDeclaracao */
+        RendimentoDeclaracao: {
+            /** Ticker */
+            ticker: string;
+            /** Nome */
+            nome: string;
+            /** Bruto */
+            bruto: string;
+            /**
+             * Ir
+             * @description IR retido na fonte (JCP: 15%)
+             */
+            ir: string;
+            /** Liquido */
+            liquido: string;
+        };
         /** RentabilidadeCarteira */
         RentabilidadeCarteira: {
             /** Inicio */
@@ -1742,6 +2405,15 @@ export interface components {
             /** Pontos */
             pontos: components["schemas"]["PontoRentabilidade"][];
             acumulado: components["schemas"]["AcumuladoCarteira"] | null;
+        };
+        /** ResultadoImportacao */
+        ResultadoImportacao: {
+            /** Importadas */
+            importadas: number;
+            /** Duplicadas */
+            duplicadas: number;
+            /** Ignoradas */
+            ignoradas: number;
         };
         /** ResumoCarteira */
         ResumoCarteira: {
@@ -1805,6 +2477,19 @@ export interface components {
             codigo: string;
             /** Descricao */
             descricao: string;
+        };
+        /** TestePush */
+        TestePush: {
+            /**
+             * Enviados
+             * @description Aparelhos que receberam
+             */
+            enviados: number;
+        };
+        /** TesteWhatsApp */
+        TesteWhatsApp: {
+            /** Numero */
+            numero: string;
         };
         /** TotaisCarteira */
         TotaisCarteira: {
@@ -4060,6 +4745,152 @@ export interface operations {
             };
         };
     };
+    imposto_v1_carteiras__carteira_id__imposto_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                carteira_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImpostoCarteira"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+        };
+    };
+    declaracao_v1_carteiras__carteira_id__declaracao_get: {
+        parameters: {
+            query?: {
+                ano?: number | null;
+            };
+            header?: never;
+            path: {
+                carteira_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DeclaracaoCarteira"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+        };
+    };
     rentabilidade_v1_carteiras__carteira_id__rentabilidade_get: {
         parameters: {
             query?: never;
@@ -4078,6 +4909,158 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["RentabilidadeCarteira"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+        };
+    };
+    previa_importacao_v1_carteiras__carteira_id__importacao_previa_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                carteira_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ArquivoImportacao"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PreviaImportacao"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+        };
+    };
+    importar_v1_carteiras__carteira_id__importacao_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                carteira_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ArquivoImportacao"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResultadoImportacao"];
                 };
             };
             /** @description Unauthorized */
@@ -4422,6 +5405,650 @@ export interface operations {
             };
         };
     };
+    estado_v1_notificacoes_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Notificacoes"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+        };
+    };
+    registrar_push_v1_notificacoes_push_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["InscricaoPush"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+        };
+    };
+    cancelar_push_v1_notificacoes_push_cancelar_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CancelamentoPush"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+        };
+    };
+    remover_push_v1_notificacoes_push__inscricao_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                inscricao_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+        };
+    };
+    testar_push_v1_notificacoes_push_teste_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TestePush"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+        };
+    };
+    cadastrar_whatsapp_v1_notificacoes_whatsapp_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NumeroWhatsApp"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Notificacoes"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+        };
+    };
+    remover_whatsapp_v1_notificacoes_whatsapp_delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+        };
+    };
+    alterar_whatsapp_v1_notificacoes_whatsapp_patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AlteracaoWhatsApp"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Notificacoes"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+        };
+    };
+    confirmar_whatsapp_v1_notificacoes_whatsapp_confirmar_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CodigoWhatsApp"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Notificacoes"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+        };
+    };
     exportar_v1_conta_exportar_get: {
         parameters: {
             query?: never;
@@ -4581,6 +6208,360 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["Execucoes"];
                 };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+        };
+    };
+    ler_whatsapp_v1_admin_whatsapp_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConfigWhatsApp"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+        };
+    };
+    salvar_whatsapp_v1_admin_whatsapp_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NovaConfigWhatsApp"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ConfigWhatsApp"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+        };
+    };
+    remover_whatsapp_v1_admin_whatsapp_delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+        };
+    };
+    estado_whatsapp_v1_admin_whatsapp_estado_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EstadoInstancia"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+        };
+    };
+    testar_whatsapp_v1_admin_whatsapp_teste_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TesteWhatsApp"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Unauthorized */
             401: {

@@ -1,9 +1,12 @@
+import base64
+import binascii
 from datetime import date
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Path, Response
+from fastapi import APIRouter, Depends, Path, Query, Response
 
 from app import carteira as c
+from app import importacao as imp
 from app import schemas as s
 from app.deps import Conn, Usuario, usuario_obrigatorio
 from app.erros import Problema
@@ -105,6 +108,32 @@ def resumo(conn: Conn, usuario: Logado, carteira_id: CarteiraId, response: Respo
 
 
 @router.get(
+    "/{carteira_id}/imposto",
+    response_model=s.ImpostoCarteira,
+    summary="Apuração mensal do imposto sobre as vendas (operações comuns)",
+)
+def imposto(conn: Conn, usuario: Logado, carteira_id: CarteiraId, response: Response):
+    _privado(response)
+    return c.imposto(conn, usuario.id, carteira_id)
+
+
+@router.get(
+    "/{carteira_id}/declaracao",
+    response_model=s.DeclaracaoCarteira,
+    summary="Bens e direitos, proventos e renda variável para a declaração anual",
+)
+def declaracao(
+    conn: Conn,
+    usuario: Logado,
+    carteira_id: CarteiraId,
+    response: Response,
+    ano: Annotated[int | None, Query(ge=2000, le=2100)] = None,
+):
+    _privado(response)
+    return c.declaracao(conn, usuario.id, carteira_id, ano, date.today())
+
+
+@router.get(
     "/{carteira_id}/rentabilidade",
     response_model=s.RentabilidadeCarteira,
     summary="Rentabilidade acumulada (TWR) contra CDI e Ibovespa",
@@ -112,3 +141,36 @@ def resumo(conn: Conn, usuario: Logado, carteira_id: CarteiraId, response: Respo
 def rentabilidade(conn: Conn, usuario: Logado, carteira_id: CarteiraId, response: Response):
     _privado(response)
     return c.rentabilidade(conn, usuario.id, carteira_id)
+
+
+def _arquivo(corpo: s.ArquivoImportacao) -> bytes:
+    try:
+        return base64.b64decode(corpo.arquivo, validate=True)
+    except (binascii.Error, ValueError) as e:
+        raise Problema(422, "arquivo inválido") from e
+
+
+@router.post(
+    "/{carteira_id}/importacao/previa",
+    response_model=s.PreviaImportacao,
+    summary="Prévia da importação do extrato de negociação da B3",
+)
+def previa_importacao(
+    conn: Conn, usuario: Logado, carteira_id: CarteiraId, corpo: s.ArquivoImportacao, r: Response
+):
+    _privado(r)
+    return imp.analisar(conn, usuario.id, carteira_id, _arquivo(corpo), date.today())
+
+
+@router.post(
+    "/{carteira_id}/importacao",
+    response_model=s.ResultadoImportacao,
+    summary="Importa as operações novas do extrato de negociação da B3",
+)
+def importar(
+    conn: Conn, usuario: Logado, carteira_id: CarteiraId, corpo: s.ArquivoImportacao, r: Response
+):
+    _privado(r)
+    resultado = imp.importar(conn, usuario.id, carteira_id, _arquivo(corpo), date.today())
+    conn.commit()
+    return resultado

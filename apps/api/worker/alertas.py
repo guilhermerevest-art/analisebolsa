@@ -1,8 +1,8 @@
-"""Alertas no fim do EOD: avalia, grava os disparos e envia um e-mail por usuário.
+"""Alertas no fim do EOD: avalia, grava os disparos e envia por push e WhatsApp.
 
 `python -m worker.alertas` roda as duas partes sozinho (modo `alertas` do workflow Worker).
-Falha no envio não derruba o job: o disparo fica com `enviado_em` nulo e volta no próximo EOD
-(até 7 dias depois).
+Cada canal anda sozinho: falha num não impede o outro, e o disparo que não saiu por um canal
+volta no próximo EOD (até 7 dias depois). Canal sem configuração é pulado.
 """
 
 import logging
@@ -13,8 +13,10 @@ from sqlalchemy import Engine, text
 
 from app.config import get_settings
 from app.db import get_engine
-from dominio.alertas import Disparo, Pregao, Regra, avaliar, compor_email
-from worker.notificacao import Enviador, enviador_configurado
+from app.notificacao import Canais, EnviadorWhatsApp, canais_configurados
+from app.notificacoes import enviar_push_para
+from app.whatsapp_config import canal_whatsapp
+from dominio.alertas import Disparo, Pregao, Regra, avaliar, compor_push
 
 log = logging.getLogger("worker.alertas")
 DIAS_REENVIO = 7
@@ -73,57 +75,108 @@ def avaliar_alertas(engine: Engine) -> int:
     return disparados
 
 
-SQL_PENDENTES = f"""
-SELECT d.alerta_id, d.data, d.texto, a.ticker, u.id AS user_id, u.email
+# Disparos ainda não entregues num canal, de usuários com esse canal pronto. Só entram
+# disparos a partir do dia em que o canal foi ligado, para não chegar uma semana de alertas
+# antigos de uma vez.
+_PENDENTES = f"""
+SELECT d.alerta_id, d.data, d.texto, a.ticker, al.user_id
 FROM alertas_disparos d
 JOIN alertas al USING (alerta_id)
 JOIN ativos a ON a.ativo_id = al.ativo_id
-JOIN users u ON u.id = al.user_id
-WHERE d.enviado_em IS NULL AND u.email IS NOT NULL
-  AND d.data >= current_date - {DIAS_REENVIO}
-ORDER BY u.id, d.data, a.ticker
+WHERE d.data >= current_date - {DIAS_REENVIO}
+  AND NOT EXISTS (SELECT 1 FROM alertas_envios e
+                  WHERE e.alerta_id = d.alerta_id AND e.data = d.data AND e.canal = :canal)
+  AND {{filtro}}
+ORDER BY al.user_id, d.data, a.ticker
 """
+FILTRO = {
+    "push": """EXISTS (SELECT 1 FROM push_inscricoes p WHERE p.user_id = al.user_id
+               AND d.data >= (p.criado_em AT TIME ZONE 'America/Sao_Paulo')::date)""",
+    "whatsapp": """EXISTS (SELECT 1 FROM whatsapp w WHERE w.user_id = al.user_id
+                   AND w.ativo AND w.confirmado_em IS NOT NULL
+                   AND d.data >= (w.confirmado_em AT TIME ZONE 'America/Sao_Paulo')::date)""",
+}
 
 
-def enviar_pendentes(engine: Engine, enviador: Enviador | None, site: str) -> dict:
+def _pendentes(engine: Engine, canal: str) -> list:
     with engine.connect() as conn:
-        pendentes = conn.execute(text(SQL_PENDENTES)).mappings().all()
-    if not pendentes:
-        return {"enviados": 0, "pendentes": 0}
-    if enviador is None:
-        log.warning("alertas: SMTP não configurado; %d disparos aguardando envio", len(pendentes))
-        return {"enviados": 0, "pendentes": len(pendentes), "smtp": "não configurado"}
+        sql = _PENDENTES.format(filtro=FILTRO[canal])
+        return conn.execute(text(sql), {"canal": canal}).mappings().all()
 
+
+def _marcar(engine: Engine, linhas: list, canal: str) -> None:
+    with engine.begin() as conn:
+        for r in linhas:
+            conn.execute(
+                text(
+                    "INSERT INTO alertas_envios (alerta_id, data, canal) VALUES (:a, :d, :c) "
+                    "ON CONFLICT DO NOTHING"
+                ),
+                {"a": r["alerta_id"], "d": r["data"], "c": canal},
+            )
+
+
+def _por_usuario(engine: Engine, canal: str, enviar) -> dict:
+    pendentes = _pendentes(engine, canal)
     enviados = falhas = 0
-    for _, grupo in groupby(pendentes, key=lambda r: r["user_id"]):
+    for user_id, grupo in groupby(pendentes, key=lambda r: r["user_id"]):
         linhas = list(grupo)
-        assunto, corpo, html = compor_email(
-            [Disparo(r["ticker"], r["data"], r["texto"]) for r in linhas], site
-        )
+        disparos = [Disparo(r["ticker"], r["data"], r["texto"]) for r in linhas]
         try:
-            enviador.enviar(linhas[0]["email"], assunto, corpo, html)
-        except Exception:  # um usuário com problema não impede os outros
-            log.exception("alertas: falha ao enviar para um usuário")
+            ok = enviar(user_id, disparos)
+        except Exception:
+            log.exception("alertas: falha no %s de um usuário", canal)
+            ok = False
+        if ok:
+            _marcar(engine, linhas, canal)
+            enviados += 1
+        else:
             falhas += 1
-            continue
-        with engine.begin() as conn:
-            for r in linhas:
-                conn.execute(
-                    text(
-                        "UPDATE alertas_disparos SET enviado_em = now() "
-                        "WHERE alerta_id = :a AND data = :d"
-                    ),
-                    {"a": r["alerta_id"], "d": r["data"]},
-                )
-        enviados += 1
     return {"enviados": enviados, "falhas": falhas, "pendentes": len(pendentes)}
 
 
-def processar_alertas(engine: Engine, enviador: Enviador | None, site: str) -> dict:
+def enviar_pendentes(engine: Engine, canais: Canais, site: str) -> dict:
+    res: dict = {}
+    if canais.push is None:
+        res["push"] = "não configurado"
+    else:
+        push = canais.push
+        res["push"] = _por_usuario(
+            engine, "push", lambda u, ds: enviar_push_para(engine, push, u, compor_push(ds)) > 0
+        )
+    if canais.whatsapp is None:
+        res["whatsapp"] = "não configurado"
+    else:
+        wa: EnviadorWhatsApp = canais.whatsapp
+
+        def enviar_whatsapp(user_id: str, disparos: list[Disparo]) -> bool:
+            with engine.connect() as conn:
+                telefone = conn.execute(
+                    text("SELECT telefone FROM whatsapp WHERE user_id = :u"), {"u": user_id}
+                ).scalar_one()
+            wa.enviar_alertas(telefone, disparos, f"{site.rstrip('/')}/alertas")
+            return True
+
+        res["whatsapp"] = _por_usuario(engine, "whatsapp", enviar_whatsapp)
+    return res
+
+
+def canais_do_worker(engine: Engine, settings) -> Canais:
+    """Push pelo ambiente e WhatsApp pela instância do /admin (ou pela Meta)."""
+    try:
+        with engine.connect() as conn:
+            whatsapp = canal_whatsapp(conn, settings)
+    except Exception:
+        log.exception("alertas: não foi possível ler a configuração do WhatsApp")
+        whatsapp = None
+    return canais_configurados(settings, whatsapp)
+
+
+def processar_alertas(engine: Engine, canais: Canais, site: str) -> dict:
     """Avalia e envia; nunca levanta exceção (o EOD segue de pé)."""
     try:
         disparados = avaliar_alertas(engine)
-        return {"disparados": disparados, **enviar_pendentes(engine, enviador, site)}
+        return {"disparados": disparados, **enviar_pendentes(engine, canais, site)}
     except Exception as e:
         log.exception("alertas: falha")
         return {"erro": type(e).__name__}
@@ -132,7 +185,8 @@ def processar_alertas(engine: Engine, enviador: Enviador | None, site: str) -> d
 def main() -> int:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s")
     settings = get_settings()
-    res = processar_alertas(get_engine(), enviador_configurado(settings), settings.web_internal_url)
+    engine = get_engine()
+    res = processar_alertas(engine, canais_do_worker(engine, settings), settings.url_publica)
     log.info("alertas: %s", res)
     return 1 if "erro" in res else 0
 
