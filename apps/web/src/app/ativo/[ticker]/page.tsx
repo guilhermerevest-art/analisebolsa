@@ -1,4 +1,6 @@
+import { Calculator, FlaskConical } from "lucide-react";
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
 import { Abas } from "@/components/ativo/abas";
@@ -55,6 +57,16 @@ export default async function PaginaAtivo({ params }: Props) {
       <section aria-label="Gráfico">
         <GraficoCliente ticker={ativo.ticker} niveis={analise?.cenario?.niveis} />
       </section>
+      <nav aria-label="Ferramentas" className="-mt-4 flex flex-wrap gap-2 text-sm">
+        <Link href={`/backtest?ticker=${ativo.ticker}`} className="inline-flex items-center gap-1.5 rounded-md border px-3 py-1.5 hover:bg-muted">
+          <FlaskConical className="size-4" aria-hidden />
+          Testar uma estratégia
+        </Link>
+        <Link href={`/simulador?ticker=${ativo.ticker}&inicio=2015-01&inicial=1.000&mensal=500`} className="inline-flex items-center gap-1.5 rounded-md border px-3 py-1.5 hover:bg-muted">
+          <Calculator className="size-4" aria-hidden />
+          Simular aportes
+        </Link>
+      </nav>
       <Abas
         abas={[
           { id: "analise", rotulo: "Análise", conteudo: <PainelAnalise dados={analise} /> },

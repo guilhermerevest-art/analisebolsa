@@ -2035,6 +2035,457 @@
         }
       }
     },
+    "/v1/backtest": {
+      "get": {
+        "tags": [
+          "backtest"
+        ],
+        "summary": "Estratégia por regras no histórico de um ativo",
+        "operationId": "backtest_v1_backtest_get",
+        "parameters": [
+          {
+            "name": "ticker",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 6,
+              "title": "Ticker"
+            }
+          },
+          {
+            "name": "estrategia",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "enum": [
+                "cruzamento_mm",
+                "rsi",
+                "macd",
+                "bollinger",
+                "setup_91",
+                "rompimento",
+                "buy_and_hold"
+              ],
+              "type": "string",
+              "title": "Estrategia"
+            }
+          },
+          {
+            "name": "inicio",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "title": "Inicio"
+            }
+          },
+          {
+            "name": "fim",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Fim"
+            }
+          },
+          {
+            "name": "curta",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "maximum": 1000,
+                  "minimum": 1
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Curta"
+            }
+          },
+          {
+            "name": "longa",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "maximum": 1000,
+                  "minimum": 1
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Longa"
+            }
+          },
+          {
+            "name": "rsi_periodo",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "maximum": 1000,
+                  "minimum": 1
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Rsi Periodo"
+            }
+          },
+          {
+            "name": "rsi_entrada",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "maximum": 1000,
+                  "minimum": 1
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Rsi Entrada"
+            }
+          },
+          {
+            "name": "rsi_saida",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "maximum": 1000,
+                  "minimum": 1
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Rsi Saida"
+            }
+          },
+          {
+            "name": "n_entrada",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "maximum": 1000,
+                  "minimum": 1
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "N Entrada"
+            }
+          },
+          {
+            "name": "n_saida",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "maximum": 1000,
+                  "minimum": 1
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "N Saida"
+            }
+          },
+          {
+            "name": "macd_rapida",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "maximum": 1000,
+                  "minimum": 1
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Macd Rapida"
+            }
+          },
+          {
+            "name": "macd_lenta",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "maximum": 1000,
+                  "minimum": 1
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Macd Lenta"
+            }
+          },
+          {
+            "name": "macd_sinal",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "maximum": 1000,
+                  "minimum": 1
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Macd Sinal"
+            }
+          },
+          {
+            "name": "bb_periodo",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "maximum": 1000,
+                  "minimum": 1
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Bb Periodo"
+            }
+          },
+          {
+            "name": "bb_desvios",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "maximum": 1000,
+                  "minimum": 1
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Bb Desvios"
+            }
+          },
+          {
+            "name": "mme_periodo",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "maximum": 1000,
+                  "minimum": 1
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Mme Periodo"
+            }
+          },
+          {
+            "name": "stop_atr",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "maximum": 5,
+                  "minimum": 1
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Múltiplo do ATR14",
+              "title": "Stop Atr"
+            },
+            "description": "Múltiplo do ATR14"
+          },
+          {
+            "name": "capital",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "maximum": 1000000000.0,
+              "minimum": 1000,
+              "default": 10000,
+              "title": "Capital"
+            }
+          },
+          {
+            "name": "corretagem",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "maximum": 100,
+              "minimum": 0,
+              "description": "R$ por execução",
+              "default": 0,
+              "title": "Corretagem"
+            },
+            "description": "R$ por execução"
+          },
+          {
+            "name": "taxas",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "maximum": 1,
+              "minimum": 0,
+              "description": "% do volume",
+              "default": 0.03,
+              "title": "Taxas"
+            },
+            "description": "% do volume"
+          },
+          {
+            "name": "deslizamento",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "maximum": 2,
+              "minimum": 0,
+              "description": "% do preço",
+              "default": 0.05,
+              "title": "Deslizamento"
+            },
+            "description": "% do preço"
+          },
+          {
+            "name": "cdi_no_caixa",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": true,
+              "title": "Cdi No Caixa"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Backtest"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        }
+      }
+    },
     "/v1/watchlist": {
       "get": {
         "tags": [
@@ -4270,6 +4721,120 @@
         ],
         "title": "AtivoResumo"
       },
+      "Backtest": {
+        "properties": {
+          "ticker": {
+            "type": "string",
+            "title": "Ticker"
+          },
+          "estrategia": {
+            "type": "string",
+            "title": "Estrategia"
+          },
+          "nome": {
+            "type": "string",
+            "title": "Nome"
+          },
+          "regra": {
+            "type": "string",
+            "title": "Regra"
+          },
+          "parametros": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Parametros"
+          },
+          "stop_atr": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stop Atr"
+          },
+          "capital": {
+            "type": "number",
+            "title": "Capital"
+          },
+          "custos": {
+            "$ref": "#/components/schemas/CustosBacktest"
+          },
+          "cdi_no_caixa": {
+            "type": "boolean",
+            "title": "Cdi No Caixa"
+          },
+          "inicio": {
+            "type": "string",
+            "format": "date",
+            "title": "Inicio"
+          },
+          "fim": {
+            "type": "string",
+            "format": "date",
+            "title": "Fim"
+          },
+          "divisao": {
+            "type": "string",
+            "format": "date",
+            "title": "Divisao",
+            "description": "Primeiro pregão fora da amostra (últimos 30%)"
+          },
+          "pontos": {
+            "items": {
+              "$ref": "#/components/schemas/PontoBacktest"
+            },
+            "type": "array",
+            "title": "Pontos"
+          },
+          "total": {
+            "$ref": "#/components/schemas/ComparacaoBacktest"
+          },
+          "dentro_amostra": {
+            "$ref": "#/components/schemas/ComparacaoBacktest"
+          },
+          "fora_amostra": {
+            "$ref": "#/components/schemas/ComparacaoBacktest"
+          },
+          "operacoes": {
+            "items": {
+              "$ref": "#/components/schemas/OperacaoBacktest"
+            },
+            "type": "array",
+            "title": "Operacoes"
+          },
+          "aviso": {
+            "type": "string",
+            "title": "Aviso"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ticker",
+          "estrategia",
+          "nome",
+          "regra",
+          "parametros",
+          "stop_atr",
+          "capital",
+          "custos",
+          "cdi_no_caixa",
+          "inicio",
+          "fim",
+          "divisao",
+          "pontos",
+          "total",
+          "dentro_amostra",
+          "fora_amostra",
+          "operacoes",
+          "aviso"
+        ],
+        "title": "Backtest"
+      },
       "CampoScreener": {
         "properties": {
           "campo": {
@@ -4642,6 +5207,26 @@
         ],
         "title": "CenariosAtivo"
       },
+      "ComparacaoBacktest": {
+        "properties": {
+          "estrategia": {
+            "$ref": "#/components/schemas/MetricasBacktest"
+          },
+          "buy_and_hold": {
+            "$ref": "#/components/schemas/MetricasBacktest"
+          },
+          "cdi": {
+            "$ref": "#/components/schemas/MetricasBacktest"
+          }
+        },
+        "type": "object",
+        "required": [
+          "estrategia",
+          "buy_and_hold",
+          "cdi"
+        ],
+        "title": "ComparacaoBacktest"
+      },
       "Cotacoes": {
         "properties": {
           "ticker": {
@@ -4672,6 +5257,38 @@
           "candles"
         ],
         "title": "Cotacoes"
+      },
+      "CustosBacktest": {
+        "properties": {
+          "corretagem": {
+            "type": "number",
+            "title": "Corretagem",
+            "description": "R$ por execução"
+          },
+          "taxas": {
+            "type": "number",
+            "title": "Taxas",
+            "description": "Fração do volume"
+          },
+          "deslizamento": {
+            "type": "number",
+            "title": "Deslizamento",
+            "description": "Fração do preço"
+          },
+          "total": {
+            "type": "number",
+            "title": "Total",
+            "description": "R$ gastos no período"
+          }
+        },
+        "type": "object",
+        "required": [
+          "corretagem",
+          "taxas",
+          "deslizamento",
+          "total"
+        ],
+        "title": "CustosBacktest"
       },
       "Destaque": {
         "properties": {
@@ -6161,6 +6778,112 @@
         ],
         "title": "MetricasAtivo"
       },
+      "MetricasBacktest": {
+        "properties": {
+          "retorno_total": {
+            "type": "number",
+            "title": "Retorno Total",
+            "description": "Fração (0,1 = 10%)"
+          },
+          "retorno_anual": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Retorno Anual",
+            "description": "Composto; nulo com menos de meio ano"
+          },
+          "volatilidade": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Volatilidade",
+            "description": "Anualizada"
+          },
+          "drawdown_maximo": {
+            "type": "number",
+            "title": "Drawdown Maximo",
+            "description": "Maior queda desde um topo, fração negativa"
+          },
+          "sharpe": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sharpe",
+            "description": "Retorno acima do CDI dividido pela oscilação"
+          },
+          "exposicao": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Exposicao",
+            "description": "Fração dos pregões posicionado"
+          },
+          "operacoes": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Operacoes"
+          },
+          "acertos": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Acertos",
+            "description": "Fração das operações encerradas com resultado positivo"
+          },
+          "resultado_medio": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resultado Medio",
+            "description": "Por operação encerrada"
+          }
+        },
+        "type": "object",
+        "required": [
+          "retorno_total",
+          "retorno_anual",
+          "volatilidade",
+          "drawdown_maximo",
+          "sharpe"
+        ],
+        "title": "MetricasBacktest"
+      },
       "NivelPreco": {
         "properties": {
           "preco": {
@@ -6325,6 +7048,73 @@
         ],
         "title": "NovoAlerta"
       },
+      "OperacaoBacktest": {
+        "properties": {
+          "entrada": {
+            "type": "string",
+            "format": "date",
+            "title": "Entrada"
+          },
+          "preco_entrada": {
+            "type": "number",
+            "title": "Preco Entrada",
+            "description": "Preço ajustado, com deslizamento"
+          },
+          "saida": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Saida",
+            "description": "Nula se a posição segue aberta no fim"
+          },
+          "preco_saida": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Preco Saida"
+          },
+          "resultado": {
+            "type": "number",
+            "title": "Resultado",
+            "description": "Fração, líquida de custos"
+          },
+          "pregoes": {
+            "type": "integer",
+            "title": "Pregoes"
+          },
+          "motivo": {
+            "type": "string",
+            "enum": [
+              "sinal",
+              "stop",
+              "aberta"
+            ],
+            "title": "Motivo"
+          }
+        },
+        "type": "object",
+        "required": [
+          "entrada",
+          "preco_entrada",
+          "saida",
+          "preco_saida",
+          "resultado",
+          "pregoes",
+          "motivo"
+        ],
+        "title": "OperacaoBacktest"
+      },
       "OperacaoCarteira": {
         "properties": {
           "id": {
@@ -6455,6 +7245,53 @@
           "total"
         ],
         "title": "PaginaScreener"
+      },
+      "PontoBacktest": {
+        "properties": {
+          "data": {
+            "type": "string",
+            "format": "date",
+            "title": "Data"
+          },
+          "estrategia": {
+            "type": "number",
+            "title": "Estrategia",
+            "description": "Patrimônio, base 100"
+          },
+          "buy_and_hold": {
+            "type": "number",
+            "title": "Buy And Hold"
+          },
+          "cdi": {
+            "type": "number",
+            "title": "Cdi"
+          },
+          "drawdown": {
+            "type": "number",
+            "title": "Drawdown",
+            "description": "% abaixo do topo da estratégia"
+          },
+          "drawdown_bh": {
+            "type": "number",
+            "title": "Drawdown Bh"
+          },
+          "preco": {
+            "type": "number",
+            "title": "Preco",
+            "description": "Fechamento ajustado por proventos usado no teste"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data",
+          "estrategia",
+          "buy_and_hold",
+          "cdi",
+          "drawdown",
+          "drawdown_bh",
+          "preco"
+        ],
+        "title": "PontoBacktest"
       },
       "PontoFaixa": {
         "properties": {
