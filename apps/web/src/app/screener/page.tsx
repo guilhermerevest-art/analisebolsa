@@ -49,6 +49,11 @@ export default async function Screener({ searchParams }: Props) {
           );
         })}
       </nav>
+      {PRESETS.filter((p) => new URLSearchParams(p.params).toString() === atual).map((p) => (
+        <p key={p.id} className="-mt-3 max-w-3xl text-sm text-muted-foreground">
+          {p.descricao}. Filtro sobre os dados do último pregão, para estudo.
+        </p>
+      ))}
 
       <div className="grid gap-6 lg:grid-cols-[18rem_1fr]">
         <aside className="order-2 lg:order-none">
