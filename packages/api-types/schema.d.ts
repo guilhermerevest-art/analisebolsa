@@ -418,6 +418,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/carteiras/{carteira_id}/importacao/previa": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Prévia da importação do extrato de negociação da B3 */
+        post: operations["previa_importacao_v1_carteiras__carteira_id__importacao_previa_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/carteiras/{carteira_id}/importacao": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Importa as operações novas do extrato de negociação da B3 */
+        post: operations["importar_v1_carteiras__carteira_id__importacao_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/alertas": {
         parameters: {
             query?: never;
@@ -757,6 +791,14 @@ export interface components {
              * Format: date-time
              */
             criado_em: string;
+        };
+        /** ArquivoImportacao */
+        ArquivoImportacao: {
+            /**
+             * Arquivo
+             * @description O .xlsx em base64
+             */
+            arquivo: string;
         };
         /** AtivoDetalhe */
         AtivoDetalhe: {
@@ -1424,6 +1466,31 @@ export interface components {
             adicionado_em: string;
             metricas: components["schemas"]["MetricasAtivo"] | null;
         };
+        /** LinhaImportacao */
+        LinhaImportacao: {
+            /**
+             * Linha
+             * @description Número da linha na planilha
+             */
+            linha: number;
+            /** Data */
+            data: string | null;
+            /** Tipo */
+            tipo: ("compra" | "venda") | null;
+            /** Ticker */
+            ticker: string | null;
+            /** Quantidade */
+            quantidade: string | null;
+            /** Preco */
+            preco: string | null;
+            /**
+             * Situacao
+             * @enum {string}
+             */
+            situacao: "nova" | "duplicada" | "ignorada";
+            /** Motivo */
+            motivo: string | null;
+        };
         /** MetricasAtivo */
         MetricasAtivo: {
             /**
@@ -1884,6 +1951,17 @@ export interface components {
             /** Proventos */
             proventos: string;
         };
+        /** PreviaImportacao */
+        PreviaImportacao: {
+            /** Linhas */
+            linhas: components["schemas"]["LinhaImportacao"][];
+            /** Novas */
+            novas: number;
+            /** Duplicadas */
+            duplicadas: number;
+            /** Ignoradas */
+            ignoradas: number;
+        };
         /** Problema */
         Problema: {
             /**
@@ -1953,6 +2031,15 @@ export interface components {
             /** Pontos */
             pontos: components["schemas"]["PontoRentabilidade"][];
             acumulado: components["schemas"]["AcumuladoCarteira"] | null;
+        };
+        /** ResultadoImportacao */
+        ResultadoImportacao: {
+            /** Importadas */
+            importadas: number;
+            /** Duplicadas */
+            duplicadas: number;
+            /** Ignoradas */
+            ignoradas: number;
         };
         /** ResumoCarteira */
         ResumoCarteira: {
@@ -4297,6 +4384,158 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["RentabilidadeCarteira"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+        };
+    };
+    previa_importacao_v1_carteiras__carteira_id__importacao_previa_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                carteira_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ArquivoImportacao"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PreviaImportacao"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Forbidden */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": unknown;
+                    "application/json": components["schemas"]["Problema"];
+                };
+            };
+        };
+    };
+    importar_v1_carteiras__carteira_id__importacao_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                carteira_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ArquivoImportacao"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResultadoImportacao"];
                 };
             };
             /** @description Unauthorized */

@@ -3921,6 +3921,202 @@
         }
       }
     },
+    "/v1/carteiras/{carteira_id}/importacao/previa": {
+      "post": {
+        "tags": [
+          "usuário"
+        ],
+        "summary": "Prévia da importação do extrato de negociação da B3",
+        "operationId": "previa_importacao_v1_carteiras__carteira_id__importacao_previa_post",
+        "parameters": [
+          {
+            "name": "carteira_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "title": "Carteira Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ArquivoImportacao"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PreviaImportacao"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        }
+      }
+    },
+    "/v1/carteiras/{carteira_id}/importacao": {
+      "post": {
+        "tags": [
+          "usuário"
+        ],
+        "summary": "Importa as operações novas do extrato de negociação da B3",
+        "operationId": "importar_v1_carteiras__carteira_id__importacao_post",
+        "parameters": [
+          {
+            "name": "carteira_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "title": "Carteira Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ArquivoImportacao"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultadoImportacao"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {},
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          }
+        }
+      }
+    },
     "/v1/alertas": {
       "get": {
         "tags": [
@@ -5554,6 +5750,21 @@
           "criado_em"
         ],
         "title": "AparelhoPush"
+      },
+      "ArquivoImportacao": {
+        "properties": {
+          "arquivo": {
+            "type": "string",
+            "maxLength": 3000000,
+            "title": "Arquivo",
+            "description": "O .xlsx em base64"
+          }
+        },
+        "type": "object",
+        "required": [
+          "arquivo"
+        ],
+        "title": "ArquivoImportacao"
       },
       "AtivoDetalhe": {
         "properties": {
@@ -7649,6 +7860,107 @@
         ],
         "title": "ItemWatchlist"
       },
+      "LinhaImportacao": {
+        "properties": {
+          "linha": {
+            "type": "integer",
+            "title": "Linha",
+            "description": "Número da linha na planilha"
+          },
+          "data": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Data"
+          },
+          "tipo": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "compra",
+                  "venda"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tipo"
+          },
+          "ticker": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ticker"
+          },
+          "quantidade": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quantidade"
+          },
+          "preco": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Preco"
+          },
+          "situacao": {
+            "type": "string",
+            "enum": [
+              "nova",
+              "duplicada",
+              "ignorada"
+            ],
+            "title": "Situacao"
+          },
+          "motivo": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Motivo"
+          }
+        },
+        "type": "object",
+        "required": [
+          "linha",
+          "data",
+          "tipo",
+          "ticker",
+          "quantidade",
+          "preco",
+          "situacao",
+          "motivo"
+        ],
+        "title": "LinhaImportacao"
+      },
       "MetricasAtivo": {
         "properties": {
           "data": {
@@ -8916,6 +9228,37 @@
         ],
         "title": "PosicaoCarteira"
       },
+      "PreviaImportacao": {
+        "properties": {
+          "linhas": {
+            "items": {
+              "$ref": "#/components/schemas/LinhaImportacao"
+            },
+            "type": "array",
+            "title": "Linhas"
+          },
+          "novas": {
+            "type": "integer",
+            "title": "Novas"
+          },
+          "duplicadas": {
+            "type": "integer",
+            "title": "Duplicadas"
+          },
+          "ignoradas": {
+            "type": "integer",
+            "title": "Ignoradas"
+          }
+        },
+        "type": "object",
+        "required": [
+          "linhas",
+          "novas",
+          "duplicadas",
+          "ignoradas"
+        ],
+        "title": "PreviaImportacao"
+      },
       "Problema": {
         "properties": {
           "type": {
@@ -9126,6 +9469,29 @@
           "acumulado"
         ],
         "title": "RentabilidadeCarteira"
+      },
+      "ResultadoImportacao": {
+        "properties": {
+          "importadas": {
+            "type": "integer",
+            "title": "Importadas"
+          },
+          "duplicadas": {
+            "type": "integer",
+            "title": "Duplicadas"
+          },
+          "ignoradas": {
+            "type": "integer",
+            "title": "Ignoradas"
+          }
+        },
+        "type": "object",
+        "required": [
+          "importadas",
+          "duplicadas",
+          "ignoradas"
+        ],
+        "title": "ResultadoImportacao"
       },
       "ResumoCarteira": {
         "properties": {

@@ -388,6 +388,34 @@ class OperacaoCarteira(BaseModel):
     custos: Preco
 
 
+class ArquivoImportacao(BaseModel):
+    arquivo: Annotated[str, Field(max_length=3_000_000, description="O .xlsx em base64")]
+
+
+class LinhaImportacao(BaseModel):
+    linha: int = Field(description="Número da linha na planilha")
+    data: date | None
+    tipo: Literal["compra", "venda"] | None
+    ticker: str | None
+    quantidade: Quantidade | None
+    preco: Preco | None
+    situacao: Literal["nova", "duplicada", "ignorada"]
+    motivo: str | None
+
+
+class PreviaImportacao(BaseModel):
+    linhas: list[LinhaImportacao]
+    novas: int
+    duplicadas: int
+    ignoradas: int
+
+
+class ResultadoImportacao(BaseModel):
+    importadas: int
+    duplicadas: int
+    ignoradas: int
+
+
 class Operacoes(BaseModel):
     itens: list[OperacaoCarteira]
 

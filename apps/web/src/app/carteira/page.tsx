@@ -19,7 +19,7 @@ import { cn } from "@/lib/utils";
 export const metadata: Metadata = { title: "Minha carteira", robots: { index: false } };
 export const dynamic = "force-dynamic";
 
-type Props = { searchParams: Promise<{ c?: string }> };
+type Props = { searchParams: Promise<{ c?: string; importadas?: string }> };
 
 async function ler<T>(caminho: string): Promise<T | null> {
   const resp = await chamarApi(caminho, { cache: "no-store" });
@@ -81,7 +81,9 @@ export default async function PaginaCarteira({ searchParams }: Props) {
     );
   }
 
-  const pedida = Number((await searchParams).c);
+  const params = await searchParams;
+  const pedida = Number(params.c);
+  const importadas = Number(params.importadas);
   const atual = lista.itens.find((c) => c.id === pedida) ?? lista.itens[0];
   const [resumo, ops, rent] = await Promise.all([
     ler<ResumoCarteira>(`/v1/carteiras/${atual.id}/resumo`),
@@ -103,6 +105,12 @@ export default async function PaginaCarteira({ searchParams }: Props) {
         </div>
         {lista.itens.length < lista.limite && <NovaCarteira primeira={false} />}
       </div>
+
+      {Number.isInteger(importadas) && importadas > 0 && (
+        <p role="status" className="rounded-lg bg-positivo/10 px-4 py-3 text-sm text-positivo">
+          {importadas === 1 ? "1 operação importada da B3." : `${importadas} operações importadas da B3.`} Corretagem e taxas entraram como zero.
+        </p>
+      )}
 
       {lista.itens.length > 1 && (
         <nav aria-label="Carteiras" className="flex flex-wrap gap-2">
@@ -243,9 +251,14 @@ export default async function PaginaCarteira({ searchParams }: Props) {
           )}
 
           <section aria-labelledby="titulo-lancar" className="grid gap-3">
-            <h2 id="titulo-lancar" className="text-xl font-semibold">
-              Lançar operação
-            </h2>
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <h2 id="titulo-lancar" className="text-xl font-semibold">
+                Lançar operação
+              </h2>
+              <Button asChild variant="outline" size="sm">
+                <Link href={`/carteira/importar?c=${atual.id}`}>Importar da B3</Link>
+              </Button>
+            </div>
             <div className="rounded-lg border p-4">
               <FormularioOperacao carteira={atual.id} hoje={hoje} />
             </div>

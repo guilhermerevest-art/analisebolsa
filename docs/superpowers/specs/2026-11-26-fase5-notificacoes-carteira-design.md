@@ -122,7 +122,7 @@ do site.
 
 ## 3. Etapa 2: importação de operações (B3)
 
-Upload do arquivo "Negociação" da Área do Investidor (Extratos → Negociação, `.xlsx`).
+**Entregue.** Upload do arquivo "Negociação" da Área do Investidor (Extratos → Negociação, `.xlsx`, até 2 MB e 5.000 linhas), em `/carteira/importar`.
 Mapeia data, tipo (compra/venda), código (tirando o sufixo `F` do fracionário), quantidade e
 preço; mostra uma prévia com o que vai entrar, o que já existe (mesma data, ativo, tipo,
 quantidade e preço) e o que tem ativo desconhecido; o usuário confirma. Custos ficam em zero
