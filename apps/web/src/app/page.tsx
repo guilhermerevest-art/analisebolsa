@@ -1,30 +1,52 @@
-import { BarChart3, Bell, Briefcase, Calculator, CandlestickChart, Coins, Filter, FlaskConical, Lightbulb, Scale, Target } from "lucide-react";
+import { BarChart3, Bell, Briefcase, Calculator, CandlestickChart, Coins, Filter, FlaskConical, Lightbulb, Scale, Star } from "lucide-react";
 import Link from "next/link";
 
 import { BuscaGlobal } from "@/components/busca-global";
+import { PainelIbovespa } from "@/components/landing/painel-ibovespa";
 import { SinaisDeHoje } from "@/components/landing/sinais";
-import { BentoCard, BentoGrid } from "@/components/magic/bento-grid";
 import { Marquee } from "@/components/magic/marquee";
 import { Button } from "@/components/ui/button";
-import { lerDestaques, lerSinais } from "@/lib/dados";
+import { lerDestaques, lerIbovespa, lerSinais } from "@/lib/dados";
 import { classeVariacao, formatarPct, formatarPreco } from "@/lib/formato";
 import type { Destaque } from "@/lib/tipos-api";
 import { cn } from "@/lib/utils";
 
 export const revalidate = 300;
 
-const FUNCIONALIDADES = [
-  { titulo: "Gráfico e indicadores", descricao: "Candles com médias móveis, Bollinger, RSI e MACD.", icone: <CandlestickChart />, classe: "md:col-span-2" },
-  { titulo: "Fundamentos", descricao: "P/L, P/VP, ROE, margem, dívida e mais.", icone: <BarChart3 /> },
-  { titulo: "Proventos", descricao: "Histórico de dividendos, JCP e rendimentos, com DY por ano.", icone: <Coins /> },
-  { titulo: "Insights", descricao: "Leitura educacional dos sinais técnicos de cada ativo, na aba Análise.", icone: <Lightbulb /> },
-  { titulo: "Cenários", descricao: "Suportes, resistências e cenários condicionais de alta, lateral e baixa.", icone: <Target /> },
-  { titulo: "Screener", descricao: "Filtre ativos por indicadores e fundamentos.", icone: <Filter />, href: "/screener", classe: "md:col-span-2" },
-  { titulo: "Carteira", descricao: "Posições, preço médio, proventos recebidos e alocação.", icone: <Briefcase />, href: "/carteira" },
-  { titulo: "Simulador", descricao: "Aportes mensais com reinvestimento, comparados ao CDI e ao IPCA.", icone: <Calculator />, href: "/simulador" },
-  { titulo: "Backtest", descricao: "Golden cross, IFR2, Setup 9.1, MACD e outras regras testadas no histórico, com custos.", icone: <FlaskConical />, href: "/backtest", classe: "md:col-span-2" },
-  { titulo: "Calculadora de posição", descricao: "Quantidade pelo risco até o stop, manual ou por ATR.", icone: <Scale />, href: "/posicao" },
-  { titulo: "Alertas", descricao: "Avisos por e-mail quando um ativo cruza um preço, varia muito no dia ou gera um sinal.", icone: <Bell />, href: "/alertas", classe: "md:col-span-2" },
+const EXEMPLOS = ["PETR4", "VALE3", "ITUB4", "HGLG11", "BOVA11"];
+
+type Item = { titulo: string; descricao: string; icone: React.ReactNode; href?: string };
+
+const GRUPOS: { titulo: string; descricao: string; itens: Item[] }[] = [
+  {
+    titulo: "Analisar um ativo",
+    descricao: "Tudo na página de cada ticker.",
+    itens: [
+      { titulo: "Gráfico e indicadores", descricao: "Candles com médias móveis, Bollinger, RSI e MACD.", icone: <CandlestickChart />, href: "/ativo/PETR4" },
+      { titulo: "Fundamentos", descricao: "P/L, P/VP, ROE, margem, dívida e mais.", icone: <BarChart3 /> },
+      { titulo: "Proventos", descricao: "Dividendos, JCP e rendimentos, com DY por ano.", icone: <Coins /> },
+      { titulo: "Análise e cenários", descricao: "Leitura dos sinais técnicos, suportes, resistências e cenários de alta, lateral e baixa.", icone: <Lightbulb /> },
+    ],
+  },
+  {
+    titulo: "Filtrar e testar",
+    descricao: "Para comparar ativos e regras.",
+    itens: [
+      { titulo: "Screener", descricao: "Filtre por indicadores e fundamentos, ou use filtros prontos.", icone: <Filter />, href: "/screener" },
+      { titulo: "Backtest", descricao: "Golden cross, IFR2, Setup 9.1, MACD e outras regras no histórico, com custos.", icone: <FlaskConical />, href: "/backtest" },
+      { titulo: "Simulador", descricao: "Aportes mensais com reinvestimento, comparados ao CDI e ao IPCA.", icone: <Calculator />, href: "/simulador" },
+    ],
+  },
+  {
+    titulo: "Acompanhar",
+    descricao: "Com uma conta grátis.",
+    itens: [
+      { titulo: "Carteira", descricao: "Posições, preço médio, proventos recebidos e alocação.", icone: <Briefcase />, href: "/carteira" },
+      { titulo: "Watchlist", descricao: "Os ativos que você acompanha, num lugar só.", icone: <Star />, href: "/watchlist" },
+      { titulo: "Alertas", descricao: "E-mail quando um ativo cruza um preço, varia muito ou gera um sinal.", icone: <Bell />, href: "/alertas" },
+      { titulo: "Calculadora de posição", descricao: "Quantidade pelo risco até o stop, manual ou por ATR.", icone: <Scale />, href: "/posicao" },
+    ],
+  },
 ];
 
 function ItemFaixa({ d }: { d: Destaque }) {
@@ -37,21 +59,79 @@ function ItemFaixa({ d }: { d: Destaque }) {
   );
 }
 
-export default async function Inicio() {
-  const [destaques, sinais] = await Promise.all([lerDestaques(), lerSinais()]);
-  const faixa = destaques ? [...destaques.altas, ...destaques.baixas] : [];
+/** Sem a série do Ibovespa, o hero mostra as maiores altas e baixas do pregão. */
+function PainelDestaques({ altas, baixas }: { altas: Destaque[]; baixas: Destaque[] }) {
+  const lista = (titulo: string, itens: Destaque[]) => (
+    <div className="grid content-start gap-1">
+      <p className="mb-1 text-sm text-muted-foreground">{titulo}</p>
+      {itens.slice(0, 5).map((d) => (
+        <Link key={d.ticker} href={`/ativo/${d.ticker}`} className="-mx-2 flex items-center justify-between rounded-md px-2 py-1.5 text-sm hover:bg-muted">
+          <span className="font-semibold">{d.ticker}</span>
+          <span className={cn("tabular-nums font-medium", classeVariacao(d.variacao))}>{formatarPct(d.variacao)}</span>
+        </Link>
+      ))}
+    </div>
+  );
   return (
-    <div className="grid grid-cols-[minmax(0,1fr)] gap-16">
-      <section className="mx-auto flex max-w-2xl flex-col items-center gap-6 pt-10 text-center">
-        <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">Entenda os ativos da B3</h1>
-        <p className="text-lg text-muted-foreground">
-          Gráficos, indicadores técnicos, fundamentos e proventos de ações, FIIs, ETFs e BDRs, atualizados todo fim de pregão.
-        </p>
-        <BuscaGlobal variante="hero" />
+    <div className="grid gap-6 rounded-2xl border bg-card p-6 sm:grid-cols-2">
+      {lista("Maiores altas", altas)}
+      {lista("Maiores baixas", baixas)}
+    </div>
+  );
+}
+
+function LinhaFuncionalidade({ item }: { item: Item }) {
+  const conteudo = (
+    <>
+      <span className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-lg bg-accent text-cobalto [&_svg]:size-[18px]">{item.icone}</span>
+      <span className="grid gap-0.5">
+        <span className="font-medium group-hover:text-cobalto">{item.titulo}</span>
+        <span className="text-sm text-muted-foreground">{item.descricao}</span>
+      </span>
+    </>
+  );
+  const classe = "group -mx-3 flex gap-3 rounded-lg px-3 py-3";
+  return item.href ? (
+    <Link href={item.href} className={cn(classe, "transition-colors hover:bg-muted")}>
+      {conteudo}
+    </Link>
+  ) : (
+    <div className={classe}>{conteudo}</div>
+  );
+}
+
+export default async function Inicio() {
+  const [destaques, sinais, ibov] = await Promise.all([lerDestaques(), lerSinais(), lerIbovespa()]);
+  const faixa = destaques ? [...destaques.altas, ...destaques.baixas] : [];
+  const temPainel = Boolean((ibov && ibov.pontos.length > 1) || faixa.length > 0);
+
+  return (
+    <div className="grid grid-cols-[minmax(0,1fr)] gap-20">
+      <section className={cn("grid grid-cols-[minmax(0,1fr)] items-center gap-10 pt-6 sm:pt-12", temPainel && "lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)]")}>
+        <div className="grid grid-cols-[minmax(0,1fr)] gap-6">
+          <h1 className="max-w-xl text-4xl font-semibold leading-[1.05] tracking-tight sm:text-6xl">Entenda os ativos da B3 antes de investir</h1>
+          <p className="max-w-lg text-lg text-muted-foreground">
+            Gráficos, indicadores técnicos, fundamentos e proventos de ações, FIIs, ETFs e BDRs, atualizados todo fim de pregão.
+          </p>
+          <BuscaGlobal variante="hero" />
+          <div className="flex flex-wrap items-center gap-2 text-sm">
+            <span className="text-muted-foreground">Comece por</span>
+            {EXEMPLOS.map((t) => (
+              <Link key={t} href={`/ativo/${t}`} className="rounded-md border bg-card px-2.5 py-1 font-medium transition-colors hover:border-cobalto hover:text-cobalto">
+                {t}
+              </Link>
+            ))}
+          </div>
+        </div>
+        {ibov && ibov.pontos.length > 1 ? (
+          <PainelIbovespa indice={ibov} />
+        ) : (
+          destaques && faixa.length > 0 && <PainelDestaques altas={destaques.altas} baixas={destaques.baixas} />
+        )}
       </section>
 
       {faixa.length > 0 && (
-        <section aria-label="Maiores altas e baixas do último pregão" className="-mx-4 overflow-hidden border-y py-3">
+        <section aria-label="Maiores altas e baixas do último pregão" className="-my-8 overflow-hidden rounded-xl border bg-card py-3.5">
           <Marquee>
             {faixa.map((d) => (
               <ItemFaixa key={d.ticker} d={d} />
@@ -62,23 +142,43 @@ export default async function Inicio() {
 
       {sinais && <SinaisDeHoje dados={sinais} />}
 
-      <section aria-labelledby="funcionalidades">
-        <h2 id="funcionalidades" className="mb-6 text-2xl font-semibold tracking-tight">
-          O que você encontra aqui
-        </h2>
-        <BentoGrid>
-          {FUNCIONALIDADES.map((f) => (
-            <BentoCard key={f.titulo} titulo={f.titulo} descricao={f.descricao} icone={f.icone} href={"href" in f ? f.href : undefined} className={f.classe} />
+      <section aria-labelledby="funcionalidades" className="grid gap-10">
+        <div className="grid gap-2">
+          <h2 id="funcionalidades" className="text-3xl font-semibold tracking-tight">
+            O que você encontra aqui
+          </h2>
+          <p className="max-w-xl text-muted-foreground">Ferramentas para estudar um ativo, comparar com outros e acompanhar o que você já tem.</p>
+        </div>
+        <div className="grid gap-x-10 gap-y-12 md:grid-cols-3">
+          {GRUPOS.map((g) => (
+            <div key={g.titulo} className="grid content-start gap-3 border-t-2 border-foreground pt-5">
+              <div>
+                <h3 className="text-lg font-semibold">{g.titulo}</h3>
+                <p className="text-sm text-muted-foreground">{g.descricao}</p>
+              </div>
+              <div className="grid">
+                {g.itens.map((i) => (
+                  <LinhaFuncionalidade key={i.titulo} item={i} />
+                ))}
+              </div>
+            </div>
           ))}
-        </BentoGrid>
+        </div>
       </section>
 
-      <section className="flex flex-col items-center gap-4 rounded-xl border bg-card p-10 text-center">
-        <h2 className="text-2xl font-semibold tracking-tight">Crie sua conta grátis</h2>
-        <p className="max-w-md text-muted-foreground">A conta vai guardar sua carteira, sua lista de acompanhamento e seus alertas.</p>
-        <Button asChild size="lg">
-          <Link href="/cadastro">Criar conta</Link>
-        </Button>
+      <section className="grid items-center gap-6 rounded-2xl border border-transparent bg-[#0e1b2e] px-6 py-12 text-[#f6f7f9] sm:px-12 dark:border-border md:grid-cols-[1fr_auto]">
+        <div className="grid gap-2">
+          <h2 className="text-3xl font-semibold tracking-tight">Crie sua conta grátis</h2>
+          <p className="max-w-lg text-[#f6f7f9]/75">Guarde sua carteira, sua watchlist e seus alertas, e acesse de qualquer aparelho.</p>
+        </div>
+        <div className="flex flex-wrap gap-3">
+          <Button asChild size="lg" className="bg-[#f6f7f9] text-[#0e1b2e] hover:bg-white">
+            <Link href="/cadastro">Criar conta</Link>
+          </Button>
+          <Button asChild size="lg" variant="ghost" className="text-[#f6f7f9] hover:bg-white/10 hover:text-white">
+            <Link href="/entrar">Já tenho conta</Link>
+          </Button>
+        </div>
       </section>
     </div>
   );
