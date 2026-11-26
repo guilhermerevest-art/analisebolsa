@@ -15,7 +15,8 @@ from app.config import get_settings
 from app.db import get_engine
 from app.notificacao import Canais, EnviadorWhatsApp, canais_configurados
 from app.notificacoes import enviar_push_para
-from dominio.alertas import Disparo, Pregao, Regra, avaliar, compor_push, compor_whatsapp
+from app.whatsapp_config import canal_whatsapp
+from dominio.alertas import Disparo, Pregao, Regra, avaliar, compor_push
 
 log = logging.getLogger("worker.alertas")
 DIAS_REENVIO = 7
@@ -153,11 +154,22 @@ def enviar_pendentes(engine: Engine, canais: Canais, site: str) -> dict:
                 telefone = conn.execute(
                     text("SELECT telefone FROM whatsapp WHERE user_id = :u"), {"u": user_id}
                 ).scalar_one()
-            wa.enviar_alertas(telefone, compor_whatsapp(disparos), f"{site.rstrip('/')}/alertas")
+            wa.enviar_alertas(telefone, disparos, f"{site.rstrip('/')}/alertas")
             return True
 
         res["whatsapp"] = _por_usuario(engine, "whatsapp", enviar_whatsapp)
     return res
+
+
+def canais_do_worker(engine: Engine, settings) -> Canais:
+    """Push pelo ambiente e WhatsApp pela instância do /admin (ou pela Meta)."""
+    try:
+        with engine.connect() as conn:
+            whatsapp = canal_whatsapp(conn, settings)
+    except Exception:
+        log.exception("alertas: não foi possível ler a configuração do WhatsApp")
+        whatsapp = None
+    return canais_configurados(settings, whatsapp)
 
 
 def processar_alertas(engine: Engine, canais: Canais, site: str) -> dict:
@@ -173,7 +185,8 @@ def processar_alertas(engine: Engine, canais: Canais, site: str) -> dict:
 def main() -> int:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s")
     settings = get_settings()
-    res = processar_alertas(get_engine(), canais_configurados(settings), settings.url_publica)
+    engine = get_engine()
+    res = processar_alertas(engine, canais_do_worker(engine, settings), settings.url_publica)
     log.info("alertas: %s", res)
     return 1 if "erro" in res else 0
 

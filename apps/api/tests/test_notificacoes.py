@@ -1,9 +1,11 @@
 import re
+from datetime import date
 
 import pytest
 from sqlalchemy import text
 
 from app.rotas.notificacoes import canal_push, canal_whatsapp
+from dominio.alertas import Disparo
 from dominio.telefone import mascarar_telefone, normalizar_telefone
 from tests.test_alertas import PushFalso, WhatsAppFalso
 from tests.test_api import cliente, token  # noqa: F401 (fixture)
@@ -213,7 +215,11 @@ def test_canal_whatsapp_monta_os_modelos():
     with respx.mock() as mock:
         rota = mock.post("https://graph.facebook.com/v23.0/123/messages").respond(200, json={})
         canal = CanalWhatsApp(s, httpx.Client())
-        canal.enviar_alertas("5511987654321", "PETR4 subiu", "https://s/alertas")
+        canal.enviar_alertas(
+            "5511987654321",
+            [Disparo("PETR4", date(2026, 11, 26), "PETR4 subiu.")],
+            "https://s/alertas",
+        )
         canal.enviar_codigo("5511987654321", "123456")
         alerta, codigo = (__import__("json").loads(c.request.content) for c in rota.calls)
         assert rota.calls[0].request.headers["authorization"] == "Bearer tok"
@@ -281,3 +287,9 @@ def test_canal_push_criptografa_assina_e_detecta_expirada(monkeypatch):
     status["v"] = 500
     with pytest.raises(FalhaEnvio):
         canal.enviar("https://push.exemplo/x", p256dh, auth, {})
+
+
+@pytest.mark.db
+def test_whatsapp_numero_sem_whatsapp(api, canais):  # noqa: F811
+    r = api.put("/v1/notificacoes/whatsapp", json={"numero": "11 99999-9999"}, headers=auth())
+    assert r.status_code == 422 and r.json()["detail"] == "esse número não tem WhatsApp"

@@ -1,4 +1,4 @@
-"""Canais de notificação dos alertas: push (Web Push) e WhatsApp (Cloud API da Meta).
+"""Canais de notificação dos alertas: push (Web Push) e WhatsApp (Evolution API ou Meta).
 
 A API usa os canais para o push de teste e o código do WhatsApp; o worker, para os alertas.
 Canal sem configuração não é criado (`push_configurado` e `whatsapp_configurado` devolvem None).
@@ -10,12 +10,20 @@ import base64
 import json
 import logging
 import sys
+import time
 from dataclasses import dataclass
 from typing import Protocol
+from urllib.parse import quote
 
 import httpx
 
 from app.config import Settings
+from dominio.alertas import (
+    Disparo,
+    compor_codigo_whatsapp,
+    compor_mensagem_whatsapp,
+    compor_whatsapp,
+)
 
 log = logging.getLogger("notificacao")
 
@@ -33,8 +41,11 @@ class EnviadorPush(Protocol):
 
 
 class EnviadorWhatsApp(Protocol):
-    def enviar_alertas(self, telefone: str, textos: str, link: str) -> None: ...
+    def enviar_alertas(self, telefone: str, disparos: list[Disparo], link: str) -> None: ...
     def enviar_codigo(self, telefone: str, codigo: str) -> None: ...
+    def tem_whatsapp(self, telefone: str) -> bool | None:
+        """True/False se o canal sabe dizer se o número usa WhatsApp; None se não sabe."""
+        ...
 
 
 class CanalPush:
@@ -92,7 +103,11 @@ class CanalWhatsApp:
             )
             raise FalhaEnvio(f"whatsapp {r.status_code} {erro.get('code')} {erro.get('message')}")
 
-    def enviar_alertas(self, telefone: str, textos: str, link: str) -> None:
+    def tem_whatsapp(self, telefone: str) -> bool | None:
+        return None
+
+    def enviar_alertas(self, telefone: str, disparos: list[Disparo], link: str) -> None:
+        textos = compor_whatsapp(disparos)
         self._modelo(
             telefone,
             self.s.whatsapp_modelo_alertas,
@@ -124,6 +139,87 @@ class CanalWhatsApp:
         )
 
 
+class CanalEvolution:
+    """WhatsApp pela Evolution API (v2), numa instância própria conectada por QR code.
+
+    Usa o protocolo do WhatsApp Web: mensagens livres, sem modelo aprovado. Para reduzir o
+    risco de bloqueio do número, há uma pausa entre envios.
+    """
+
+    def __init__(
+        self,
+        url: str,
+        instancia: str,
+        chave: str,
+        cliente: httpx.Client | None = None,
+        intervalo_s: float = 2.0,
+    ):
+        self.base = url.rstrip("/")
+        self.instancia = quote(instancia, safe="")
+        self.cabecalhos = {"apikey": chave}
+        self.cliente = cliente or httpx.Client(timeout=20)
+        self.intervalo_s = intervalo_s
+
+    def _url(self, caminho: str) -> str:
+        return f"{self.base}/{caminho}/{self.instancia}"
+
+    def _checar(self, r: httpx.Response, o_que: str) -> dict | list:
+        if r.status_code >= 400:
+            detalhe = r.text[:200].replace("\n", " ")
+            raise FalhaEnvio(f"evolution {o_que} {r.status_code} {detalhe}")
+        try:
+            return r.json()
+        except ValueError:
+            return {}
+
+    def enviar_texto(self, telefone: str, texto: str) -> None:
+        r = self.cliente.post(
+            self._url("message/sendText"),
+            json={"number": telefone, "text": texto},
+            headers=self.cabecalhos,
+        )
+        self._checar(r, "sendText")
+        if self.intervalo_s:
+            time.sleep(self.intervalo_s)
+
+    def enviar_alertas(self, telefone: str, disparos: list[Disparo], link: str) -> None:
+        self.enviar_texto(telefone, compor_mensagem_whatsapp(disparos, link))
+
+    def enviar_codigo(self, telefone: str, codigo: str) -> None:
+        self.enviar_texto(telefone, compor_codigo_whatsapp(codigo))
+
+    def tem_whatsapp(self, telefone: str) -> bool | None:
+        try:
+            r = self.cliente.post(
+                self._url("chat/whatsappNumbers"),
+                json={"numbers": [telefone]},
+                headers=self.cabecalhos,
+            )
+            dados = self._checar(r, "whatsappNumbers")
+        except (FalhaEnvio, httpx.HTTPError):
+            return None  # na dúvida, deixa o envio do código decidir
+        if isinstance(dados, list) and dados:
+            return bool(dados[0].get("exists"))
+        return None
+
+    def estado(self) -> str:
+        """ "open" (conectada), "connecting", "close" ou o que a Evolution responder."""
+        r = self.cliente.get(self._url("instance/connectionState"), headers=self.cabecalhos)
+        dados = self._checar(r, "connectionState")
+        return str(
+            (dados.get("instance") or {}).get("state") or dados.get("state") or "desconhecido"
+        )
+
+    def conectar(self) -> dict:
+        """QR code (data URL) e código de pareamento para conectar a instância."""
+        r = self.cliente.get(self._url("instance/connect"), headers=self.cabecalhos)
+        dados = self._checar(r, "connect")
+        qr = dados.get("base64")
+        if qr and not str(qr).startswith("data:image"):
+            qr = f"data:image/png;base64,{qr}"
+        return {"qr": qr, "codigo_pareamento": dados.get("pairingCode")}
+
+
 def push_configurado(settings: Settings) -> CanalPush | None:
     if not settings.vapid_public_key or not settings.vapid_private_key:
         return None
@@ -143,8 +239,9 @@ class Canais:
     whatsapp: EnviadorWhatsApp | None = None
 
 
-def canais_configurados(settings: Settings) -> Canais:
-    return Canais(push_configurado(settings), whatsapp_configurado(settings))
+def canais_configurados(settings: Settings, whatsapp: EnviadorWhatsApp | None = None) -> Canais:
+    """Push pelo ambiente; o WhatsApp vem de `app.whatsapp_config.canal_whatsapp` (banco)."""
+    return Canais(push_configurado(settings), whatsapp)
 
 
 def gerar_vapid() -> tuple[str, str]:

@@ -49,3 +49,5 @@ export type PontoFaixa = S["PontoFaixa"];
 export type Posicao = S["Posicao"];
 export type Notificacoes = S["Notificacoes"];
 export type PreviaImportacao = S["PreviaImportacao"];
+export type ConfigWhatsApp = S["ConfigWhatsApp"];
+export type EstadoInstancia = S["EstadoInstancia"];

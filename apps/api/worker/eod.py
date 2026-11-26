@@ -13,10 +13,10 @@ from sqlalchemy import Engine
 
 from app.config import Settings, get_settings
 from app.db import get_engine
-from app.notificacao import Canais, canais_configurados
+from app.notificacao import Canais
 from fontes.cadeia import CadeiaFontes, criar_cadeia
 from worker import repositorio as repo
-from worker.alertas import processar_alertas
+from worker.alertas import canais_do_worker, processar_alertas
 from worker.analise import atualizar_analise
 from worker.indices import atualizar_indices, buscadores
 from worker.processamento import (
@@ -93,15 +93,16 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s")
     settings = get_settings()
+    engine = get_engine()
     status = executar_eod(
-        get_engine(),
+        engine,
         criar_cadeia(settings),
         settings,
         hoje_b3(),
         forcar_catalogo=args.catalogo,
         forcar_fundamentos=args.fundamentos,
         fontes_indices=buscadores(),
-        canais=canais_configurados(settings),
+        canais=canais_do_worker(engine, settings),
     )
     return 1 if status == "erro" else 0
 

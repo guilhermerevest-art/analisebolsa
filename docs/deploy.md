@@ -80,7 +80,29 @@ No projeto `analisebolsa-api`, além das variáveis abaixo, defina `SITE_URL=htt
 Trocar as chaves invalida todas as inscrições: cada usuário precisa ligar o push de novo.
 No iPhone, o push só funciona com o site adicionado à tela de início (iOS 16.4 ou mais novo).
 
-#### WhatsApp (WhatsApp Cloud API, da Meta)
+#### WhatsApp pela Evolution API (recomendado: cadastro no /admin)
+
+O site manda os alertas e os códigos de confirmação por uma instância da
+[Evolution API](https://doc.evolution-api.com) (v2), que conecta um número pelo WhatsApp Web.
+Nada vai em variável de ambiente: a instância é cadastrada no `/admin`, e a API key fica
+guardada no banco cifrada com o `INTERNAL_JWT_SECRET` (se ele mudar, cadastre a chave de novo).
+
+1. Suba a Evolution API num servidor seu (Docker) com HTTPS e crie uma instância, por exemplo
+   `analisebolsa`. A API key pode ser a da instância ou a global (`AUTHENTICATION_API_KEY`).
+2. Entre no `/admin` com um e-mail de `ADMIN_EMAILS`, preencha a URL, o nome da instância e a
+   API key, e salve.
+3. Se a instância não estiver conectada, o `/admin` mostra o QR code: no celular do número de
+   envio, abra WhatsApp → Aparelhos conectados → Conectar um aparelho. A tela confere a
+   conexão sozinha a cada 5 segundos.
+4. Mande uma mensagem de teste pelo próprio `/admin`.
+
+Cuidados: use um número só para o site (não o seu pessoal). O WhatsApp pode bloquear números
+que mandam muitas mensagens pelo WhatsApp Web; por isso há uma pausa de 2 segundos entre
+envios (`WHATSAPP_INTERVALO_S`), e só recebe quem confirmou o próprio número com o código.
+
+Com a instância ligada no `/admin`, ela tem prioridade sobre a Cloud API da Meta abaixo.
+
+#### WhatsApp pela Cloud API oficial da Meta (alternativa)
 
 1. Em business.facebook.com, crie (ou use) uma conta empresarial. Em developers.facebook.com,
    crie um app do tipo **Business** e adicione o produto **WhatsApp**.

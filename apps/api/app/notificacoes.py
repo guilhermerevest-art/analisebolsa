@@ -179,6 +179,8 @@ def cadastrar_whatsapp(
     if usados >= CODIGOS_POR_DIA:
         raise Problema(429, "limite de códigos por hoje atingido; tente amanhã")
 
+    if wa.tem_whatsapp(telefone) is False:
+        raise Problema(422, "esse número não tem WhatsApp")
     codigo = f"{secrets.randbelow(10**6):06d}"
     try:
         wa.enviar_codigo(telefone, codigo)

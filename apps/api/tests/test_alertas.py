@@ -117,10 +117,13 @@ class WhatsAppFalso:
     def __init__(self, falhar=()):
         self.enviados, self.falhar = [], set(falhar)
 
-    def enviar_alertas(self, telefone, textos, link):
+    def enviar_alertas(self, telefone, disparos, link):
         if telefone in self.falhar:
             raise OSError("whatsapp fora")
-        self.enviados.append((telefone, textos, link))
+        self.enviados.append((telefone, compor_whatsapp(disparos), link))
+
+    def tem_whatsapp(self, telefone):
+        return False if telefone.endswith("99999999") else None
 
     def enviar_codigo(self, telefone, codigo):
         self.enviados.append((telefone, codigo))

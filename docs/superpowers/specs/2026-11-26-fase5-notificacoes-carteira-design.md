@@ -35,7 +35,21 @@ Depende de: [Fase 3](2026-11-25-fase3-usuario-design.md), [Fase 4](2026-11-26-fa
 - Conteúdo: título "1 alerta disparado" ou "N alertas disparados", corpo com o primeiro
   texto (e "e mais N"), e clique abrindo `/alertas` (ou o ativo, quando é um só).
 
-### 2.2 WhatsApp (WhatsApp Cloud API, da Meta)
+### 2.2 WhatsApp
+
+**Atualização (pedido do usuário em 2026-11-26):** o canal principal é a **Evolution API**,
+com a instância (URL, nome e API key) cadastrada pelo administrador no `/admin`, que também
+mostra o QR code para conectar o número e envia uma mensagem de teste. A API key fica no
+banco (tabela `config_whatsapp`, migration `0007`), cifrada com uma chave derivada do
+`INTERNAL_JWT_SECRET`. Pela Evolution as mensagens são livres (sem modelo da Meta), com uma
+linha por disparo; o cadastro do usuário confere se o número tem WhatsApp antes de mandar o
+código; e há uma pausa entre envios. A Cloud API da Meta, descrita abaixo, continua como
+alternativa por variáveis de ambiente, usada só quando não há instância ligada no `/admin`.
+
+Rotas do admin: `GET/PUT/DELETE /v1/admin/whatsapp`, `GET /v1/admin/whatsapp/estado` (conexão
+e QR code) e `POST /v1/admin/whatsapp/teste`.
+
+#### Alternativa: WhatsApp Cloud API, da Meta
 
 - Envio direto pela API oficial da Meta, sem intermediário. Mensagens que a empresa inicia
   precisam de **modelo (template) aprovado** pela Meta, e cada conversa é cobrada pela Meta.

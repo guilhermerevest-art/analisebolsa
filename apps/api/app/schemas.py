@@ -736,3 +736,35 @@ class CodigoWhatsApp(BaseModel):
 
 class AlteracaoWhatsApp(BaseModel):
     ativo: bool = Field(description="Pausa ou retoma os alertas pelo WhatsApp")
+
+
+class ConfigWhatsApp(BaseModel):
+    configurada: bool
+    url: str | None
+    instancia: str | None
+    chave_final: str | None = Field(description="Últimos 4 caracteres da API key, ex.: …a1b2")
+    ativo: bool
+    atualizado_em: datetime | None
+    provedor_em_uso: Literal["evolution", "meta"] | None = Field(
+        description="Por onde os alertas saem agora"
+    )
+
+
+class NovaConfigWhatsApp(BaseModel):
+    url: Annotated[str, Field(min_length=8, max_length=300)]
+    instancia: Annotated[str, Field(min_length=1, max_length=100, pattern=r"^[^/?#\s]+$")]
+    chave: Annotated[str | None, Field(max_length=300)] = Field(
+        default=None, description="API key; vazia mantém a guardada"
+    )
+    ativo: bool = True
+
+
+class EstadoInstancia(BaseModel):
+    estado: str = Field(description="open (conectada), connecting, close ou erro")
+    qr: str | None = Field(description="QR code em data URL, quando não está conectada")
+    codigo_pareamento: str | None
+    erro: str | None
+
+
+class TesteWhatsApp(BaseModel):
+    numero: Annotated[str, Field(min_length=8, max_length=30)]

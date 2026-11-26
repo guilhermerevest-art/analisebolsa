@@ -7,7 +7,8 @@ from app import schemas as s
 from app.config import Settings, get_settings
 from app.deps import Conn, Usuario, usuario_obrigatorio
 from app.erros import Problema
-from app.notificacao import EnviadorPush, EnviadorWhatsApp, push_configurado, whatsapp_configurado
+from app.notificacao import EnviadorPush, EnviadorWhatsApp, push_configurado
+from app.whatsapp_config import canal_whatsapp as _canal_whatsapp
 
 router = APIRouter(prefix="/notificacoes", tags=["usuário"])
 Logado = Annotated[Usuario, Depends(usuario_obrigatorio)]
@@ -18,8 +19,8 @@ def canal_push(settings: Config) -> EnviadorPush | None:
     return push_configurado(settings)
 
 
-def canal_whatsapp(settings: Config) -> EnviadorWhatsApp | None:
-    return whatsapp_configurado(settings)
+def canal_whatsapp(conn: Conn, settings: Config) -> EnviadorWhatsApp | None:
+    return _canal_whatsapp(conn, settings)
 
 
 Push = Annotated[EnviadorPush | None, Depends(canal_push)]

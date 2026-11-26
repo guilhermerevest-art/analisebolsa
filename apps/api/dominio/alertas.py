@@ -136,3 +136,21 @@ def compor_whatsapp(disparos: list[Disparo]) -> str:
             return "; ".join(partes) + f"; e mais {resto}"
         partes.append(d.texto.rstrip("."))
     return " ".join("; ".join(partes).split())[:LIMITE_WHATSAPP]
+
+
+def compor_mensagem_whatsapp(disparos: list[Disparo], link: str) -> str:
+    """Mensagem livre (Evolution API): uma linha por disparo, com o link e o aviso."""
+    itens = "\n".join(f"• {d.texto}" for d in disparos)
+    cabecalho = (
+        "Alerta do pregão no analisebolsa:"
+        if len(disparos) == 1
+        else (f"{len(disparos)} alertas do pregão no analisebolsa:")
+    )
+    return f"{cabecalho}\n\n{itens}\n\nGerencie seus alertas: {link}\n\n_{AVISO}_"
+
+
+def compor_codigo_whatsapp(codigo: str) -> str:
+    return (
+        f"Seu código do analisebolsa é *{codigo}*. Ele vale por 10 minutos.\n\n"
+        "Se não foi você que pediu, ignore esta mensagem."
+    )
