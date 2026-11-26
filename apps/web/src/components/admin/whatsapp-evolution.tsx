@@ -87,7 +87,7 @@ export function WhatsAppEvolution({ config }: { config: ConfigWhatsApp }) {
           placeholder={config.chave_final ? "••••••••" : "apikey da instância ou a global"}
         />
         <label className="flex items-center gap-2 text-sm">
-          <input type="checkbox" name="ativo" defaultChecked={config.configurada ? config.ativo : true} className="size-4 accent-[var(--cobalto)]" />
+          <input type="checkbox" name="ativo" defaultChecked={config.configurada ? config.ativo : true} className="size-4 accent-[var(--azul)]" />
           Usar esta instância para os alertas
         </label>
         <div className="flex flex-wrap items-center gap-3">

@@ -49,9 +49,9 @@ export function ImportadorB3({ carteira }: { carteira: number }) {
           e.preventDefault();
           escolher(e.dataTransfer.files[0] ?? null);
         }}
-        className="grid cursor-pointer justify-items-center gap-2 rounded-xl border-2 border-dashed bg-card px-6 py-10 text-center transition-colors hover:border-cobalto focus-within:border-cobalto"
+        className="grid cursor-pointer justify-items-center gap-2 rounded-xl border-2 border-dashed bg-card px-6 py-10 text-center transition-colors hover:border-azul focus-within:border-azul"
       >
-        <FileSpreadsheet aria-hidden className="size-8 text-cobalto" />
+        <FileSpreadsheet aria-hidden className="size-8 text-azul" />
         <span className="font-medium">{arquivo ? arquivo.name : "Escolha ou arraste o arquivo .xlsx"}</span>
         <span className="text-sm text-muted-foreground">{lendo ? "Lendo a planilha…" : arquivo ? "Escolher outro arquivo" : "Até 2 MB"}</span>
         <input

@@ -1,6 +1,8 @@
 import { ArrowDown, ArrowUp } from "lucide-react";
 import Link from "next/link";
 
+import { Dica } from "@/components/dica";
+import type { ChaveGlossario } from "@/lib/glossario";
 import { classeVariacao, formatarCompacto, formatarNumero, formatarPct, formatarPreco } from "@/lib/formato";
 import { proximaOrdem, urlCom } from "@/lib/screener";
 import type { ItemScreener } from "@/lib/tipos-api";
@@ -12,6 +14,7 @@ type Coluna = {
   chave: string;
   rotulo: string;
   titulo?: string;
+  termo?: ChaveGlossario;
   render: (i: ItemScreener) => React.ReactNode;
   classe?: string;
 };
@@ -29,17 +32,34 @@ export const COLUNAS: Coluna[] = [
   {
     chave: "tendencia",
     rotulo: "Tendência",
+    termo: "tendencia",
     render: (i) => (i.tendencia ? <span className={CLASSE_TENDENCIA[i.tendencia]}>{NOMES_TENDENCIA[i.tendencia]}</span> : "—"),
   },
-  { chave: "pos_52s", rotulo: "52 sem.", titulo: "Posição entre a mínima (0%) e a máxima (100%) de 52 semanas", render: (i) => pct(i.pos_52s), classe: "hidden md:table-cell" },
-  { chave: "rsi14", rotulo: "RSI", render: (i) => formatarNumero(i.rsi14, 0), classe: "hidden lg:table-cell" },
-  { chave: "dy_12m", rotulo: "DY", titulo: "Dividend yield de 12 meses", render: (i) => pct(i.dy_12m) },
-  { chave: "pl", rotulo: "P/L", render: (i) => formatarNumero(i.pl, 1), classe: "hidden sm:table-cell" },
-  { chave: "pvp", rotulo: "P/VP", render: (i) => formatarNumero(i.pvp, 2), classe: "hidden md:table-cell" },
-  { chave: "volume_financeiro_20d", rotulo: "Liquidez", titulo: "Volume financeiro médio diário em 20 pregões", render: (i) => (i.volume_financeiro_20d === null ? "—" : `R$ ${formatarCompacto(i.volume_financeiro_20d)}`), classe: "hidden sm:table-cell" },
+  { chave: "pos_52s", termo: "posicao_52s", rotulo: "52 sem.", titulo: "Posição entre a mínima (0%) e a máxima (100%) de 52 semanas", render: (i) => pct(i.pos_52s), classe: "hidden md:table-cell" },
+  { chave: "rsi14", termo: "rsi", rotulo: "RSI", render: (i) => formatarNumero(i.rsi14, 0), classe: "hidden lg:table-cell" },
+  { chave: "dy_12m", termo: "dy", rotulo: "DY", titulo: "Dividend yield de 12 meses", render: (i) => pct(i.dy_12m) },
+  { chave: "pl", termo: "pl", rotulo: "P/L", render: (i) => formatarNumero(i.pl, 1), classe: "hidden sm:table-cell" },
+  { chave: "pvp", termo: "pvp", rotulo: "P/VP", render: (i) => formatarNumero(i.pvp, 2), classe: "hidden md:table-cell" },
+  { chave: "volume_financeiro_20d", termo: "liquidez", rotulo: "Liquidez", titulo: "Volume financeiro médio diário em 20 pregões", render: (i) => (i.volume_financeiro_20d === null ? "—" : `R$ ${formatarCompacto(i.volume_financeiro_20d)}`), classe: "hidden sm:table-cell" },
 ];
 
-function Cabecalho({ chave, rotulo, titulo, ordem, busca, classe }: { chave: string; rotulo: string; titulo?: string; ordem: string; busca: Busca; classe?: string }) {
+function Cabecalho({
+  chave,
+  rotulo,
+  titulo,
+  termo,
+  ordem,
+  busca,
+  classe,
+}: {
+  chave: string;
+  rotulo: string;
+  titulo?: string;
+  termo?: ChaveGlossario;
+  ordem: string;
+  busca: Busca;
+  classe?: string;
+}) {
   const ordenavel = chave !== "tendencia";
   const ativa = ordem.replace(/^-/, "") === chave;
   const conteudo = (
@@ -55,13 +75,16 @@ function Cabecalho({ chave, rotulo, titulo, ordem, busca, classe }: { chave: str
       aria-sort={ativa ? (ordem.startsWith("-") ? "descending" : "ascending") : undefined}
       className={cn("whitespace-nowrap py-2 pl-3 text-right font-normal", chave === "ticker" && "pl-0 text-left", classe)}
     >
-      {ordenavel ? (
-        <Link href={urlCom(busca, { ordem: proximaOrdem(ordem, chave) })} className={cn("inline-flex items-center gap-1 hover:text-foreground", ativa && "text-foreground")}>
-          {conteudo}
-        </Link>
-      ) : (
-        conteudo
-      )}
+      <span className="inline-flex items-center gap-1">
+        {ordenavel ? (
+          <Link href={urlCom(busca, { ordem: proximaOrdem(ordem, chave) })} className={cn("inline-flex items-center gap-1 hover:text-foreground", ativa && "text-foreground")}>
+            {conteudo}
+          </Link>
+        ) : (
+          conteudo
+        )}
+        {termo && <Dica termo={termo} />}
+      </span>
     </th>
   );
 }
@@ -74,7 +97,7 @@ export function TabelaScreener({ itens, ordem, busca }: { itens: ItemScreener[];
           <tr>
             <Cabecalho chave="ticker" rotulo="Ativo" ordem={ordem} busca={busca} />
             {COLUNAS.map((c) => (
-              <Cabecalho key={c.chave} chave={c.chave} rotulo={c.rotulo} titulo={c.titulo} ordem={ordem} busca={busca} classe={c.classe} />
+              <Cabecalho key={c.chave} chave={c.chave} rotulo={c.rotulo} titulo={c.termo ? undefined : c.titulo} termo={c.termo} ordem={ordem} busca={busca} classe={c.classe} />
             ))}
           </tr>
         </thead>

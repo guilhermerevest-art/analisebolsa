@@ -5,11 +5,19 @@ import { PRESETS, urlPreset } from "@/lib/screener";
 import type { SinaisDoDia } from "@/lib/tipos-api";
 import { cn } from "@/lib/utils";
 
-const COR_TOM = { positivo: "bg-positivo", atencao: "bg-amber-500", neutro: "bg-cobalto" } as const;
+const COR_TOM = { positivo: "bg-positivo", atencao: "bg-amber-500", neutro: "bg-azul" } as const;
 
 // Sinais com um filtro pronto parecido no screener.
 const preset = (id: string) => urlPreset(PRESETS.find((p) => p.id === id)!);
 const NO_SCREENER: Record<string, string> = { maxima_52s: preset("maxima-52s"), minima_52s: preset("minima-52s") };
+
+// A API manda a frase no plural ("{n} ativos renovaram..."); com 1 ativo, o verbo vai ao singular.
+const SINGULAR: Record<string, string> = { renovaram: "renovou", tiveram: "teve", passaram: "passou", "estão": "está", negociaram: "negociou" };
+const concordar = (frase: string, total: number) => {
+  if (total !== 1) return frase;
+  const [verbo, ...resto] = frase.split(" ");
+  return [SINGULAR[verbo] ?? verbo, ...resto].join(" ");
+};
 
 export function SinaisDeHoje({ dados }: { dados: SinaisDoDia }) {
   if (!dados.data || dados.sinais.length === 0) return null;
@@ -31,12 +39,12 @@ export function SinaisDeHoje({ dados }: { dados: SinaisDoDia }) {
             <p className="grid gap-1">
               <span className="font-display text-4xl font-semibold tracking-tight tabular-nums">{formatarNumero(s.total, 0)}</span>
               <span className="text-sm text-muted-foreground">
-                {s.total === 1 ? "ativo" : "ativos"} {s.frase}
+                {s.total === 1 ? "ativo" : "ativos"} {concordar(s.frase, s.total)}
               </span>
             </p>
             <div className="flex flex-wrap gap-1.5">
               {s.exemplos.map((e) => (
-                <Link key={e.ticker} href={`/ativo/${e.ticker}`} title={e.nome} className="rounded-md border px-2 py-0.5 text-xs font-medium transition-colors hover:border-cobalto hover:text-cobalto">
+                <Link key={e.ticker} href={`/ativo/${e.ticker}`} title={e.nome} className="rounded-md border px-2 py-0.5 text-xs font-medium transition-colors hover:border-azul hover:text-azul">
                   {e.ticker}
                 </Link>
               ))}

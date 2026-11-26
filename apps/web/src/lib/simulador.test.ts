@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { fimDeCadaAno, lerParamsSimulador, mesMaximo } from "./simulador";
+import { fimDeCadaAno, leituraSimulador, lerParamsSimulador, mesMaximo } from "./simulador";
 
 const hoje = new Date("2026-11-25T12:00:00Z");
 
@@ -42,4 +42,16 @@ describe("lerParamsSimulador", () => {
 it("fimDeCadaAno pega o último ponto de cada ano", () => {
   const pontos = ["2024-11-29", "2024-12-31", "2025-01-31", "2025-02-28"].map((data) => ({ data }));
   expect(fimDeCadaAno(pontos).map((p) => p.data)).toEqual(["2024-12-31", "2025-02-28"]);
+});
+
+describe("leitura do simulador", () => {
+  it("compara com o CDI e com a inflação", () => {
+    const [a, b, c] = leituraSimulador({ aportado: 30000, ativo: 62810.74, ticker: "PETR4", cdi: 41698.4, ipca: 33511.88 });
+    expect(a).toMatch(/somaram R\$\s30\.000 e, em PETR4, com os proventos reinvestidos, chegaram a R\$\s62\.811: R\$\s21\.112 a mais que no CDI/);
+    expect(b).toMatch(/acima disso: esse é o ganho real/);
+    expect(c).toContain("passado");
+    const [, abaixo] = leituraSimulador({ aportado: 10000, ativo: 9000, ticker: "MGLU3", cdi: 12000, ipca: 11000 });
+    expect(abaixo).toContain("perdeu poder de compra");
+    expect(leituraSimulador({ aportado: 10000, ativo: null, ticker: null, cdi: 12000, ipca: 11000 })[0]).toContain("e, no CDI, chegaram a");
+  });
 });

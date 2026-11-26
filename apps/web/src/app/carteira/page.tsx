@@ -15,6 +15,8 @@ import { chamarApi } from "@/lib/api";
 import { classeVariacao, formatarData, formatarNumero, formatarPct, formatarPreco, NOMES_PROVENTO } from "@/lib/formato";
 import type { Carteiras, Operacoes, RentabilidadeCarteira, ResumoCarteira } from "@/lib/tipos-api";
 import { cn } from "@/lib/utils";
+import { Termo } from "@/components/dica";
+import type { ChaveGlossario } from "@/lib/glossario";
 
 export const metadata: Metadata = { title: "Minha carteira", robots: { index: false } };
 export const dynamic = "force-dynamic";
@@ -30,10 +32,10 @@ async function ler<T>(caminho: string): Promise<T | null> {
 
 const qtd = (v: string) => formatarNumero(v, Number.isInteger(Number(v)) ? 0 : 4);
 
-function Valor({ rotulo, valor, classe, detalhe }: { rotulo: string; valor: string; classe?: string; detalhe?: string }) {
+function Valor({ rotulo, valor, classe, detalhe, termo }: { rotulo: string; valor: string; classe?: string; detalhe?: string; termo?: ChaveGlossario }) {
   return (
     <div className="rounded-xl border bg-card p-4">
-      <dt className="text-sm text-muted-foreground">{rotulo}</dt>
+      <dt className="text-sm text-muted-foreground">{termo ? <Termo termo={termo}>{rotulo}</Termo> : rotulo}</dt>
       <dd className={cn("mt-1 text-xl font-semibold tabular-nums", classe)}>{valor}</dd>
       {detalhe && <dd className="text-xs text-muted-foreground">{detalhe}</dd>}
     </div>
@@ -150,15 +152,16 @@ export default async function PaginaCarteira({ searchParams }: Props) {
           {t && resumo.posicoes.length + ops.itens.length > 0 && (
             <dl className="grid grid-cols-2 gap-3 lg:grid-cols-5">
               <Valor rotulo="Patrimônio" valor={formatarPreco(t.patrimonio)} />
-              <Valor rotulo="Custo das posições" valor={formatarPreco(t.custo)} />
+              <Valor rotulo="Custo das posições" termo="preco_medio" valor={formatarPreco(t.custo)} />
               <Valor
                 rotulo="Resultado em aberto"
+                termo="resultado_aberto"
                 valor={formatarPreco(t.resultado_nao_realizado)}
                 classe={classeVariacao(Number(t.resultado_nao_realizado))}
                 detalhe={variacaoTotal === null ? undefined : `${formatarPct(variacaoTotal)} sobre o custo`}
               />
-              <Valor rotulo="Resultado realizado" valor={formatarPreco(t.resultado_realizado)} classe={classeVariacao(Number(t.resultado_realizado))} detalhe="Nas vendas" />
-              <Valor rotulo="Proventos recebidos" valor={formatarPreco(t.proventos)} detalhe="Valor bruto" />
+              <Valor rotulo="Resultado realizado" termo="resultado_realizado" valor={formatarPreco(t.resultado_realizado)} classe={classeVariacao(Number(t.resultado_realizado))} detalhe="Nas vendas" />
+              <Valor rotulo="Proventos recebidos" termo="proventos" valor={formatarPreco(t.proventos)} detalhe="Valor bruto" />
             </dl>
           )}
 
@@ -166,7 +169,7 @@ export default async function PaginaCarteira({ searchParams }: Props) {
             <section aria-labelledby="titulo-rentabilidade" className="grid gap-3">
               <div>
                 <h2 id="titulo-rentabilidade" className="text-xl font-semibold">
-                  Rentabilidade
+                  <Termo termo="rentabilidade_twr">Rentabilidade</Termo>
                 </h2>
                 <p className="text-sm text-muted-foreground">
                   Retorno acumulado desde {formatarData(rent.inicio)}, ponderado pelo tempo (aportes e retiradas não distorcem), com proventos. CDI e Ibovespa no mesmo período.

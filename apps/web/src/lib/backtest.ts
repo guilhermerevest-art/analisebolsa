@@ -188,3 +188,41 @@ export function ultimoDiaDoMes(mes: string, hoje = new Date()): string {
   const hojeIso = hoje.toISOString().slice(0, 10);
   return fim > hojeIso ? hojeIso : fim;
 }
+
+/** Retorno total (fração) de cada lado, para a leitura do resultado. */
+export type ResumoComparacao = {
+  capital: number;
+  estrategia: { retorno: number | null; queda: number | null };
+  manter: { retorno: number | null; queda: number | null };
+  cdi: { retorno: number | null };
+};
+
+const reais = (v: number) => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
+const porcento = (v: number) => `${v > 0 ? "+" : v < 0 ? "−" : ""}${Math.abs(v * 100).toLocaleString("pt-BR", { maximumFractionDigits: 1 })}%`;
+const comparar = (a: number, b: number) => (Math.abs(a - b) < 0.005 ? "praticamente o mesmo que" : a > b ? "mais que" : "menos que");
+
+/**
+ * Frases em linguagem simples sobre o resultado do backtest: quanto o capital teria virado
+ * em cada caminho, como a regra se compara aos outros dois e a maior queda. Descrevem o
+ * passado; não dizem o que fazer.
+ */
+export function leituraBacktest(r: ResumoComparacao): string[] {
+  const { capital, estrategia: e, manter: m, cdi } = r;
+  if (e.retorno === null || m.retorno === null) return [];
+  const frases = [
+    `Com ${reais(capital)} no início, seguir a regra teria terminado com ${reais(capital * (1 + e.retorno))} (${porcento(e.retorno)}). ` +
+      `Manter o ativo o tempo todo teria chegado a ${reais(capital * (1 + m.retorno))} (${porcento(m.retorno)})` +
+      (cdi.retorno !== null ? `, e deixar no CDI, a ${reais(capital * (1 + cdi.retorno))} (${porcento(cdi.retorno)}).` : "."),
+  ];
+  let comparacao = `Nesse histórico, a regra rendeu ${comparar(e.retorno, m.retorno)} manter o ativo`;
+  if (cdi.retorno !== null) comparacao += ` e ${comparar(e.retorno, cdi.retorno)} o CDI`;
+  frases.push(`${comparacao}.`);
+  if (e.queda !== null && m.queda !== null) {
+    frases.push(
+      `A maior queda no caminho foi de ${porcento(e.queda)} seguindo a regra e de ${porcento(m.queda)} mantendo o ativo. ` +
+        "Uma queda menor quer dizer um percurso com sustos menores, mesmo quando o retorno final é menor.",
+    );
+  }
+  frases.push("É um teste sobre o passado, com custos e sem impostos: não mostra o que vai acontecer daqui para frente.");
+  return frases;
+}

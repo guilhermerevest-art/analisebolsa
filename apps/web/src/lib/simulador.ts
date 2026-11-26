@@ -61,3 +61,32 @@ export function lerParamsSimulador(params: Params, hoje = new Date()) {
 export function fimDeCadaAno<T extends { data: string }>(pontos: T[]): T[] {
   return pontos.filter((p, i) => i === pontos.length - 1 || pontos[i + 1].data.slice(0, 4) !== p.data.slice(0, 4));
 }
+
+const brl0 = (v: number) => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
+
+/**
+ * Leitura em linguagem simples do fim da simulação: quanto foi aportado, em quanto virou no
+ * ativo e no CDI, e se ficou acima da inflação. Descreve o passado; não diz o que fazer.
+ */
+export function leituraSimulador(f: { aportado: number; ativo: number | null; ticker: string | null; cdi: number; ipca: number }): string[] {
+  const frases: string[] = [];
+  const principal = f.ativo ?? f.cdi;
+  const onde = f.ativo !== null && f.ticker ? `em ${f.ticker}, com os proventos reinvestidos,` : "no CDI,";
+  let primeira = `Os aportes somaram ${brl0(f.aportado)} e, ${onde} chegaram a ${brl0(principal)}`;
+  if (f.ativo !== null) {
+    const dif = f.ativo - f.cdi;
+    primeira +=
+      Math.abs(dif) < 1 ? `, praticamente o mesmo que no CDI.` : `: ${brl0(Math.abs(dif))} ${dif > 0 ? "a mais" : "a menos"} que no CDI (${brl0(f.cdi)}).`;
+  } else {
+    primeira += ".";
+  }
+  frases.push(primeira);
+  frases.push(
+    `Só para manter o poder de compra, o dinheiro aportado precisaria valer ${brl0(f.ipca)} hoje (corrigido pelo IPCA). ` +
+      (principal >= f.ipca
+        ? `O resultado ficou ${brl0(principal - f.ipca)} acima disso: esse é o ganho real, descontada a inflação.`
+        : `O resultado ficou ${brl0(f.ipca - principal)} abaixo: o dinheiro perdeu poder de compra no período.`),
+  );
+  frases.push("São números do passado, sem impostos nem custos de corretagem: não mostram o que vai acontecer.");
+  return frases;
+}

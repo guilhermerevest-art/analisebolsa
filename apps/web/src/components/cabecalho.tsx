@@ -14,6 +14,7 @@ export async function Cabecalho() {
     { href: "/simulador", rotulo: "Simulador" },
     { href: "/backtest", rotulo: "Backtest" },
     { href: "/posicao", rotulo: "Calculadora de posição", curto: "Posição" },
+    { href: "/glossario", rotulo: "Glossário" },
     ...(logado
       ? [
           { href: "/watchlist", rotulo: "Watchlist" },
